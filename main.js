@@ -1,4 +1,5 @@
 const { app, BrowserWindow } = require('electron');
+const path = require('path');
 let mainWindow
 
 function createWindow () {
@@ -8,6 +9,7 @@ function createWindow () {
     height: 600,
     minHeight: 300,
     minWidth: 460,
+    icon: __dirname + '/app/assets/healthline_logo.ico',
     webPreferences: {
       nodeIntegration: true
     }
