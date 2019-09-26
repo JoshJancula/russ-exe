@@ -4,10 +4,12 @@
   "description": "Lund & Browder Form",
   "main": "main.js",
   "dependencies": {
+    "body-parser": "^1.19.0",
     "express": "^4.16.3",
     "fs": "0.0.1-security",
     "http": "0.0.0",
     "jquery": "^3.4.1",
+    "jspdf": "^1.5.3",
     "path": "^0.12.7",
     "winser": "^1.0.3"
   },

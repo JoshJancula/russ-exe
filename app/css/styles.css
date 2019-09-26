@@ -1,0 +1,53 @@
+.canvasContainer1 {
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-image: url('../assets/adult.png');
+}
+
+
+.canvasContainer2 {
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-image: url('../assets/baby.png');
+}
+
+.burnRadio {
+    padding: 4px;
+}
+
+td,
+th {
+    border-left: 1px solid rgba(0, 0, 0, 0.12);
+    border-right: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+th {
+    border-top: 1px solid rgba(0, 0, 0, 0.12);
+    text-align: center;
+}
+
+td input {
+    margin: 2%;
+    border-bottom: none !important;
+}
+
+.insertMoreButton {
+    margin-top: 5%;
+}
+
+body {
+    padding: 2%;
+}
+
+#burnTypes,
+#skinTypes,
+#fill3 {
+    display: none;
+}
+
+.html2canvas-container { 
+    width: 1000px !important; 
+    /* height: 2000px !important;  */
+}

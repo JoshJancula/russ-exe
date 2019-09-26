@@ -2,118 +2,18 @@
 <html>
 
 <head>
-    <!--Materialize CDN-->
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-alpha.2/css/materialize.min.css">
-
-    <!--jQuery library-->
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script> -->
-
-    <!--Let browser know website is optimized for mobile-->
+    <link type="text/css" rel="stylesheet" href="./css/materialize.min.css" media="screen,projection" />
+    <link type="text/css" rel="stylesheet" href="./css/styles.css" media="screen,projection" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
 </head>
 
 <base href="./">
 
-<style>
-    .canvasContainer1 {
-        background-position: center;
-        background-size: contain;
-        background-repeat: no-repeat;
-        background-image: url('./assets/adult.png');
-    }
-
-
-    .canvasContainer2 {
-        background-position: center;
-        background-size: contain;
-        background-repeat: no-repeat;
-        background-image: url('./assets/baby.png');
-    }
-
-    .burnRadio {
-        /* border: solid black 1px; */
-        padding: 4px;
-    }
-
-    td,
-    th {
-        border-left: 1px solid rgba(0, 0, 0, 0.12);
-        border-right: 1px solid rgba(0, 0, 0, 0.12);
-    }
-
-    th {
-        border-top: 1px solid rgba(0, 0, 0, 0.12);
-        text-align: center;
-    }
-
-    td input {
-        margin: 2%;
-        border-bottom: none !important;
-    }
-
-    .insertMoreButton {
-        margin-top: 5%;
-    }
-
-    body {
-        padding: 2%;
-    }
-
-    #burnTypes,
-    #skinTypes,
-    #fill3 {
-        display: none;
-    }
-</style>
-
-<script type="text/javascript">
-
-    var patientAge = 0;
-    var tooltype = 'draw';
-    var canvasFillColor = "#000306";
-    var formType = 'burn';
-
-    function setCanvasFill(color) {
-        canvasFillColor = color;
-    }
-
-    function useTool(tool) {
-        tooltype = tool; //update
-    }
-
-    function setFormType(type) {
-        var burn = document.getElementById('burnTypes');
-        var skin = document.getElementById('skinTypes');
-        var lowerBurn = document.getElementById('lowerBurn');
-        var burnAnnotations = document.getElementById('burnAnnotations');
-        var skinAnnotations = document.getElementById('skinAnnotations');
-        var fill1 = document.getElementById('fill1');
-        var fill3 = document.getElementById('fill3');
-
-        if (type === 'burn') {
-            formType = 'burn';
-            burn.style.display = 'inline';
-            lowerBurn.style.display = 'inline';
-            skin.style.display = 'none';
-            burnAnnotations.style.display = 'inline';
-            skinAnnotations.style.display = 'none';
-            fill1.click();
-        } else {
-            formType = 'skinDisease';
-            burn.style.display = 'none';
-            lowerBurn.style.display = 'none';
-            skin.style.display = 'inline';
-            burnAnnotations.style.display = 'none';
-            skinAnnotations.style.display = 'inline';
-            fill3.click();
-        }
-    }
-
-</script>
+<script type="text/javascript" src="./js/preload.js"></script>
 
 <body>
-
+<div id="mainForm">
     <div class="row">
         <!-- Estimated Percentage -->
         <div class="col l6 m6 s12">
@@ -151,10 +51,7 @@
                 <h6>Date Completed: <input type="date" /></h6>
             </div>
             <div class="row center">
-                <!-- <p>Type of Burn Injury</p> -->
-                <div class="row">
-                    <h6>Form Type?</h6>
-                </div>
+                <h6>Form Type?</h6>
                 <div class="row">
                     <label class="td_wtt"><input type="radio" id="burnRadio" name="formType"
                             onclick="setFormType('burn');" /><span>Burn</span></label>
@@ -164,33 +61,6 @@
                 <hr />
                 <div id="burnTypes">
                     <h6>Type of Burn Injury</h6>
-                    <!-- <table>
-                        <tr style="border-top: 1px solid rgba(0, 0, 0, 0.12);">
-                            <td>
-                                <label class="td_wtt burnRadio"><input type="radio" name="burnType" />
-                                    <span>Thermal</span></label>
-                            </td>
-                            <td>
-                                <label class="td_wtt burnRadio"><input type="radio" name="burnType" />
-                                    <span>Chemical</span></label>
-                            </td>
-                            <td>
-                                <label class="td_wtt burnRadio"><input type="radio" name="burnType" />
-                                    <span>Electrical</span></label>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td>
-                                <label class="td_wtt burnRadio"><input type="radio" name="burnType" />
-                                    <span>Scald</span></label>
-                            </td>
-                            <td>
-                                <label class="td_wtt burnRadio"><input type="radio" name="burnType" />
-                                    <span>Friction</span></label>
-                            </td>
-                        </tr>
-                    </table> -->
                     <label class="td_wtt burnRadio"><input type="radio" name="burnType" />
                         <span>Thermal</span></label>
 
@@ -235,13 +105,13 @@
             </div>
         </div>
 
-            <div class="col l6 m6 s12">
+        <div class="col l6 m6 s12">
             <!-- canvas in here -->
             <div class="row" style="margin-left:7%;">
                 <div id="canvasDiv"></div>
             </div>
 
-            <div class="row center">
+            <div class="row center" id="canvasTools">
                 <div class="col l6 m12 s12 center">
                     <div class="row">Select Fill</div>
                     <div class="row">
@@ -276,7 +146,7 @@
 
         </div>
     </div>
-
+<div class="sectionBreak"></div>
     <div class="row">
         <div class="row center">
             <h6>Lund and Browder Chart - Burn Estimate - Age vs. Area</h6>
@@ -568,279 +438,15 @@
         </div>
     </div>
 
+    <div class="row">
+    <button onclick="generatePDF()" id='print-pdf'>Convert to PDF</button>
+    </div>
 
+</div>
 </body>
-<!-- <script>window.$ = window.jQuery = require('./jquery-3.0.0.min.js');</script> -->
-
+<script>window.html2canvas = require('html2canvas');</script>
+<script>window.jsPDF = require('jspdf');</script>
 <script>window.$ = window.jQuery = require('jquery');</script>
-<script type="text/javascript">
-
-    var useThisRange = 'infant';
-    var grandTotal = 0;
-    var fourthTotal = 0;
-    var thirdTotal = 0;
-    var secondTotal = 0;
-    var patientSex = null;
-
-    Date.prototype.toDateInputValue = (function () {
-        var local = new Date(this);
-        return local.toJSON().slice(0, 10);
-    });
-
-    Date.prototype.toTimeInputValue = (function () {
-        var local = new Date(this);
-        return `${local.getHours()}:${local.getMinutes() > 9 ? local.getMinutes() : `0${local.getMinutes()}`}`;
-    });
-
-    $(document).ready(function () {
-        renderTableCells();
-        $('#todayDate').val(new Date().toDateInputValue());
-        setTimeForNow();
-        initializeCanvas('canvasDiv', 'canvas', 'canvasContainer2');
-        setRadios();
-        setFormType('burn');
-        const args = require('electron').remote.process.argv
-        console.log('arguments passed...... ', args);
-    });
-
-    function setRadios() {
-        var fill = document.getElementById('fill1');
-        var tool = document.getElementById('tool1');
-        var burn = document.getElementById('burnRadio');
-        tool1.click();
-        fill1.click();
-        burn.click();
-    }
-
-    function setTimeForNow() {
-        setInterval(() => {
-            $('#currentTime').val(new Date().toTimeInputValue());
-        }, 1000);
-    }
-
-    function initializeCanvas(c, d, e) {
-
-        var canvasDiv = document.getElementById(c);
-        canvas = document.createElement('canvas');
-        canvas.setAttribute('width', 400);
-        canvas.setAttribute('height', 400);
-        canvas.setAttribute('id', d);
-        canvas.className = e;
-        canvasDiv.appendChild(canvas);
-
-        if (typeof G_vmlCanvasManager != 'undefined') {
-            canvas = G_vmlCanvasManager.initElement(canvas);
-        }
-
-        context = canvas.getContext("2d");
-        var ctx = canvas.getContext('2d');
-        var last_mousex = last_mousey = 0;
-        var mousex = mousey = 0;
-        var mousedown = false;
-
-        //Mousedown
-        $(`#${c}`).on('mousedown', function (e) {
-            var canvasx = $(`#${c}`).offset().left;
-            var canvasy = $(`#${c}`).offset().top;
-            last_mousex = mousex = parseInt(e.pageX) - parseInt(canvasx);
-            last_mousey = mousey = parseInt(e.pageY) - parseInt(canvasy);
-            mousedown = true;
-        });
-
-        //Mouseup
-        $(`#${c}`).on('mouseup', function (e) {
-            mousedown = false;
-        });
-
-
-        //Mousemove
-        $(`#${c}`).on('mousemove', function (e) {
-            var canvasx = $(`#${c}`).offset().left;
-            var canvasy = $(`#${c}`).offset().top;
-            mousex = parseInt(e.pageX - canvasx);
-            mousey = parseInt(e.pageY - canvasy);
-            if (mousedown) {
-                ctx.beginPath();
-                if (tooltype == 'draw') {
-                    ctx.globalCompositeOperation = 'source-over';
-                    ctx.strokeStyle = canvasFillColor;
-                    ctx.lineWidth = 3;
-                } else if (tooltype === 'erase') {
-                    ctx.globalCompositeOperation = 'destination-out';
-                    ctx.lineWidth = 5;
-                }
-                ctx.moveTo(last_mousex, last_mousey);
-                ctx.lineTo(mousex, mousey);
-                ctx.lineJoin = ctx.lineCap = 'round';
-                ctx.stroke();
-            }
-            last_mousex = mousex;
-            last_mousey = mousey;
-        });
-    }
-
-    function insertNewAmendedRow() {
-        var tr = ` <tr>
-                        <td><input type="date" /></td>
-                        <td><input type="text" /></td>
-                        <td><input type="text" /></td>
-                        <td><input type="text" /></td>
-                        <td><input type="text" /></td>
-                    </tr>`;
-        var table = document.getElementById('amendedTable');
-        table.innerHTML += tr;
-    }
-
-    function setSex(sex) {
-        if (sex === 'm') {
-            patientSex = 'male';
-            var box = document.getElementById('femaleBox');
-            box.checked = false;
-        } else {
-            patientSex = 'female';
-            var box = document.getElementById('maleBox');
-            box.checked = false;
-        }
-    }
-
-    function calculateTotals() {
-
-        var tableRows = [
-            { name: 'head', infant: 19, oneToFour: 12, fiveToNine: 13, tenToFourteen: 11, fifteen: 8, adult: 7 },
-            { name: 'neck', infant: 2, oneToFour: 2, fiveToNine: 2, tenToFourteen: 2, fifteen: 2, adult: 2 },
-            { name: 'anteriorTrunk', infant: 13, oneToFour: 13, fiveToNine: 13, tenToFourteen: 13, fifteen: 13, adult: 13 },
-            { name: 'posteriorTrunk', infant: 13, oneToFour: 13, fiveToNine: 13, tenToFourteen: 13, fifteen: 13, adult: 13 },
-            { name: 'rightButtock', infant: 2.5, oneToFour: 2.5, fiveToNine: 2.5, tenToFourteen: 2.5, fifteen: 2.5, adult: 2.5 },
-            { name: 'leftButtock', infant: 2.5, oneToFour: 2.5, fiveToNine: 2.5, tenToFourteen: 2.5, fifteen: 2.5, adult: 2.5 },
-            { name: 'genetalia', infant: 1, oneToFour: 1, fiveToNine: 1, tenToFourteen: 1, fifteen: 1, adult: 1 },
-            { name: 'rightUpperArm', infant: 4, oneToFour: 4, fiveToNine: 4, tenToFourteen: 4, fifteen: 4, adult: 4 },
-            { name: 'leftUpperArm', infant: 4, oneToFour: 4, fiveToNine: 4, tenToFourteen: 4, fifteen: 4, adult: 4 },
-            { name: 'rightLowerArm', infant: 3, oneToFour: 3, fiveToNine: 3, tenToFourteen: 3, fifteen: 3, adult: 3 },
-            { name: 'leftLowerArm', infant: 3, oneToFour: 3, fiveToNine: 3, tenToFourteen: 3, fifteen: 3, adult: 3 },
-            { name: 'rightHand', infant: 2.5, oneToFour: 2.5, fiveToNine: 2.5, tenToFourteen: 2.5, fifteen: 2.5, adult: 2.5 },
-            { name: 'leftHand', infant: 2.5, oneToFour: 2.5, fiveToNine: 2.5, tenToFourteen: 2.5, fifteen: 2.5, adult: 2.5 },
-            { name: 'rightThigh', infant: 5.5, oneToFour: 6.5, fiveToNine: 8, tenToFourteen: 8.5, fifteen: 9, adult: 9.5 },
-            { name: 'leftThigh', infant: 5.5, oneToFour: 6.5, fiveToNine: 8, tenToFourteen: 8.5, fifteen: 9, adult: 9.5 },
-            { name: 'rightLeg', infant: 5, oneToFour: 5, fiveToNine: 5.5, tenToFourteen: 6, fifteen: 6.5, adult: 7 },
-            { name: 'leftLeg', infant: 5, oneToFour: 5, fiveToNine: 5.5, tenToFourteen: 6, fifteen: 6.5, adult: 7 },
-            { name: 'rightFoot', infant: 3.5, oneToFour: 3.5, fiveToNine: 3.5, tenToFourteen: 3.5, fifteen: 3.5, adult: 3.5 },
-            { name: 'leftFoot', infant: 3.5, oneToFour: 3.5, fiveToNine: 3.5, tenToFourteen: 3.5, fifteen: 3.5, adult: 3.5 }
-        ];
-
-        grandTotal = 0;
-        secondTotal = 0;
-        thirdTotal = 0;
-        fourthTotal = 0;
-
-        for (var i = 0; i < tableRows.length; i++) {
-            renderCalculation(tableRows[i]);
-        }
-
-    }
-
-    function renderCalculation(row) {
-        var second = $(`#${row.name}SecondDegree`).val();
-        var third = $(`#${row.name}ThirdDegree`).val();
-        var fourth = $(`#${row.name}FourthDegree`).val();
-        var rowTotal = parseFloat(second ? second : 0) + parseFloat(third ? third : 0) + parseFloat(fourth ? fourth : 0);
-        var maxAllowed = row[useThisRange];
-        var totalBox = document.getElementById(`${row.name}Total`);
-        $(`#${row.name}Total`).val(rowTotal > 0 ? rowTotal : null);
-        grandTotal += rowTotal;
-        $('#grandTotal').val(grandTotal > 0 ? grandTotal : null);
-        secondTotal += parseFloat(second ? second : 0);
-        $('#secondTotal').val(secondTotal);
-        thirdTotal += parseFloat(third ? third : 0);
-        $('#thirdTotal').val(thirdTotal > 0 ? thirdTotal : null);
-        fourthTotal += parseFloat(fourth ? fourth : 0);
-        $('#fourthTotal').val(fourthTotal > 0 ? fourthTotal : null);
-        if (rowTotal > maxAllowed) {
-            totalBox.style.background = 'red';
-            totalBox.style.color = 'white';
-        } else {
-            totalBox.style.color = 'black';
-            totalBox.style.background = 'white';
-        }
-    }
-
-    function renderTableCells() {
-        patientAge = $('#patientAge').val();
-
-        var infant = document.getElementsByClassName('infant');
-        var oneToFour = document.getElementsByClassName('oneToFour');
-        var fiveToNine = document.getElementsByClassName('fiveToNine');
-        var tenToFourteen = document.getElementsByClassName('tenToFourteen');
-        var fifteen = document.getElementsByClassName('fifteen');
-        var adult = document.getElementsByClassName('adult');
-        if (patientAge < 1) {
-            alterTableDisplay(infant, false);
-            alterTableDisplay(oneToFour, true);
-            alterTableDisplay(fiveToNine, true);
-            alterTableDisplay(tenToFourteen, true);
-            alterTableDisplay(fifteen, true);
-            alterTableDisplay(adult, true);
-            useThisRange = 'infant';
-            $('#canvas').removeClass('canvasContainer1');
-            $('#canvas').addClass('canvasContainer2');
-        } else if (patientAge >= 1 && patientAge < 5) {
-            alterTableDisplay(infant, true);
-            alterTableDisplay(oneToFour, false);
-            alterTableDisplay(fiveToNine, true);
-            alterTableDisplay(tenToFourteen, true);
-            alterTableDisplay(fifteen, true);
-            alterTableDisplay(adult, true);
-            useThisRange = 'oneToFour';
-            $('#canvas').removeClass('canvasContainer2');
-            $('#canvas').addClass('canvasContainer1');
-        } else if (patientAge >= 5 && patientAge < 10) {
-            alterTableDisplay(infant, true);
-            alterTableDisplay(oneToFour, true);
-            alterTableDisplay(fiveToNine, false);
-            alterTableDisplay(tenToFourteen, true);
-            alterTableDisplay(fifteen, true);
-            alterTableDisplay(adult, true);
-            useThisRange = 'fiveToNine';
-            $('#canvas').removeClass('canvasContainer2');
-            $('#canvas').addClass('canvasContainer1');
-        } else if (patientAge >= 10 && patientAge < 15) {
-            alterTableDisplay(infant, true);
-            alterTableDisplay(oneToFour, true);
-            alterTableDisplay(fiveToNine, true);
-            alterTableDisplay(tenToFourteen, false);
-            alterTableDisplay(fifteen, true);
-            alterTableDisplay(adult, true);
-            $('#canvas').removeClass('canvasContainer2');
-            useThisRange = 'tenToFourteen';
-            $('#canvas').addClass('canvasContainer1');
-        } else if (patientAge === 15) {
-            alterTableDisplay(infant, true);
-            alterTableDisplay(oneToFour, true);
-            alterTableDisplay(fiveToNine, true);
-            alterTableDisplay(tenToFourteen, true);
-            alterTableDisplay(fifteen, false);
-            alterTableDisplay(adult, true);
-            $('#canvas').removeClass('canvasContainer2');
-            useThisRange = 'fifteen';
-            $('#canvas').addClass('canvasContainer1');
-        } else if (patientAge > 15) {
-            alterTableDisplay(infant, true);
-            alterTableDisplay(oneToFour, true);
-            alterTableDisplay(fiveToNine, true);
-            alterTableDisplay(tenToFourteen, true);
-            alterTableDisplay(fifteen, true);
-            alterTableDisplay(adult, false);
-            $('#canvas').removeClass('canvasContainer2');
-            useThisRange = 'adult';
-            $('#canvas').addClass('canvasContainer1');
-        }
-    }
-
-    function alterTableDisplay(arr, hide) {
-        for (var i = 0; i < arr.length; i++) {
-            arr[i].style.display = hide ? 'none' : 'table-cell';
-        }
-    }
-
-</script>
+<script type="text/javascript" src="./js/form.js"></script>
 
 </html>

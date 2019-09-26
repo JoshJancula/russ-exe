@@ -60,4 +60,6 @@ typings/
 # next.js build output
 .next
 
+# compiled outputs
 russ-exe-darwin-x64
+dist

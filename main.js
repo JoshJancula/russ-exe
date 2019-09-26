@@ -16,12 +16,12 @@ function createWindow () {
   mainWindow.setTitle('Lund & Browder Form');
 
   // and load the index.html of the app.
-  mainWindow.loadFile('index.html');
+  mainWindow.loadFile('./app/index.html');
   mainWindow.webContents.openDevTools();
   
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {
-    mainWindow = null
+    mainWindow = null;
   });
 }
 
@@ -33,5 +33,5 @@ app.on('window-all-closed', function () {
 });
 
 app.on('activate', function () {
-  if (mainWindow === null) createWindow()
+  if (mainWindow === null) createWindow();
 });
