@@ -20,7 +20,7 @@ $(document).ready(function () {
     renderTableCells();
     $('#todayDate').val(new Date().toDateInputValue());
     setTimeForNow();
-    initializeCanvas('canvasDiv', 'canvas', 'canvasContainer2');
+    initializeCanvas('canvasDiv', 'canvas', 'infant-canvas');
     setRadios();
     setFormType('burn');
     const args = require('electron').remote.process.argv;
@@ -193,8 +193,8 @@ function renderTableCells() {
         alterTableDisplay(fifteen, true);
         alterTableDisplay(adult, true);
         useThisRange = 'infant';
-        $('#canvas').removeClass('canvasContainer1');
-        $('#canvas').addClass('canvasContainer2');
+        removeAllClasses('infant-canvas');
+        $('#canvas').addClass('infant-canvas');
     } else if (patientAge >= 1 && patientAge < 5) {
         alterTableDisplay(infant, true);
         alterTableDisplay(oneToFour, false);
@@ -203,8 +203,8 @@ function renderTableCells() {
         alterTableDisplay(fifteen, true);
         alterTableDisplay(adult, true);
         useThisRange = 'oneToFour';
-        $('#canvas').removeClass('canvasContainer2');
-        $('#canvas').addClass('canvasContainer1');
+        removeAllClasses('oneToFour-canvas');
+        $('#canvas').addClass('oneToFour-canvas');
     } else if (patientAge >= 5 && patientAge < 10) {
         alterTableDisplay(infant, true);
         alterTableDisplay(oneToFour, true);
@@ -213,8 +213,8 @@ function renderTableCells() {
         alterTableDisplay(fifteen, true);
         alterTableDisplay(adult, true);
         useThisRange = 'fiveToNine';
-        $('#canvas').removeClass('canvasContainer2');
-        $('#canvas').addClass('canvasContainer1');
+        removeAllClasses('fiveToNine-canvas');
+        $('#canvas').addClass('fiveToNine-canvas');
     } else if (patientAge >= 10 && patientAge < 15) {
         alterTableDisplay(infant, true);
         alterTableDisplay(oneToFour, true);
@@ -222,19 +222,19 @@ function renderTableCells() {
         alterTableDisplay(tenToFourteen, false);
         alterTableDisplay(fifteen, true);
         alterTableDisplay(adult, true);
-        $('#canvas').removeClass('canvasContainer2');
+        removeAllClasses('tenToFourteen-canvas');
         useThisRange = 'tenToFourteen';
-        $('#canvas').addClass('canvasContainer1');
-    } else if (patientAge === 15) {
+        $('#canvas').addClass('tenToFourteen-canvas');
+    } else if (patientAge == 15) {
         alterTableDisplay(infant, true);
         alterTableDisplay(oneToFour, true);
         alterTableDisplay(fiveToNine, true);
         alterTableDisplay(tenToFourteen, true);
         alterTableDisplay(fifteen, false);
         alterTableDisplay(adult, true);
-        $('#canvas').removeClass('canvasContainer2');
+        removeAllClasses('fifteen-canvas');
         useThisRange = 'fifteen';
-        $('#canvas').addClass('canvasContainer1');
+        determineBackgroundAdult(patientAge);
     } else if (patientAge > 15) {
         alterTableDisplay(infant, true);
         alterTableDisplay(oneToFour, true);
@@ -242,10 +242,30 @@ function renderTableCells() {
         alterTableDisplay(tenToFourteen, true);
         alterTableDisplay(fifteen, true);
         alterTableDisplay(adult, false);
-        $('#canvas').removeClass('canvasContainer2');
+        removeAllClasses('adult-canvas');
         useThisRange = 'adult';
-        $('#canvas').addClass('canvasContainer1');
+        determineBackgroundAdult(patientAge);
+       }
+}
+
+function determineBackgroundAdult(age) {
+    if (age < 18) {
+        $('#canvas').removeClass('adult-canvas');
+        $('#canvas').addClass('fifteen-canvas');
+    } else {
+        $('#canvas').removeClass('fifteen-canvas');
+        $('#canvas').addClass('adult-canvas');
     }
+}
+
+function removeAllClasses(except) {
+    const arr = ['infant-canvas', 'oneToFour-canvas', 'fiveToNine-canvas', 'tenToFourteen-canvas', 'fifteen-canvas', 'adult-canvas'];
+    const canvas = document.getElementById('canvas');
+    arr.forEach(c => {
+        if (canvas && c !== except) {
+            $('#canvas').removeClass(c);
+        }
+    });
 }
 
 function alterTableDisplay(arr, hide) {
@@ -264,11 +284,14 @@ function generatePDF() {
         const imgWidth = 170;
         const imgHeight = (canvas.height * imgWidth / canvas.width);
         const contentDataURL = canvas.toDataURL('image/png');
-        let pdf = new jsPDF('p', 'mm', 'a4'); // A4 size page of PDF
+        let pdf = new jsPDF('p', 'mm', 'a4', true); // A4 size page of PDF
         let position =  window.innerWidth < 500 ? -75 : window.innerWidth > 500 && window.innerWidth < 1200 ? -4 : -8;
-        pdf.addImage(contentDataURL, 'PNG', 0, position, imgWidth, imgHeight);
+        pdf.addImage(contentDataURL, 'PNG', 0, position, imgWidth, imgHeight, '','FAST');
         // let blob = pdf.output('blob');
         pdf.save();
+        document.body.style.width = ogWidth;
+        tools.style.display = ogTools;
+    }).catch((err) => {
         document.body.style.width = ogWidth;
         tools.style.display = ogTools;
     });

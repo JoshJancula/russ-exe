@@ -51,3 +51,48 @@ body {
     width: 1000px !important; 
     /* height: 2000px !important;  */
 }
+
+.infant-canvas {
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-image: url('../assets/BodyOutlines_AllFigures-06.png');
+}
+
+
+.oneToFour-canvas {
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-image: url('../assets/BodyOutlines_AllFigures-05.png');
+}
+
+.fiveToNine-canvas {
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-image: url('../assets/BodyOutlines_AllFigures-04.png');
+}
+
+
+.tenToFourteen-canvas {
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-image: url('../assets/BodyOutlines_AllFigures-03.png');
+}
+
+.fifteen-canvas {
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-image: url('../assets/BodyOutlines_AllFigures-02.png');
+}
+
+
+.adult-canvas {
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-image: url('../assets/BodyOutlines_AllFigures-01.png');
+}
