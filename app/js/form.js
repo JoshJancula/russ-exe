@@ -13,10 +13,10 @@ Date.prototype.toDateInputValue = (function () {
 
 Date.prototype.toTimeInputValue = (function () {
     let local = new Date(this);
-    return `${local.getHours()}:${local.getMinutes() > 9 ? local.getMinutes() : `0${local.getMinutes()}`}`;
+    return `${local.getHours() > 9 ? local.getHours() : `0${local.getHours()}`}:${local.getMinutes() > 9 ? local.getMinutes() : `0${local.getMinutes()}`}`;
 });
 
-$(document).ready(function () {
+$(document).ready(() => {
     renderTableCells();
     $('#todayDate').val(new Date().toDateInputValue());
     setTimeForNow();
@@ -29,8 +29,8 @@ $(document).ready(function () {
 });
 
 function setRadios() {
-    const fill = document.getElementById('fill1');
-    const tool = document.getElementById('tool1');
+    const fill1 = document.getElementById('fill1');
+    const tool1 = document.getElementById('tool1');
     const burn = document.getElementById('burnRadio');
     tool1.click();
     fill1.click();
@@ -41,6 +41,14 @@ function setTimeForNow() {
     setInterval(() => {
         $('#currentTime').val(new Date().toTimeInputValue());
     }, 1000);
+}
+
+function resetCanvas() {
+    let canvas = document.getElementById('canvas');
+    const context = canvas.getContext('2d');
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    const tool1 = document.getElementById('tool1');
+    tool1.click();
 }
 
 function initializeCanvas(c, d, e) {
@@ -64,7 +72,7 @@ function initializeCanvas(c, d, e) {
     let mousedown = false;
 
     //Mousedown
-    $(`#${c}`).on('mousedown', function (e) {
+    $(`#${c}`).on('mousedown', (e) => {
         let canvasx = $(`#${c}`).offset().left;
         let canvasy = $(`#${c}`).offset().top;
         last_mousex = mousex = parseInt(e.pageX) - parseInt(canvasx);
@@ -73,13 +81,13 @@ function initializeCanvas(c, d, e) {
     });
 
     //Mouseup
-    $(`#${c}`).on('mouseup', function (e) {
+    $(`#${c}`).on('mouseup', (e) => {
         mousedown = false;
     });
 
 
     //Mousemove
-    $(`#${c}`).on('mousemove', function (e) {
+    $(`#${c}`).on('mousemove', (e) => {
         let canvasx = $(`#${c}`).offset().left;
         let canvasy = $(`#${c}`).offset().top;
         mousex = parseInt(e.pageX - canvasx);
@@ -144,19 +152,15 @@ function calculateTotals() {
     secondTotal = 0;
     thirdTotal = 0;
     fourthTotal = 0;
-
-    for (let i = 0; i < tableRows.length; i++) {
-        renderCalculation(tableRows[i]);
-    }
-
+    tableRows.map(row => renderCalculation(row));
 }
 
 function renderCalculation(row) {
-    let second = $(`#${row.name}SecondDegree`).val();
-    let third = $(`#${row.name}ThirdDegree`).val();
-    let fourth = $(`#${row.name}FourthDegree`).val();
-    let rowTotal = parseFloat(second ? second : 0) + parseFloat(third ? third : 0) + parseFloat(fourth ? fourth : 0);
-    let maxAllowed = row[useThisRange];
+    const second = $(`#${row.name}SecondDegree`).val();
+    const third = $(`#${row.name}ThirdDegree`).val();
+    const fourth = $(`#${row.name}FourthDegree`).val();
+    const rowTotal = parseFloat(second ? second : 0) + parseFloat(third ? third : 0) + parseFloat(fourth ? fourth : 0);
+    const maxAllowed = row[useThisRange];
     let totalBox = document.getElementById(`${row.name}Total`);
     $(`#${row.name}Total`).val(rowTotal > 0 ? rowTotal : null);
     grandTotal += rowTotal;
@@ -178,74 +182,55 @@ function renderCalculation(row) {
 
 function renderTableCells() {
     patientAge = $('#patientAge').val();
-
-    let infant = document.getElementsByClassName('infant');
-    let oneToFour = document.getElementsByClassName('oneToFour');
-    let fiveToNine = document.getElementsByClassName('fiveToNine');
-    let tenToFourteen = document.getElementsByClassName('tenToFourteen');
-    let fifteen = document.getElementsByClassName('fifteen');
-    let adult = document.getElementsByClassName('adult');
+    let infant = Array.from(document.getElementsByClassName('infant'));
+    let oneToFour = Array.from(document.getElementsByClassName('oneToFour'));
+    let fiveToNine = Array.from(document.getElementsByClassName('fiveToNine'));
+    let tenToFourteen = Array.from(document.getElementsByClassName('tenToFourteen'));
+    let fifteen = Array.from(document.getElementsByClassName('fifteen'));
+    let adult = Array.from(document.getElementsByClassName('adult'));
     if (patientAge < 1) {
+        const noGos = adult.concat(oneToFour, fiveToNine, tenToFourteen, fifteen);
+        alterTableDisplay(noGos, true);
         alterTableDisplay(infant, false);
-        alterTableDisplay(oneToFour, true);
-        alterTableDisplay(fiveToNine, true);
-        alterTableDisplay(tenToFourteen, true);
-        alterTableDisplay(fifteen, true);
-        alterTableDisplay(adult, true);
         useThisRange = 'infant';
         removeAllClasses('infant-canvas');
         $('#canvas').addClass('infant-canvas');
     } else if (patientAge >= 1 && patientAge < 5) {
-        alterTableDisplay(infant, true);
+        const noGos = adult.concat(infant, fiveToNine, tenToFourteen, fifteen);
+        alterTableDisplay(noGos, true);
         alterTableDisplay(oneToFour, false);
-        alterTableDisplay(fiveToNine, true);
-        alterTableDisplay(tenToFourteen, true);
-        alterTableDisplay(fifteen, true);
-        alterTableDisplay(adult, true);
         useThisRange = 'oneToFour';
         removeAllClasses('oneToFour-canvas');
         $('#canvas').addClass('oneToFour-canvas');
     } else if (patientAge >= 5 && patientAge < 10) {
-        alterTableDisplay(infant, true);
-        alterTableDisplay(oneToFour, true);
+        const noGos = adult.concat(infant, oneToFour, tenToFourteen, fifteen);
+        alterTableDisplay(noGos, true);
         alterTableDisplay(fiveToNine, false);
-        alterTableDisplay(tenToFourteen, true);
-        alterTableDisplay(fifteen, true);
-        alterTableDisplay(adult, true);
         useThisRange = 'fiveToNine';
         removeAllClasses('fiveToNine-canvas');
         $('#canvas').addClass('fiveToNine-canvas');
     } else if (patientAge >= 10 && patientAge < 15) {
-        alterTableDisplay(infant, true);
-        alterTableDisplay(oneToFour, true);
-        alterTableDisplay(fiveToNine, true);
+        const noGos = adult.concat(infant, oneToFour, fiveToNine, fifteen);
+        alterTableDisplay(noGos, true);
         alterTableDisplay(tenToFourteen, false);
-        alterTableDisplay(fifteen, true);
-        alterTableDisplay(adult, true);
         removeAllClasses('tenToFourteen-canvas');
         useThisRange = 'tenToFourteen';
         $('#canvas').addClass('tenToFourteen-canvas');
     } else if (patientAge == 15) {
-        alterTableDisplay(infant, true);
-        alterTableDisplay(oneToFour, true);
-        alterTableDisplay(fiveToNine, true);
-        alterTableDisplay(tenToFourteen, true);
+        const noGos = adult.concat(infant, oneToFour, fiveToNine, tenToFourteen);
+        alterTableDisplay(noGos, true);
         alterTableDisplay(fifteen, false);
-        alterTableDisplay(adult, true);
         removeAllClasses('fifteen-canvas');
         useThisRange = 'fifteen';
         determineBackgroundAdult(patientAge);
     } else if (patientAge > 15) {
-        alterTableDisplay(infant, true);
-        alterTableDisplay(oneToFour, true);
-        alterTableDisplay(fiveToNine, true);
-        alterTableDisplay(tenToFourteen, true);
-        alterTableDisplay(fifteen, true);
+        const noGos = fifteen.concat(infant, oneToFour, fiveToNine, tenToFourteen);
+        alterTableDisplay(noGos, true);
         alterTableDisplay(adult, false);
         removeAllClasses('adult-canvas');
         useThisRange = 'adult';
         determineBackgroundAdult(patientAge);
-       }
+    }
 }
 
 function determineBackgroundAdult(age) {
@@ -261,7 +246,7 @@ function determineBackgroundAdult(age) {
 function removeAllClasses(except) {
     const arr = ['infant-canvas', 'oneToFour-canvas', 'fiveToNine-canvas', 'tenToFourteen-canvas', 'fifteen-canvas', 'adult-canvas'];
     const canvas = document.getElementById('canvas');
-    arr.forEach(c => {
+    arr.forEach((c) => {
         if (canvas && c !== except) {
             $('#canvas').removeClass(c);
         }
@@ -269,30 +254,52 @@ function removeAllClasses(except) {
 }
 
 function alterTableDisplay(arr, hide) {
-    for (let i = 0; i < arr.length; i++) {
-        arr[i].style.display = hide ? 'none' : 'table-cell';
-    }
+    arr.forEach((el) => {
+        el.style.display = hide ? 'none' : 'table-cell';
+    });
 }
 
 function generatePDF() {
     const ogWidth = document.body.style.width;
     let tools = document.getElementById('canvasTools');
+    let resetCanvasButton = document.getElementById('resetCanvasButton');
     let ogTools = tools.style.display;
     tools.style.display = 'none';
+    resetCanvasButton.style.display = 'none';
     document.body.style.width = '1400px';
-    html2canvas(document.body).then(canvas => {
+    makeCellsDarker(false);
+    html2canvas(document.body).then((canvas) => {
         const imgWidth = 170;
         const imgHeight = (canvas.height * imgWidth / canvas.width);
         const contentDataURL = canvas.toDataURL('image/png');
         let pdf = new jsPDF('p', 'mm', 'a4', true); // A4 size page of PDF
-        let position =  window.innerWidth < 500 ? -75 : window.innerWidth > 500 && window.innerWidth < 1200 ? -4 : -8;
-        pdf.addImage(contentDataURL, 'PNG', 0, position, imgWidth, imgHeight, '','FAST');
+        let position = window.innerWidth < 500 ? -75 : window.innerWidth > 500 && window.innerWidth < 1200 ? -4 : -8;
+        pdf.addImage(contentDataURL, 'PNG', 0, position, imgWidth, imgHeight, '', 'FAST');
         // let blob = pdf.output('blob');
         pdf.save();
         document.body.style.width = ogWidth;
         tools.style.display = ogTools;
+        resetCanvasButton.style.display = 'none';
+        makeCellsDarker(true);
     }).catch((err) => {
         document.body.style.width = ogWidth;
         tools.style.display = ogTools;
+        resetCanvasButton.style.display = 'none';
+        makeCellsDarker(true);
     });
+}
+
+function makeCellsDarker(def) {
+    const tds = Array.from(document.getElementsByTagName('td'));
+    const ths = Array.from(document.getElementsByTagName('th'));
+    tds.map(t => executeStyleUpdate(t, def));
+    ths.map(t => executeStyleUpdate(t, def));
+}
+
+function executeStyleUpdate(el, def) {
+    if (!def) {
+        el.style.border = "1px solid rgba(0, 0, 0, 0.5)";
+    } else {
+        el.style.border = "1px solid rgba(0, 0, 0, 0.12)";
+    }
 }

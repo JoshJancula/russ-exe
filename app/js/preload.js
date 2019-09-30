@@ -5,6 +5,8 @@ var formType = 'burn';
 
 function setCanvasFill(color) {
     canvasFillColor = color;
+    const tool1 = document.getElementById('tool1');
+    tool1.click();
 }
 
 function useTool(tool) {
@@ -19,8 +21,6 @@ function setFormType(type) {
     var skinAnnotations = document.getElementById('skinAnnotations');
     var fill1 = document.getElementById('fill1');
     var fill3 = document.getElementById('fill3');
-
-    console.log('location.... ', window.location);
 
     if (type === 'burn') {
         formType = 'burn';

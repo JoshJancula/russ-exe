@@ -1,6 +1,6 @@
 const { app, BrowserWindow } = require('electron');
 const path = require('path');
-let mainWindow
+let mainWindow = null;
 
 function createWindow () {
   // Create the browser window.
@@ -37,3 +37,4 @@ app.on('window-all-closed', function () {
 app.on('activate', function () {
   if (mainWindow === null) createWindow();
 });
+
