@@ -30,24 +30,56 @@ $(document).ready(() => {
 });
 
 function connectDB() {
+    console.log('about to connect');
     const sql = require('mssql');
-
-    async () => {
-        try {
-            await sql.connect('mssql://wfadmin:hiswfadmin@localhost/HealthlineWorkflow')
-            const result = await sql.query(`
-                                        select @patient_name =
-                                        (select content_value
-                                        From envelope_content
-                                        Where envelope_id = convert(uniqueidentifier, 'c7a19bba-abdb-4ff0-b6e4-fe8528c8a1ae') and
-                                        content_description = 'PATIENT NAME') 
-                                        `);
-
-            console.log('result connecting to mssql... ', result);
-        } catch (err) {
-            console.log('error connecting to mssql.... ', err);
-        }
+    const config = {
+        user: 'wfadmin',
+        password: 'hiswfadmin',
+        server: 'localhost',
+        database: 'HealthlineWorkflow',
     }
+    const queryString = `
+                        select @patient_name =
+                        (select content_value
+                        From envelope_content
+                        Where envelope_id = convert(uniqueidentifier, 'c7a19bba-abdb-4ff0-b6e4-fe8528c8a1ae') and
+                        content_description = 'PATIENT NAME') 
+                        `;
+
+    sql.connect(config).then(res => {
+        console.log('res from connection.... ', res);
+        sql.query(queryString).then(res2 => {
+            console.log('result from query.... ', res2);
+        });
+    });
+
+
+
+
+    // sql.connect(config).then(pool => {
+    //     // Query
+    //     console.log('connected to db, pool is.... ', pool);
+    //     // return pool.request()
+    //     //     .input('input_parameter', sql.Int, value)
+    //     //     .query(queryString)
+    // }).then(result => {
+    //     console.dir('query result is.... ', result);
+    // //     // Stored procedure
+
+    // //     return pool.request()
+    // //         .input('input_parameter', sql.Int, value)
+    // //         .output('output_parameter', sql.VarChar(50))
+    // //         .execute('procedure_name')
+    // // }).then(result => {
+    // //     console.dir(result)
+    // }).catch(err => {
+    //     // ... error checks
+    //     console.log('got an error tryng to get connect')
+    // })
+
+    // sql.on('error', err => {
+    //     // ... error handler
+    // })
 }
 
 function setRadios() {
