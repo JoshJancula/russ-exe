@@ -26,7 +26,29 @@ $(document).ready(() => {
     const args = require('electron').remote.process.argv;
     inputArgs = args;
     console.log('arguments passed...... ', args);
+    connectDB();
 });
+
+function connectDB() {
+    const sql = require('mssql');
+
+    async () => {
+        try {
+            await sql.connect('mssql://wfadmin:hiswfadmin@localhost/HealthlineWorkflow')
+            const result = await sql.query(`
+                                        select @patient_name =
+                                        (select content_value
+                                        From envelope_content
+                                        Where envelope_id = convert(uniqueidentifier, 'c7a19bba-abdb-4ff0-b6e4-fe8528c8a1ae') and
+                                        content_description = 'PATIENT NAME' 
+                                        `);
+
+            console.log('result connecting to mssql... ', result);
+        } catch (err) {
+            console.log('error connecting to mssql.... ', err);
+        }
+    }
+}
 
 function setRadios() {
     const fill1 = document.getElementById('fill1');
