@@ -40,7 +40,7 @@ function connectDB() {
                                         (select content_value
                                         From envelope_content
                                         Where envelope_id = convert(uniqueidentifier, 'c7a19bba-abdb-4ff0-b6e4-fe8528c8a1ae') and
-                                        content_description = 'PATIENT NAME' 
+                                        content_description = 'PATIENT NAME') 
                                         `);
 
             console.log('result connecting to mssql... ', result);
