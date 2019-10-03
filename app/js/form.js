@@ -24,13 +24,12 @@ $(document).ready(() => {
     setRadios();
     setFormType('burn');
     const args = require('electron').remote.process.argv;
-    inputArgs = args;
     console.log('arguments passed...... ', args);
-    connectDB();
+    connectDB(args);
 });
 
-function connectDB() {
-    console.log('about to connect');
+function connectDB(args) {
+    console.log('about to connect, args are.... ', args);
     const sql = require('mssql');
     const config = {
         user: 'wfadmin',
@@ -39,11 +38,10 @@ function connectDB() {
         database: 'HealthlineWorkflow',
     }
     const queryString = `
-                        select @patient_name =
-                        (select content_value
+                        select content_value
                         From envelope_content
                         Where envelope_id = convert(uniqueidentifier, 'c7a19bba-abdb-4ff0-b6e4-fe8528c8a1ae') and
-                        content_description = 'PATIENT NAME') 
+                        content_description = 'PATIENT NAME'
                         `;
 
     sql.connect(config).then(res => {
