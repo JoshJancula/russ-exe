@@ -12,43 +12,62 @@
 <script type="text/javascript" src="./js/preload.js"></script>
 
 <body>
-<div id="mainForm">
-    <div class="row">
-        <!-- Estimated Percentage -->
-        <div class="col l6 m6 s12">
-            <!-- top row -->
-            <div class="row">
-                <div class="col l5 m6 s12" style="padding:0">
-                    <span>
-                        <h6>Date Of Admission: </h6>
-                    </span><input type="date" />
+    <div id="mainForm">
+
+        <div class="row" id="toggleViewWrapper">
+            <h6>Toggle View</h6>
+            <label class="td_wtt"><input type="radio" id="formWrapperRadio" name="toggleWound"
+                    onclick="toggleViewImages(false);" /><span>Form Overview</span></label>
+            <label class="td_wtt"><input type="radio" id="woundImagesRadio" name="toggleWound"
+                    onclick="toggleViewImages(true);" /><span>Wound Images</span></label>
+        </div>
+
+        <div class="row">
+            <!-- Estimated Percentage -->
+            <div class="col l6 m6 s12">
+                <!-- top row -->
+                <div id="formWrapper">
+                    <div class="row">
+                        <div class="col l5 m6 s12" style="padding:0">
+                            <span>
+                                <h6>Date Of Admission: </h6>
+                            </span><input type="date" />
+                        </div>
+                        <div class="col l3 m2 s6">
+                            <span>
+                                <h6>Age: </h6>
+                            </span><input min="0" value="0" oninput="renderTableCells()" id="patientAge"
+                                type="number" />
+                        </div>
+                        <div class="col l3 m4 s6 center" style="padding:0">
+                            <span>
+                                <h6>Sex: </h6>
+                            </span>
+                            <label style="margin: 2%"><input id="maleBox" type="checkbox"
+                                    onclick="setSex('m')" /><span>M</span></label>
+                            <label style="margin: 2%"><input id="femaleBox" type="checkbox"
+                                    onclick="setSex('f')" /><span>F</span></label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col l6 m12 s12" style="margin:0; padding: 0">
+                            <h6>Date of Injury: <input type="date" /></h6>
+                        </div>
+                        <div class="col l6 m12 s12" style="margin:0; padding:0">
+                            <h6>Time of Injury: <input type="time" /> </h6>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <h6>Date Completed: <input type="date" /></h6>
+                    </div>
                 </div>
-                <div class="col l3 m2 s6">
-                    <span>
-                        <h6>Age: </h6>
-                    </span><input min="0" value="0" oninput="renderTableCells()" id="patientAge" type="number" />
-                </div>
-                <div class="col l3 m4 s6 center" style="padding:0">
-                    <span>
-                        <h6>Sex: </h6>
-                    </span>
-                    <label style="margin: 2%"><input id="maleBox" type="checkbox"
-                            onclick="setSex('m')" /><span>M</span></label>
-                    <label style="margin: 2%"><input id="femaleBox" type="checkbox"
-                            onclick="setSex('f')" /><span>F</span></label>
-                </div>
+
+            <div id="woundImages">
+                    <!-- <div class='carousel carousel-slider' id="carouselDiv"> -->
+                    <div class='slideshow-container' id="carouselDiv"></div>
+                    <div id="carouselDots" style="text-align:center"></div>
             </div>
-            <div class="row">
-                <div class="col l6 m12 s12" style="margin:0; padding: 0">
-                    <h6>Date of Injury: <input type="date" /></h6>
-                </div>
-                <div class="col l6 m12 s12" style="margin:0; padding:0">
-                    <h6>Time of Injury: <input type="time" /> </h6>
-                </div>
-            </div>
-            <div class="row">
-                <h6>Date Completed: <input type="date" /></h6>
-            </div>
+
             <div class="row center">
                 <h6>Form Type?</h6>
                 <div class="row">
@@ -111,7 +130,8 @@
             </div>
 
             <div class="row center">
-                <a id="resetCanvasButton" style="cursor: pointer; margin-bottom: 12px; display: block" onclick="resetCanvas()">Reset Canvas</a>
+                <a id="resetCanvasButton" style="cursor: pointer; margin-bottom: 12px; display: block"
+                    onclick="resetCanvas()">Reset Canvas</a>
                 <div class="col l6 m12 s12 center">
                     <div class="row">Select Fill</div>
                     <div class="row">
@@ -146,7 +166,7 @@
 
         </div>
     </div>
-<div class="sectionBreak"></div>
+    <div class="sectionBreak"></div>
     <div class="row">
         <div class="row center">
             <h6>Lund and Browder Chart - Burn Estimate - Age vs. Area</h6>
@@ -439,14 +459,15 @@
     </div>
 
     <div class="row">
-    <button onclick="generatePDF()" id='print-pdf'>Convert to PDF</button>
+        <button onclick="generatePDF()" id='print-pdf'>Convert to PDF</button>
     </div>
 
-</div>
+    </div>
 </body>
 <script>window.html2canvas = require('html2canvas');</script>
 <script>window.jsPDF = require('jspdf');</script>
 <script>window.$ = window.jQuery = require('jquery');</script>
+<script type="text/javascript" src="./js/materialize/materialize.js"></script>
 <script type="text/javascript" src="./js/form.js"></script>
 
 </html>
