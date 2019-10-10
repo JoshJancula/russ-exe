@@ -39,4 +39,5 @@ function setFormType(type) {
         skinAnnotations.style.display = 'inline';
         fill3.click();
     }
+    resetCanvas();
 }

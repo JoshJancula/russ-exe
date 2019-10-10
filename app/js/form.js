@@ -17,6 +17,16 @@ let ptLocation = null;
 let patientWoundImages = [];
 let slideIndex = 1;
 
+let patientInfo = {
+    patientName: null,
+    medRecno: null,
+    acctNo: null,
+    patientAge: null,
+    birthDate: null,
+    patientSex: null,
+    admitDate: null
+}
+
 Date.prototype.toDateInputValue = (function () {
     let local = new Date(this);
     return local.toJSON().slice(0, 10);
@@ -36,7 +46,7 @@ $(document).ready(() => {
     setFormType('burn');
     const args = require('electron').remote.process.argv;
     console.log('arguments passed...... ', args);
-    // connectDB(args);
+    connectDB(args);
     initWoundImageCarousel();
 });
 
@@ -165,51 +175,66 @@ function connectDB(args) {
                    console.log('error processing convert string query.... ', err);
                });
          */
-        sql.query(queryStringpatName).then(res2 => {
-            console.log('result from query.... ', res2);
-            patientName = res2;
+
+        sql.query(queryStringpatName).then(name => {
+            console.log('result from query name is.... ', name);
+            patientName = name;
+            patientInfo.patientName = name;
+            initFields();
         }).catch(err => {
             console.log('error retrieving Patient Name in query.... ', err);
         });
 
-        sql.query(queryStringmedRecno).then(res2 => {
-            console.log('result from query.... ', res2);
-            medRecno = res2;
+        sql.query(queryStringmedRecno).then(med => {
+            console.log('result from query medRecno is.... ', med);
+            medRecno = med;
+            patientInfo.medRecno = med;
+            initFields();
         }).catch(err => {
             console.log('error retrieving med rec no in query.... ', err);
         });
 
-        sql.query(queryStringacctNo).then(res2 => {
-            console.log('result from query.... ', res2);
-            acctNo = res2;
+        sql.query(queryStringacctNo).then(acc => {
+            console.log('result from query accNo.... ', acc);
+            acctNo = acc;
+            patientInfo.acctNo = acc;
+            initFields();
         }).catch(err => {
             console.log('error retrieving acct number in query.... ', err);
         });
 
-        sql.query(queryStringpatientAge).then(res2 => {
-            console.log('result from query.... ', res2);
-            patientAge = res2;
+        sql.query(queryStringpatientAge).then(age => {
+            console.log('result from query patient age is.... ', age);
+            patientAge = age;
+            patientInfo.patientAge = age;
+            initFields();
         }).catch(err => {
             console.log('error retrieving patient age in query.... ', err);
         });
 
-        sql.query(queryStringpatBirthdate).then(res2 => {
-            console.log('result from query.... ', res2);
-            birthDate = res2;
+        sql.query(queryStringpatBirthdate).then(bday => {
+            console.log('result from query bday is.... ', bday);
+            birthDate = bday;
+            patientInfo.birthDate = bday;
+            initFields();
         }).catch(err => {
             console.log('error retrieving patient DOB in query.... ', err);
         });
 
-        sql.query(queryStringpatientSex).then(res2 => {
-            console.log('result from query.... ', res2);
-            patientSex = res2;
+        sql.query(queryStringpatientSex).then(sex => {
+            console.log('result from query sex is.... ', sex);
+            patientSex = sex;
+            patientInfo.patientSex = sex
+            initFields();
         }).catch(err => {
             console.log('error retrieving patient sex in query.... ', err);
         });
 
-        sql.query(queryStringadmitDate).then(res2 => {
-            console.log('result from query.... ', res2);
-            admitDate = res2;
+        sql.query(queryStringadmitDate).then(admit => {
+            console.log('result from query admin date is.... ', admit);
+            admitDate = admit;
+            patientInfo.admitDate = admit;
+            initFields();
         }).catch(err => {
             console.log('error retrieving admit date in query.... ', err);
         });
@@ -239,7 +264,29 @@ function connectDB(args) {
 
     }).catch(e => {
         console.log('error connecting to database.... ', e);
+        patientInfo = {
+            patientName: 'Russ Lane',
+            medRecno: 'M12345678',
+            acctNo: 'A12345678890',
+            patientAge: '56',
+            birthDate: '04/25/1963',
+            patientSex: 'M',
+            admitDate: '01/01/2019'
+        };
+        patientAge = '56'
+        initFields();
     });
+}
+
+function initFields() {
+    $('#dateOfAdmission').text(patientInfo.admitDate);
+    $('#patientName').text(patientInfo.patientName);
+    $('#patientAge').text(patientInfo.patientAge);
+    $('#patientDOB').text(patientInfo.birthDate);
+    $('#patientSex').text(patientInfo.patientSex);
+    $('#medNum').text(patientInfo.medRecno);
+    $('#accNum').text(patientInfo.acctNo);
+    renderTableCells();
 }
 
 function setRadios() {
@@ -395,7 +442,7 @@ function renderCalculation(row) {
 }
 
 function renderTableCells() {
-    patientAge = $('#patientAge').val();
+    // patientAge = $('#patientAge').val();
     let infant = Array.from(document.getElementsByClassName('infant'));
     let oneToFour = Array.from(document.getElementsByClassName('oneToFour'));
     let fiveToNine = Array.from(document.getElementsByClassName('fiveToNine'));
@@ -474,31 +521,38 @@ function alterTableDisplay(arr, hide) {
 }
 
 function generatePDF() {
+    toggleViewImages(false);
     const ogWidth = document.body.style.width;
     let tools = document.getElementById('canvasTools');
     let resetCanvasButton = document.getElementById('resetCanvasButton');
+    let toggleViewWrapper = document.getElementById('toggleViewWrapper');
     let ogTools = tools.style.display;
-    tools.style.display = 'none';
-    resetCanvasButton.style.display = 'none';
     document.body.style.width = '1400px';
+    tools.style.display = 'none';
+    toggleViewWrapper.style.display = 'none';
+    resetCanvasButton.style.display = 'none';
     makeCellsDarker(false);
     html2canvas(document.body).then((canvas) => {
-        const imgWidth = 170;
-        const imgHeight = (canvas.height * imgWidth / canvas.width);
-        const contentDataURL = canvas.toDataURL('image/png');
-        let pdf = new jsPDF('p', 'mm', 'a4', true); // A4 size page of PDF
-        let position = window.innerWidth < 500 ? -75 : window.innerWidth > 500 && window.innerWidth < 1200 ? -4 : -8;
-        pdf.addImage(contentDataURL, 'PNG', 0, position, imgWidth, imgHeight, '', 'FAST');
-        // let blob = pdf.output('blob');
-        pdf.save();
-        document.body.style.width = ogWidth;
-        tools.style.display = ogTools;
-        resetCanvasButton.style.display = 'none';
-        makeCellsDarker(true);
+        const imgWidth = 210;
+        const imgHeight = (canvas.height * imgWidth / canvas.width) + 30;
+        setTimeout(() => {
+            const contentDataURL = canvas.toDataURL('image/png');
+            let pdf = new jsPDF('p', 'mm', 'a4', true); // A4 size page of PDF
+            let position = window.innerWidth < 500 ? -90 : window.innerWidth > 500 && window.innerWidth < 1200 ? -4 : -8;
+            pdf.addImage(contentDataURL, 'PNG', 0, position, imgWidth, imgHeight, '', 'FAST');
+            // let blob = pdf.output('blob');
+            pdf.save();
+            document.body.style.width = ogWidth;
+            tools.style.display = ogTools;
+            resetCanvasButton.style.display = 'block';
+            toggleViewWrapper.style.display = 'block';
+            makeCellsDarker(true);
+        }, 300);
     }).catch((err) => {
         document.body.style.width = ogWidth;
         tools.style.display = ogTools;
-        resetCanvasButton.style.display = 'none';
+        resetCanvasButton.style.display = 'block';
+        toggleViewWrapper.style.display = 'block';
         makeCellsDarker(true);
     });
 }
@@ -506,8 +560,10 @@ function generatePDF() {
 function makeCellsDarker(def) {
     const tds = Array.from(document.getElementsByTagName('td'));
     const ths = Array.from(document.getElementsByTagName('th'));
+    const hrs = Array.from(document.getElementsByTagName('hr'));
     tds.map(t => executeStyleUpdate(t, def));
     ths.map(t => executeStyleUpdate(t, def));
+    hrs.map(t => executeStyleUpdate(t, def));
 }
 
 function executeStyleUpdate(el, def) {

@@ -14,7 +14,7 @@
 <body>
     <div id="mainForm">
 
-        <div class="row" id="toggleViewWrapper">
+        <div class="row" id="toggleViewWrapper" style="margin-bottom: 0;">
             <h6>Toggle View</h6>
             <label class="td_wtt"><input type="radio" id="formWrapperRadio" name="toggleWound"
                     onclick="toggleViewImages(false);" /><span>Form Overview</span></label>
@@ -27,7 +27,8 @@
             <div class="col l6 m6 s12">
                 <!-- top row -->
                 <div id="formWrapper">
-                    <div class="row">
+                    <!-- for inputting the top data, may reuse someday.... -->
+                    <!-- <div class="row">
                         <div class="col l5 m6 s12" style="padding:0">
                             <span>
                                 <h6>Date Of Admission: </h6>
@@ -48,18 +49,23 @@
                             <label style="margin: 2%"><input id="femaleBox" type="checkbox"
                                     onclick="setSex('f')" /><span>F</span></label>
                         </div>
+                    </div> -->
+                    <div class="row">
+                            <h5><span id="patientName"></span></h5>
+                            <h6><span id="patientSex"></span> <span id="patientAge"></span> <span id="patientDOB"></span></h6>
+                            <h6>ADMIT DATE: <span id="dateOfAdmission"></span> / <span id="medNum"></span> / <span id="accNum"></span></h6>
                     </div>
                     <div class="row">
-                        <div class="col l6 m12 s12" style="margin:0; padding: 0">
+                        <div class="col l6 m6 s12" style="margin-left: 0; padding-left: 0;">
                             <h6>Date of Injury: <input type="date" /></h6>
                         </div>
-                        <div class="col l6 m12 s12" style="margin:0; padding:0">
+                        <div class="col l6 m6 s12" style="margin-left: 0; padding-left: 0;">
                             <h6>Time of Injury: <input type="time" /> </h6>
                         </div>
                     </div>
-                    <div class="row">
+                    <!-- <div class="row">
                         <h6>Date Completed: <input type="date" /></h6>
-                    </div>
+                    </div> -->
                 </div>
 
             <div id="woundImages">
@@ -68,7 +74,7 @@
                     <div id="carouselDots" style="text-align:center"></div>
             </div>
 
-            <div class="row center">
+            <div class="row center" style="margin-top: 0">
                 <h6>Form Type?</h6>
                 <div class="row">
                     <label class="td_wtt"><input type="radio" id="burnRadio" name="formType"
@@ -108,7 +114,7 @@
                     <label class="td_wtt burnRadio"><input type="radio" name="burnType" />
                         <span>Bullous Pemphigold </span></label>
                 </div>
-                <hr />
+                <hr  />
 
             </div>
             <div id="lowerBurn" class="center">
