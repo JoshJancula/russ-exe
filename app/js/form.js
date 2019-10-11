@@ -178,8 +178,8 @@ function connectDB(args) {
 
         sql.query(queryStringpatName).then(name => {
             console.log('result from query name is.... ', name);
-            patientName = name;
-            patientInfo.patientName = name;
+            patientName = name.recordset[0].content_value;
+            patientInfo.patientName = name.recordset[0].content_value;
             initFields();
         }).catch(err => {
             console.log('error retrieving Patient Name in query.... ', err);
@@ -187,8 +187,8 @@ function connectDB(args) {
 
         sql.query(queryStringmedRecno).then(med => {
             console.log('result from query medRecno is.... ', med);
-            medRecno = med;
-            patientInfo.medRecno = med;
+            medRecno = med.recordset[0].content_value;
+            patientInfo.medRecno = med.recordset[0].content_value;
             initFields();
         }).catch(err => {
             console.log('error retrieving med rec no in query.... ', err);
@@ -196,8 +196,8 @@ function connectDB(args) {
 
         sql.query(queryStringacctNo).then(acc => {
             console.log('result from query accNo.... ', acc);
-            acctNo = acc;
-            patientInfo.acctNo = acc;
+            acctNo = acc.recordset[0].content_value;
+            patientInfo.acctNo = acc.recordset[0].content_value;
             initFields();
         }).catch(err => {
             console.log('error retrieving acct number in query.... ', err);
@@ -205,8 +205,8 @@ function connectDB(args) {
 
         sql.query(queryStringpatientAge).then(age => {
             console.log('result from query patient age is.... ', age);
-            patientAge = age;
-            patientInfo.patientAge = age;
+            patientAge = age.recordset[0].content_value;
+            patientInfo.patientAge = age.recordset[0].content_value;
             initFields();
         }).catch(err => {
             console.log('error retrieving patient age in query.... ', err);
@@ -214,8 +214,8 @@ function connectDB(args) {
 
         sql.query(queryStringpatBirthdate).then(bday => {
             console.log('result from query bday is.... ', bday);
-            birthDate = bday;
-            patientInfo.birthDate = bday;
+            birthDate = bday.recordset[0].content_value;
+            patientInfo.birthDate = bday.recordset[0].content_value;
             initFields();
         }).catch(err => {
             console.log('error retrieving patient DOB in query.... ', err);
@@ -223,17 +223,17 @@ function connectDB(args) {
 
         sql.query(queryStringpatientSex).then(sex => {
             console.log('result from query sex is.... ', sex);
-            patientSex = sex;
-            patientInfo.patientSex = sex
+            patientSex = sex.recordset[0].content_value;
+            patientInfo.patientSex = sex.recordset[0].content_value;
             initFields();
         }).catch(err => {
             console.log('error retrieving patient sex in query.... ', err);
         });
 
         sql.query(queryStringadmitDate).then(admit => {
-            console.log('result from query admin date is.... ', admit);
-            admitDate = admit;
-            patientInfo.admitDate = admit;
+            console.log('result from query admit date is.... ', admit);
+            admitDate = admit.recordset[0].content_value;
+            patientInfo.admitDate = admit.recordset[0].content_value;
             initFields();
         }).catch(err => {
             console.log('error retrieving admit date in query.... ', err);
