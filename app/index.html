@@ -14,13 +14,6 @@
 <body>
     <div id="mainForm">
 
-        <div class="row" id="toggleViewWrapper" style="margin-bottom: 0;">
-            <h6>Toggle View</h6>
-            <label class="td_wtt"><input type="radio" id="formWrapperRadio" name="toggleWound"
-                    onclick="toggleViewImages(false);" /><span>Form Overview</span></label>
-            <label class="td_wtt"><input type="radio" id="woundImagesRadio" name="toggleWound"
-                    onclick="toggleViewImages(true);" /><span>Wound Images</span></label>
-        </div>
 
         <div class="row">
             <!-- Estimated Percentage -->
@@ -28,11 +21,12 @@
                 <!-- top row -->
                 <div id="formWrapper">
                     <!-- for inputting the top data, may reuse someday.... -->
-                    <!-- <div class="row">
+                    <div id="manualPatientData">
+                    <div class="row">
                         <div class="col l5 m6 s12" style="padding:0">
                             <span>
-                                <h6>Date Of Admission: </h6>
-                            </span><input type="date" />
+                                <h6>Name: </h6>
+                            </span><input type="text" id="name" />
                         </div>
                         <div class="col l3 m2 s6">
                             <span>
@@ -49,424 +43,439 @@
                             <label style="margin: 2%"><input id="femaleBox" type="checkbox"
                                     onclick="setSex('f')" /><span>F</span></label>
                         </div>
-                    </div> -->
-                    <div class="row">
-                            <h5><span id="patientName"></span></h5>
-                            <h6><span id="patientSex"></span> <span id="patientAge"></span> <span id="patientDOB"></span></h6>
-                            <h6>ADMIT DATE: <span id="dateOfAdmission"></span> / <span id="medNum"></span> / <span id="accNum"></span></h6>
                     </div>
-                    <div class="row">
-                        <div class="col l6 m6 s12" style="margin-left: 0; padding-left: 0;">
-                            <h6>Date of Injury: <input type="date" /></h6>
-                        </div>
-                        <div class="col l6 m6 s12" style="margin-left: 0; padding-left: 0;">
-                            <h6>Time of Injury: <input type="time" /> </h6>
-                        </div>
+                </div>
+                    <div class="row" id="presetPatientData">
+                        <h5><span id="patientName"></span></h5>
+                        <h6><span id="patientSex"></span> <span id="patientAge"></span> <span id="patientDOB"></span>
+                        </h6>
+                        <h6>ADMIT DATE: <span id="dateOfAdmission"></span> / <span id="medNum"></span> / <span
+                                id="accNum"></span></h6>
                     </div>
                     <!-- <div class="row">
                         <h6>Date Completed: <input type="date" /></h6>
                     </div> -->
                 </div>
 
-            <div id="woundImages">
+                <div class="row center" style="margin-top: 0">
+                    <h6>Form Type?</h6>
+                    <div class="row">
+                        <label class="td_wtt"><input type="radio" id="burnRadio" name="formType"
+                                onclick="setFormType('burn');" /><span>Burn</span></label>
+                        <label class="td_wtt"><input type="radio" id="skinRadio" name="formType"
+                                onclick="setFormType('skinDisease');" /><span>Skin Disease</span></label>
+                    </div>
+                    <hr />
+                    <div id="burnTypes">
+                        <h6>Type of Burn Injury</h6>
+                        <label class="td_wtt burnRadio"><input type="radio" name="burnType" />
+                            <span>Thermal</span></label>
+
+                        <label class="td_wtt burnRadio"><input type="radio" name="burnType" />
+                            <span>Chemical</span></label>
+
+                        <label class="td_wtt burnRadio"><input type="radio" name="burnType" />
+                            <span>Electrical</span></label>
+
+                        <label class="td_wtt burnRadio"><input type="radio" name="burnType" />
+                            <span>Scald</span></label>
+
+                        <label class="td_wtt burnRadio"><input type="radio" name="burnType" />
+                            <span>Friction</span></label>
+
+                    </div>
+                    <div id="skinTypes">
+                        <h6>Type of Skin Disease</h6>
+                        <label class="td_wtt burnRadio"><input type="radio" name="burnType" />
+                            <span>TENS/SJS</span></label>
+                        <label class="td_wtt burnRadio"><input type="radio" name="burnType" />
+                            <span>SSSS</span></label>
+
+                        <label class="td_wtt burnRadio"><input type="radio" name="burnType" />
+                            <span>Purpura Fulminans </span></label>
+
+                        <label class="td_wtt burnRadio"><input type="radio" name="burnType" />
+                            <span>Bullous Pemphigold </span></label>
+                    </div>
+                    <hr />
+
+                </div>
+                <div id="lowerBurn" class="center">
+                    <div classs="row center">
+                        <label class="td_wtt"><input type="radio" name="belowBurn" />
+                            <span>Initial Burn Estimation Chart</span></label><br>
+                        <label class="td_wtt"><input type="radio" name="belowBurn" />
+                            <span>Amended Burn Estimation Chart</span></label><br>
+                        <label class="td_wtt"><input type="radio" name="belowBurn" />
+                            <span>Discharge Burn Estimation Chart</span></label>
+                    </div>
+                </div>
+
+                <div class="row">
+                        <div class="col l6 m6 s6" style="margin-left: 0; padding-left: 0;">
+                            <h6>Date of Injury: <input type="date" /></h6>
+                        </div>
+                        <div class="col l6 m6 s6" style="margin-left: 0; padding-left: 0;">
+                            <h6>Time of Injury: <input type="time" /> </h6>
+                        </div>
+                    </div>
+
+                <div class="row center" id="toggleViewWrapper" style="margin-bottom: 0;">
+                   <h6>Toggle View</h6>
+                   <!--   <label class="td_wtt"><input type="radio" id="formWrapperRadio" name="toggleWound"
+                            onclick="toggleViewImages(false);" /><span>Form Overview</span></label>
+                    <label class="td_wtt"><input type="radio" id="woundImagesRadio" name="toggleWound"
+                            onclick="toggleViewImages(true);" /><span>Wound Images</span></label> -->
+                            <label style="margin: 2%"><input id="imageCheckbox" type="checkbox"
+                                onclick="toggleViewImagesCheckbox()" /><span>View Wound Images</span></label> 
+                </div>
+
+                <div id="woundImages">
                     <!-- <div class='carousel carousel-slider' id="carouselDiv"> -->
                     <div class='slideshow-container' id="carouselDiv"></div>
                     <div id="carouselDots" style="text-align:center"></div>
+                </div>
+
             </div>
 
-            <div class="row center" style="margin-top: 0">
-                <h6>Form Type?</h6>
-                <div class="row">
-                    <label class="td_wtt"><input type="radio" id="burnRadio" name="formType"
-                            onclick="setFormType('burn');" /><span>Burn</span></label>
-                    <label class="td_wtt"><input type="radio" id="skinRadio" name="formType"
-                            onclick="setFormType('skinDisease');" /><span>Skin Disease</span></label>
+            <div class="col l6 m6 s12">
+                <!-- canvas in here -->
+                <div class="row" style="margin-left:7%;">
+                    <div id="canvasDiv"></div>
                 </div>
-                <hr />
-                <div id="burnTypes">
-                    <h6>Type of Burn Injury</h6>
-                    <label class="td_wtt burnRadio"><input type="radio" name="burnType" />
-                        <span>Thermal</span></label>
 
-                    <label class="td_wtt burnRadio"><input type="radio" name="burnType" />
-                        <span>Chemical</span></label>
-
-                    <label class="td_wtt burnRadio"><input type="radio" name="burnType" />
-                        <span>Electrical</span></label>
-
-                    <label class="td_wtt burnRadio"><input type="radio" name="burnType" />
-                        <span>Scald</span></label>
-
-                    <label class="td_wtt burnRadio"><input type="radio" name="burnType" />
-                        <span>Friction</span></label>
-
+                <div class="row center">
+                    <a id="resetCanvasButton" style="cursor: pointer; margin-bottom: 12px; display: block"
+                        onclick="resetCanvas()">Reset Canvas</a>
+                    <div class="col l6 m12 s12 center">
+                        <div class="row">Select Fill</div>
+                        <div class="row">
+                            <div id="burnAnnotations">
+                                <label class="td_wtt"><input type="radio" id="fill1" name="canvasFill"
+                                        onclick="setCanvasFill('#000306');" />
+                                    <span style="color:black;">Full Thickness</span><span
+                                        style="display: inline-block; height: 12px; width: 12px; background: black; margin-left: 8px;"></span></label>
+                                <label class="td_wtt"><input type="radio" id="fill2" name="canvasFill"
+                                        onclick="setCanvasFill('#ff0033');" />
+                                    <span style="color: #ff0033;">Partial Thickness</span><span
+                                        style="display: inline-block; height: 12px; width: 12px; background: #ff0033; margin-left: 8px;"></span></label>
+                            </div>
+                            <div id="skinAnnotations">
+                                <label class="td_wtt"><input type="radio" id="fill3" name="canvasFill"
+                                        onclick="setCanvasFill('#0080FF');" />
+                                    <span style="color: #0080FF;">Skin Disease</span><span
+                                        style="display: inline-block; height: 12px; width: 12px; background: #0080FF; margin-left: 8px;"></span></label>
+                            </div>
+                        </div>
+                    </div>
+                    <div id='canvasTools' class="col l6 m12 s12">
+                        <div class="row">Select Tool</div>
+                        <div class="row">
+                            <label class="td_wtt"><input type="radio" id="tool1" name="canvasTool"
+                                    onclick="useTool('draw');" /><span>Draw</span></label>
+                            <label class="td_wtt"><input type="radio" name="canvasTool"
+                                    onclick="useTool('erase');" /><span>Erase</span></label>
+                        </div>
+                    </div>
                 </div>
-                <div id="skinTypes">
-                    <h6>Type of Skin Disease</h6>
-                    <label class="td_wtt burnRadio"><input type="radio" name="burnType" />
-                        <span>TENS/SJS</span></label>
-                    <label class="td_wtt burnRadio"><input type="radio" name="burnType" />
-                        <span>SSSS</span></label>
 
-                    <label class="td_wtt burnRadio"><input type="radio" name="burnType" />
-                        <span>Purpura Fulminans </span></label>
-
-                    <label class="td_wtt burnRadio"><input type="radio" name="burnType" />
-                        <span>Bullous Pemphigold </span></label>
-                </div>
-                <hr  />
-
-            </div>
-            <div id="lowerBurn" class="center">
-                <div classs="row center">
-                    <label class="td_wtt"><input type="radio" name="belowBurn" />
-                        <span>Initial Burn Estimation Chart</span></label><br>
-                    <label class="td_wtt"><input type="radio" name="belowBurn" />
-                        <span>Amended Burn Estimation Chart</span></label><br>
-                    <label class="td_wtt"><input type="radio" name="belowBurn" />
-                        <span>Discharge Burn Estimation Chart</span></label>
-                </div>
             </div>
         </div>
-
-        <div class="col l6 m6 s12">
-            <!-- canvas in here -->
-            <div class="row" style="margin-left:7%;">
-                <div id="canvasDiv"></div>
-            </div>
-
+        <div class="sectionBreak"></div>
+        <div class="row">
             <div class="row center">
-                <a id="resetCanvasButton" style="cursor: pointer; margin-bottom: 12px; display: block"
-                    onclick="resetCanvas()">Reset Canvas</a>
-                <div class="col l6 m12 s12 center">
-                    <div class="row">Select Fill</div>
-                    <div class="row">
-                        <div id="burnAnnotations">
-                            <label class="td_wtt"><input type="radio" id="fill1" name="canvasFill"
-                                    onclick="setCanvasFill('#000306');" />
-                                <span style="color:black;">Full Thickness</span><span
-                                    style="display: inline-block; height: 12px; width: 12px; background: black; margin-left: 8px;"></span></label>
-                            <label class="td_wtt"><input type="radio" id="fill2" name="canvasFill"
-                                    onclick="setCanvasFill('#ff0033');" />
-                                <span style="color: #ff0033;">Partial Thickness</span><span
-                                    style="display: inline-block; height: 12px; width: 12px; background: #ff0033; margin-left: 8px;"></span></label>
-                        </div>
-                        <div id="skinAnnotations">
-                            <label class="td_wtt"><input type="radio" id="fill3" name="canvasFill"
-                                    onclick="setCanvasFill('#0080FF');" />
-                                <span style="color: #0080FF;">Skin Disease</span><span
-                                    style="display: inline-block; height: 12px; width: 12px; background: #0080FF; margin-left: 8px;"></span></label>
-                        </div>
-                    </div>
-                </div>
-                <div id='canvasTools' class="col l6 m12 s12">
-                    <div class="row">Select Tool</div>
-                    <div class="row">
-                        <label class="td_wtt"><input type="radio" id="tool1" name="canvasTool"
-                                onclick="useTool('draw');" /><span>Draw</span></label>
-                        <label class="td_wtt"><input type="radio" name="canvasTool"
-                                onclick="useTool('erase');" /><span>Erase</span></label>
-                    </div>
-                </div>
+                <h6>Lund and Browder Chart - Burn Estimate - Age vs. Area</h6>
             </div>
-
-        </div>
-    </div>
-    <div class="sectionBreak"></div>
-    <div class="row">
-        <div class="row center">
-            <h6>Lund and Browder Chart - Burn Estimate - Age vs. Area</h6>
-        </div>
-        <table>
-            <tr>
-                <th>Area</th>
-                <th class="infant">0-1 yr</th>
-                <th class="oneToFour">1-4 yr</th>
-                <th class="fiveToNine">5-9 yr</th>
-                <th class="tenToFourteen">10-14 yr</th>
-                <th class="fifteen">15 yr</th>
-                <th class="adult">Adult</th>
-                <th>2nd Degree</th>
-                <th>3rd Degree</th>
-                <th>4th Degree</th>
-                <th>TBSA %</th>
-            </tr>
-            <tr>
-                <td>Head</td>
-                <td class="infant">19%</td>
-                <td class="oneToFour">17%</td>
-                <td class="fiveToNine">13%</td>
-                <td class="tenToFourteen">11%</td>
-                <td class="fifteen">9%</td>
-                <td class="adult">7%</td>
-                <td> <input type="number" oninput="calculateTotals()" id="headSecondDegree" /></td>
-                <td><input type="number" oninput="calculateTotals()" id="headThirdDegree" /></td>
-                <td><input type="number" oninput="calculateTotals()" id="headFourthDegree" /></td>
-                <td><input type="number" readonly id="headTotal" /></td>
-            </tr>
-            <tr>
-                <td>Neck</td>
-                <td class="infant">2%</td>
-                <td class="oneToFour">2%</td>
-                <td class="fiveToNine">2%</td>
-                <td class="tenToFourteen">2%</td>
-                <td class="fifteen">2%</td>
-                <td class="adult">2%</td>
-                <td> <input type="number" oninput="calculateTotals()" id="neckSecondDegree" /></td>
-                <td><input type="number" oninput="calculateTotals()" id="neckThirdDegree" /></td>
-                <td><input type="number" oninput="calculateTotals()" id="neckFourthDegree" /></td>
-                <td><input type="number" readonly id="neckTotal" /></td>
-            </tr>
-            <tr>
-                <td>Anterior Trunk</td>
-                <td class="infant">13%</td>
-                <td class="oneToFour">13%</td>
-                <td class="fiveToNine">13%</td>
-                <td class="tenToFourteen">13%</td>
-                <td class="fifteen">13%</td>
-                <td class="adult">13%</td>
-                <td> <input type="number" oninput="calculateTotals()" id="anteriorTrunkSecondDegree" /></td>
-                <td><input type="number" oninput="calculateTotals()" id="anteriorTrunkThirdDegree" /></td>
-                <td><input type="number" oninput="calculateTotals()" id="anteriorTrunkFourthDegree" /></td>
-                <td><input type="number" readonly id="anteriorTrunkTotal" /></td>
-            </tr>
-            <tr>
-                <td>Posterior Trunk</td>
-                <td class="infant">13%</td>
-                <td class="oneToFour">13%</td>
-                <td class="fiveToNine">13%</td>
-                <td class="tenToFourteen">13%</td>
-                <td class="fifteen">13%</td>
-                <td class="adult">13%</td>
-                <td> <input type="number" oninput="calculateTotals()" id="posteriorTrunkSecondDegree" /></td>
-                <td><input type="number" oninput="calculateTotals()" id="posteriorTrunkThirdDegree" /></td>
-                <td><input type="number" oninput="calculateTotals()" id="posteriorTrunkFourthDegree" /></td>
-                <td><input type="number" readonly id="posteriorTrunkTotal" /></td>
-            </tr>
-            <tr>
-                <td>Right Buttock</td>
-                <td class="infant">2.5%</td>
-                <td class="oneToFour">2.5%</td>
-                <td class="fiveToNine">2.5%</td>
-                <td class="tenToFourteen">2.5%</td>
-                <td class="fifteen">2.5%</td>
-                <td class="adult">2.5%</td>
-                <td> <input type="number" oninput="calculateTotals()" id="rightButtockSecondDegree" /></td>
-                <td><input type="number" oninput="calculateTotals()" id="rightButtockThirdDegree" /></td>
-                <td><input type="number" oninput="calculateTotals()" id="rightButtockFourthDegree" /></td>
-                <td><input type="number" readonly id="rightButtockTotal" /></td>
-            </tr>
-            <tr>
-                <td>Left Buttock</td>
-                <td class="infant">2.5%</td>
-                <td class="oneToFour">2.5%</td>
-                <td class="fiveToNine">2.5%</td>
-                <td class="tenToFourteen">2.5%</td>
-                <td class="fifteen">2.5%</td>
-                <td class="adult">2.5%</td>
-                <td> <input type="number" oninput="calculateTotals()" id="leftButtockSecondDegree" /></td>
-                <td><input type="number" oninput="calculateTotals()" id="leftButtockThirdDegree" /></td>
-                <td><input type="number" oninput="calculateTotals()" id="leftButtockFourthDegree" /></td>
-                <td><input type="number" readonly id="leftButtockTotal" /></td>
-            </tr>
-            <tr>
-                <td>Genitalia</td>
-                <td class="infant">1%</td>
-                <td class="oneToFour">1%</td>
-                <td class="fiveToNine">1%</td>
-                <td class="tenToFourteen">1%</td>
-                <td class="fifteen">1%</td>
-                <td class="adult">1%</td>
-                <td> <input type="number" oninput="calculateTotals()" id="genetaliaSecondDegree" /></td>
-                <td><input type="number" oninput="calculateTotals()" id="genetaliaThirdDegree" /></td>
-                <td><input type="number" oninput="calculateTotals()" id="genetaliaourthDegree" /></td>
-                <td><input type="number" readonly id="genetaliaTotal" /></td>
-            </tr>
-            <tr>
-                <td>Right Upper Arm</td>
-                <td class="infant">4%</td>
-                <td class="oneToFour">4%</td>
-                <td class="fiveToNine">4%</td>
-                <t class="tenToFourteen" d>4%</td>
+            <table>
+                <tr>
+                    <th>Area</th>
+                    <th class="infant">0-1 yr</th>
+                    <th class="oneToFour">1-4 yr</th>
+                    <th class="fiveToNine">5-9 yr</th>
+                    <th class="tenToFourteen">10-14 yr</th>
+                    <th class="fifteen">15 yr</th>
+                    <th class="adult">Adult</th>
+                    <th>2nd Degree</th>
+                    <th>3rd Degree</th>
+                    <th>4th Degree</th>
+                    <th>TBSA %</th>
+                </tr>
+                <tr>
+                    <td>Head</td>
+                    <td class="infant">19%</td>
+                    <td class="oneToFour">17%</td>
+                    <td class="fiveToNine">13%</td>
+                    <td class="tenToFourteen">11%</td>
+                    <td class="fifteen">9%</td>
+                    <td class="adult">7%</td>
+                    <td> <input type="number" oninput="calculateTotals()" id="headSecondDegree" /></td>
+                    <td><input type="number" oninput="calculateTotals()" id="headThirdDegree" /></td>
+                    <td><input type="number" oninput="calculateTotals()" id="headFourthDegree" /></td>
+                    <td><input type="number" readonly id="headTotal" /></td>
+                </tr>
+                <tr>
+                    <td>Neck</td>
+                    <td class="infant">2%</td>
+                    <td class="oneToFour">2%</td>
+                    <td class="fiveToNine">2%</td>
+                    <td class="tenToFourteen">2%</td>
+                    <td class="fifteen">2%</td>
+                    <td class="adult">2%</td>
+                    <td> <input type="number" oninput="calculateTotals()" id="neckSecondDegree" /></td>
+                    <td><input type="number" oninput="calculateTotals()" id="neckThirdDegree" /></td>
+                    <td><input type="number" oninput="calculateTotals()" id="neckFourthDegree" /></td>
+                    <td><input type="number" readonly id="neckTotal" /></td>
+                </tr>
+                <tr>
+                    <td>Anterior Trunk</td>
+                    <td class="infant">13%</td>
+                    <td class="oneToFour">13%</td>
+                    <td class="fiveToNine">13%</td>
+                    <td class="tenToFourteen">13%</td>
+                    <td class="fifteen">13%</td>
+                    <td class="adult">13%</td>
+                    <td> <input type="number" oninput="calculateTotals()" id="anteriorTrunkSecondDegree" /></td>
+                    <td><input type="number" oninput="calculateTotals()" id="anteriorTrunkThirdDegree" /></td>
+                    <td><input type="number" oninput="calculateTotals()" id="anteriorTrunkFourthDegree" /></td>
+                    <td><input type="number" readonly id="anteriorTrunkTotal" /></td>
+                </tr>
+                <tr>
+                    <td>Posterior Trunk</td>
+                    <td class="infant">13%</td>
+                    <td class="oneToFour">13%</td>
+                    <td class="fiveToNine">13%</td>
+                    <td class="tenToFourteen">13%</td>
+                    <td class="fifteen">13%</td>
+                    <td class="adult">13%</td>
+                    <td> <input type="number" oninput="calculateTotals()" id="posteriorTrunkSecondDegree" /></td>
+                    <td><input type="number" oninput="calculateTotals()" id="posteriorTrunkThirdDegree" /></td>
+                    <td><input type="number" oninput="calculateTotals()" id="posteriorTrunkFourthDegree" /></td>
+                    <td><input type="number" readonly id="posteriorTrunkTotal" /></td>
+                </tr>
+                <tr>
+                    <td>Right Buttock</td>
+                    <td class="infant">2.5%</td>
+                    <td class="oneToFour">2.5%</td>
+                    <td class="fiveToNine">2.5%</td>
+                    <td class="tenToFourteen">2.5%</td>
+                    <td class="fifteen">2.5%</td>
+                    <td class="adult">2.5%</td>
+                    <td> <input type="number" oninput="calculateTotals()" id="rightButtockSecondDegree" /></td>
+                    <td><input type="number" oninput="calculateTotals()" id="rightButtockThirdDegree" /></td>
+                    <td><input type="number" oninput="calculateTotals()" id="rightButtockFourthDegree" /></td>
+                    <td><input type="number" readonly id="rightButtockTotal" /></td>
+                </tr>
+                <tr>
+                    <td>Left Buttock</td>
+                    <td class="infant">2.5%</td>
+                    <td class="oneToFour">2.5%</td>
+                    <td class="fiveToNine">2.5%</td>
+                    <td class="tenToFourteen">2.5%</td>
+                    <td class="fifteen">2.5%</td>
+                    <td class="adult">2.5%</td>
+                    <td> <input type="number" oninput="calculateTotals()" id="leftButtockSecondDegree" /></td>
+                    <td><input type="number" oninput="calculateTotals()" id="leftButtockThirdDegree" /></td>
+                    <td><input type="number" oninput="calculateTotals()" id="leftButtockFourthDegree" /></td>
+                    <td><input type="number" readonly id="leftButtockTotal" /></td>
+                </tr>
+                <tr>
+                    <td>Genitalia</td>
+                    <td class="infant">1%</td>
+                    <td class="oneToFour">1%</td>
+                    <td class="fiveToNine">1%</td>
+                    <td class="tenToFourteen">1%</td>
+                    <td class="fifteen">1%</td>
+                    <td class="adult">1%</td>
+                    <td> <input type="number" oninput="calculateTotals()" id="genetaliaSecondDegree" /></td>
+                    <td><input type="number" oninput="calculateTotals()" id="genetaliaThirdDegree" /></td>
+                    <td><input type="number" oninput="calculateTotals()" id="genetaliaourthDegree" /></td>
+                    <td><input type="number" readonly id="genetaliaTotal" /></td>
+                </tr>
+                <tr>
+                    <td>Right Upper Arm</td>
+                    <td class="infant">4%</td>
+                    <td class="oneToFour">4%</td>
+                    <td class="fiveToNine">4%</td>
+                    <t class="tenToFourteen" d>4%</td>
+                        <td class="fifteen">4%</td>
+                        <td class="adult">4%</td>
+                        <td> <input type="number" oninput="calculateTotals()" id="rightUpperArmSecondDegree" /></td>
+                        <td><input type="number" oninput="calculateTotals()" id="rightUpperArmThirdDegree" /></td>
+                        <td><input type="number" oninput="calculateTotals()" id="rightUpperArmFourthDegree" /></td>
+                        <td><input type="number" readonly id="rightUpperArmTotal" /></td>
+                </tr>
+                <tr>
+                    <td>Left Upper Arm</td>
+                    <td class="infant">4%</td>
+                    <td class="oneToFour">4%</td>
+                    <td class="fiveToNine">4%</td>
+                    <td class="tenToFourteen">4%</td>
                     <td class="fifteen">4%</td>
                     <td class="adult">4%</td>
-                    <td> <input type="number" oninput="calculateTotals()" id="rightUpperArmSecondDegree" /></td>
-                    <td><input type="number" oninput="calculateTotals()" id="rightUpperArmThirdDegree" /></td>
-                    <td><input type="number" oninput="calculateTotals()" id="rightUpperArmFourthDegree" /></td>
-                    <td><input type="number" readonly id="rightUpperArmTotal" /></td>
-            </tr>
-            <tr>
-                <td>Left Upper Arm</td>
-                <td class="infant">4%</td>
-                <td class="oneToFour">4%</td>
-                <td class="fiveToNine">4%</td>
-                <td class="tenToFourteen">4%</td>
-                <td class="fifteen">4%</td>
-                <td class="adult">4%</td>
-                <td> <input type="number" oninput="calculateTotals()" id="leftUpperArmSecondDegree" /></td>
-                <td><input type="number" oninput="calculateTotals()" id="leftUpperArmThirdDegree" /></td>
-                <td><input type="number" oninput="calculateTotals()" id="leftUpperArmFourthDegree" /></td>
-                <td><input type="number" readonly id="leftUpperArmTotal" /></td>
-            </tr>
-            <tr>
-                <td>Right Lower Arm</td>
-                <td class="infant">3%</td>
-                <td class="oneToFour">3%</td>
-                <td class="fiveToNine">3%</td>
-                <td class="tenToFourteen">3%</td>
-                <td class="fifteen">3%</td>
-                <td class="adult">3%</td>
-                <td> <input type="number" oninput="calculateTotals()" id="rightLowerArmSecondDegree" /></td>
-                <td><input type="number" oninput="calculateTotals()" id="rightLowerArmThirdDegree" /></td>
-                <td><input type="number" oninput="calculateTotals()" id="rightLowerArmFourthDegree" /></td>
-                <td><input type="number" readonly id="rightLowerArmTotal" /></td>
-            </tr>
-            <tr>
-                <td>Left Lower Arm</td>
-                <td class="infant">3%</td>
-                <td class="oneToFour">3%</td>
-                <td class="fiveToNine">3%</td>
-                <td class="tenToFourteen">3%</td>
-                <td class="fifteen">3%</td>
-                <td class="adult">3%</td>
-                <td> <input type="number" oninput="calculateTotals()" id="leftLowerArmSecondDegree" /></td>
-                <td><input type="number" oninput="calculateTotals()" id="leftLowerArmThirdDegree" /></td>
-                <td><input type="number" oninput="calculateTotals()" id="leftLowerArmFourthDegree" /></td>
-                <td><input type="number" readonly id="leftLowerArmTotal" /></td>
-            </tr>
-            <tr>
-                <td>Right Hand</td>
-                <td class="infant">2.5%</td>
-                <td class="oneToFour">2.5%</td>
-                <td class="fiveToNine">2.5%</td>
-                <td class="tenToFourteen">2.5%</td>
-                <td class="fifteen">2.5%</td>
-                <td class="adult">2.5%</td>
-                <td> <input type="number" oninput="calculateTotals()" id="rightHandSecondDegree" /></td>
-                <td><input type="number" oninput="calculateTotals()" id="rightHandThirdDegree" /></td>
-                <td> <input type="number" oninput="calculateTotals()" id="rightHandFourthDegree" /></td>
-                <td><input type="number" readonly id="rightHandTotal" /></td>
-            </tr>
-            <tr>
-                <td>Left Hand</td>
-                <td class="infant">2.5%</td>
-                <td class="oneToFour">2.5%</td>
-                <td class="fiveToNine">2.5%</td>
-                <td class="tenToFourteen">2.5%</td>
-                <td class="fifteen">2.5%</td>
-                <td class="adult">2.5%</td>
-                <td> <input type="number" oninput="calculateTotals()" id="leftHandSecondDegree" /></td>
-                <td><input type="number" oninput="calculateTotals()" id="leftHandThirdDegree" /></td>
-                <td><input type="number" oninput="calculateTotals()" id="leftHandFourthDegree" />
-                </td>
-                <td><input type="number" readonly id="leftHandTotal" /></td>
-            </tr>
-            <tr>
-                <td>Right Thigh</td>
-                <td class="infant">5.5%</td>
-                <td class="oneToFour">6.5%</td>
-                <td class="fiveToNine">8%</td>
-                <td class="tenToFourteen">8.5%</td>
-                <td class="fifteen">9%</td>
-                <td class="adult">9.5%</td>
-                <td> <input type="number" oninput="calculateTotals()" id="rightThighSecondDegree" /></td>
-                <td><input type="number" oninput="calculateTotals()" id="rightThighThirdDegree" /></td>
-                <td><input type="number" oninput="calculateTotals()" id="rightThighFourthDegree" /></td>
-                <td><input type="number" readonly id="rightThighTotal" /></td>
-            </tr>
-            <tr>
-                <td>Left Thigh</td>
-                <td class="infant">5.5%</td>
-                <td class="oneToFour">6.5%</td>
-                <td class="fiveToNine">8%</td>
-                <td class="tenToFourteen">8.5%</td>
-                <td class="fifteen">9%</td>
-                <td class="adult">9.5%</td>
-                <td> <input type="number" oninput="calculateTotals()" id="leftThighSecondDegree" /></td>
-                <td><input type="number" oninput="calculateTotals()" id="leftThighThirdDegree" /></td>
-                <td><input type="number" oninput="calculateTotals()" id="leftThighFourthDegree" /></td>
-                <td><input type="number" readonly id="leftThighTotal" /></td>
-            </tr>
-            <tr>
-                <td>Right Leg</td>
-                <td class="infant">5%</td>
-                <td class="oneToFour">5%</td>
-                <td class="fiveToNine">5.5%</td>
-                <td class="tenToFourteen">6%</td>
-                <td class="fifteen">6.5%</td>
-                <td class="adult">7%</td>
-                <td> <input type="number" oninput="calculateTotals()" id="rightLegSecondDegree" /></td>
-                <td><input type="number" oninput="calculateTotals()" id="rightLegThirdDegree" /></td>
-                <td><input type="number" oninput="calculateTotals()" id="rightLegFourthDegree" /></td>
-                <td><input type="number" readonly id="rightLegTotal" /></td>
-            </tr>
-            <tr>
-                <td>Left Leg</td>
-                <td class="infant">5%</td>
-                <td class="oneToFour">5%</td>
-                <td class="fiveToNine">5.5%</td>
-                <td class="tenToFourteen">6%</td>
-                <td class="fifteen">6.5%</td>
-                <td class="adult">7%</td>
-                <td> <input type="number" oninput="calculateTotals()" id="leftLegSecondDegree" /></td>
-                <td><input type="number" oninput="calculateTotals()" id="leftLegThirdDegree" /></td>
-                <td><input type="number" oninput="calculateTotals()" id="leftLegFourthDegree" /></td>
-                <td><input type="number" readonly id="leftLegTotal" /></td>
-            </tr>
-            <tr>
-                <td>Right Foot</td>
-                <td class="infant">3.5%</td>
-                <td class="oneToFour">3.5%</td>
-                <td class="fiveToNine">3.5%</td>
-                <td class="tenToFourteen">3.5%</td>
-                <td class="fifteen">3.5%</td>
-                <td class="adult">3.5%</td>
-                <td> <input type="number" oninput="calculateTotals()" id="rightFootSecondDegree" /></td>
-                <td><input type="number" oninput="calculateTotals()" id="rightFootThirdDegree" /></td>
-                <td><input type="number" oninput="calculateTotals()" id="rightFootFourthDegree" /></td>
-                <td><input type="number" readonly id="rightFootTotal" /></td>
-            </tr>
-            <tr>
-                <td>Left Foot</td>
-                <td class="infant">3.5%</td>
-                <td class="oneToFour">3.5%</td>
-                <td class="fiveToNine">3.5%</td>
-                <td class="tenToFourteen">3.5%</td>
-                <td class="fifteen">3.5%</td>
-                <td class="adult">3.5%</td>
-                <td> <input type="number" oninput="calculateTotals()" id="leftFootSecondDegree" /></td>
-                <td><input type="number" oninput="calculateTotals()" id="leftFootThirdDegree" /></td>
-                <td><input type="number" oninput="calculateTotals()" id="leftFootFourthDegree" /></td>
-                <td><input type="number" readonly id="leftFootTotal" /></td>
-            </tr>
+                    <td> <input type="number" oninput="calculateTotals()" id="leftUpperArmSecondDegree" /></td>
+                    <td><input type="number" oninput="calculateTotals()" id="leftUpperArmThirdDegree" /></td>
+                    <td><input type="number" oninput="calculateTotals()" id="leftUpperArmFourthDegree" /></td>
+                    <td><input type="number" readonly id="leftUpperArmTotal" /></td>
+                </tr>
+                <tr>
+                    <td>Right Lower Arm</td>
+                    <td class="infant">3%</td>
+                    <td class="oneToFour">3%</td>
+                    <td class="fiveToNine">3%</td>
+                    <td class="tenToFourteen">3%</td>
+                    <td class="fifteen">3%</td>
+                    <td class="adult">3%</td>
+                    <td> <input type="number" oninput="calculateTotals()" id="rightLowerArmSecondDegree" /></td>
+                    <td><input type="number" oninput="calculateTotals()" id="rightLowerArmThirdDegree" /></td>
+                    <td><input type="number" oninput="calculateTotals()" id="rightLowerArmFourthDegree" /></td>
+                    <td><input type="number" readonly id="rightLowerArmTotal" /></td>
+                </tr>
+                <tr>
+                    <td>Left Lower Arm</td>
+                    <td class="infant">3%</td>
+                    <td class="oneToFour">3%</td>
+                    <td class="fiveToNine">3%</td>
+                    <td class="tenToFourteen">3%</td>
+                    <td class="fifteen">3%</td>
+                    <td class="adult">3%</td>
+                    <td> <input type="number" oninput="calculateTotals()" id="leftLowerArmSecondDegree" /></td>
+                    <td><input type="number" oninput="calculateTotals()" id="leftLowerArmThirdDegree" /></td>
+                    <td><input type="number" oninput="calculateTotals()" id="leftLowerArmFourthDegree" /></td>
+                    <td><input type="number" readonly id="leftLowerArmTotal" /></td>
+                </tr>
+                <tr>
+                    <td>Right Hand</td>
+                    <td class="infant">2.5%</td>
+                    <td class="oneToFour">2.5%</td>
+                    <td class="fiveToNine">2.5%</td>
+                    <td class="tenToFourteen">2.5%</td>
+                    <td class="fifteen">2.5%</td>
+                    <td class="adult">2.5%</td>
+                    <td> <input type="number" oninput="calculateTotals()" id="rightHandSecondDegree" /></td>
+                    <td><input type="number" oninput="calculateTotals()" id="rightHandThirdDegree" /></td>
+                    <td> <input type="number" oninput="calculateTotals()" id="rightHandFourthDegree" /></td>
+                    <td><input type="number" readonly id="rightHandTotal" /></td>
+                </tr>
+                <tr>
+                    <td>Left Hand</td>
+                    <td class="infant">2.5%</td>
+                    <td class="oneToFour">2.5%</td>
+                    <td class="fiveToNine">2.5%</td>
+                    <td class="tenToFourteen">2.5%</td>
+                    <td class="fifteen">2.5%</td>
+                    <td class="adult">2.5%</td>
+                    <td> <input type="number" oninput="calculateTotals()" id="leftHandSecondDegree" /></td>
+                    <td><input type="number" oninput="calculateTotals()" id="leftHandThirdDegree" /></td>
+                    <td><input type="number" oninput="calculateTotals()" id="leftHandFourthDegree" />
+                    </td>
+                    <td><input type="number" readonly id="leftHandTotal" /></td>
+                </tr>
+                <tr>
+                    <td>Right Thigh</td>
+                    <td class="infant">5.5%</td>
+                    <td class="oneToFour">6.5%</td>
+                    <td class="fiveToNine">8%</td>
+                    <td class="tenToFourteen">8.5%</td>
+                    <td class="fifteen">9%</td>
+                    <td class="adult">9.5%</td>
+                    <td> <input type="number" oninput="calculateTotals()" id="rightThighSecondDegree" /></td>
+                    <td><input type="number" oninput="calculateTotals()" id="rightThighThirdDegree" /></td>
+                    <td><input type="number" oninput="calculateTotals()" id="rightThighFourthDegree" /></td>
+                    <td><input type="number" readonly id="rightThighTotal" /></td>
+                </tr>
+                <tr>
+                    <td>Left Thigh</td>
+                    <td class="infant">5.5%</td>
+                    <td class="oneToFour">6.5%</td>
+                    <td class="fiveToNine">8%</td>
+                    <td class="tenToFourteen">8.5%</td>
+                    <td class="fifteen">9%</td>
+                    <td class="adult">9.5%</td>
+                    <td> <input type="number" oninput="calculateTotals()" id="leftThighSecondDegree" /></td>
+                    <td><input type="number" oninput="calculateTotals()" id="leftThighThirdDegree" /></td>
+                    <td><input type="number" oninput="calculateTotals()" id="leftThighFourthDegree" /></td>
+                    <td><input type="number" readonly id="leftThighTotal" /></td>
+                </tr>
+                <tr>
+                    <td>Right Leg</td>
+                    <td class="infant">5%</td>
+                    <td class="oneToFour">5%</td>
+                    <td class="fiveToNine">5.5%</td>
+                    <td class="tenToFourteen">6%</td>
+                    <td class="fifteen">6.5%</td>
+                    <td class="adult">7%</td>
+                    <td> <input type="number" oninput="calculateTotals()" id="rightLegSecondDegree" /></td>
+                    <td><input type="number" oninput="calculateTotals()" id="rightLegThirdDegree" /></td>
+                    <td><input type="number" oninput="calculateTotals()" id="rightLegFourthDegree" /></td>
+                    <td><input type="number" readonly id="rightLegTotal" /></td>
+                </tr>
+                <tr>
+                    <td>Left Leg</td>
+                    <td class="infant">5%</td>
+                    <td class="oneToFour">5%</td>
+                    <td class="fiveToNine">5.5%</td>
+                    <td class="tenToFourteen">6%</td>
+                    <td class="fifteen">6.5%</td>
+                    <td class="adult">7%</td>
+                    <td> <input type="number" oninput="calculateTotals()" id="leftLegSecondDegree" /></td>
+                    <td><input type="number" oninput="calculateTotals()" id="leftLegThirdDegree" /></td>
+                    <td><input type="number" oninput="calculateTotals()" id="leftLegFourthDegree" /></td>
+                    <td><input type="number" readonly id="leftLegTotal" /></td>
+                </tr>
+                <tr>
+                    <td>Right Foot</td>
+                    <td class="infant">3.5%</td>
+                    <td class="oneToFour">3.5%</td>
+                    <td class="fiveToNine">3.5%</td>
+                    <td class="tenToFourteen">3.5%</td>
+                    <td class="fifteen">3.5%</td>
+                    <td class="adult">3.5%</td>
+                    <td> <input type="number" oninput="calculateTotals()" id="rightFootSecondDegree" /></td>
+                    <td><input type="number" oninput="calculateTotals()" id="rightFootThirdDegree" /></td>
+                    <td><input type="number" oninput="calculateTotals()" id="rightFootFourthDegree" /></td>
+                    <td><input type="number" readonly id="rightFootTotal" /></td>
+                </tr>
+                <tr>
+                    <td>Left Foot</td>
+                    <td class="infant">3.5%</td>
+                    <td class="oneToFour">3.5%</td>
+                    <td class="fiveToNine">3.5%</td>
+                    <td class="tenToFourteen">3.5%</td>
+                    <td class="fifteen">3.5%</td>
+                    <td class="adult">3.5%</td>
+                    <td> <input type="number" oninput="calculateTotals()" id="leftFootSecondDegree" /></td>
+                    <td><input type="number" oninput="calculateTotals()" id="leftFootThirdDegree" /></td>
+                    <td><input type="number" oninput="calculateTotals()" id="leftFootFourthDegree" /></td>
+                    <td><input type="number" readonly id="leftFootTotal" /></td>
+                </tr>
 
-            <tr>
-                <td colspan="2" class="right-align">
-                    <h5 style="margin-right:16px">Totals: </h5>
-                </td>
-                <td><input readonly id="secondTotal" /></td>
-                <td><input readonly id="thirdTotal" /></td>
-                <td><input readonly id="fourthTotal" /></td>
-                <td><input readonly id="grandTotal" /></td>
-            </tr>
-        </table>
-    </div>
+                <tr>
+                    <td colspan="2" class="right-align">
+                        <h5 style="margin-right:16px">Totals: </h5>
+                    </td>
+                    <td><input readonly id="secondTotal" /></td>
+                    <td><input readonly id="thirdTotal" /></td>
+                    <td><input readonly id="fourthTotal" /></td>
+                    <td><input readonly id="grandTotal" /></td>
+                </tr>
+            </table>
+        </div>
 
-    <div class="row">
-        <div class="col l6 m6 s12">
-            <h6>Completed by: <input type="text" /></h6>
+        <div class="row">
+            <div class="col l6 m6 s12">
+                <h6>Completed by: <input type="text" /></h6>
+            </div>
+            <div class="col l3 m3 s6">
+                <h6>Date: <input readonly type="date" id="todayDate" /></h6>
+            </div>
+            <div class="col l3 m3 s6">
+                <h6>Time: <input readonly id="currentTime" type="time" /> </h6>
+            </div>
         </div>
-        <div class="col l3 m3 s6">
-            <h6>Date: <input readonly type="date" id="todayDate" /></h6>
-        </div>
-        <div class="col l3 m3 s6">
-            <h6>Time: <input readonly id="currentTime" type="time" /> </h6>
-        </div>
-    </div>
 
-    <div class="row">
-        <button onclick="generatePDF()" id='print-pdf'>Convert to PDF</button>
-    </div>
+        <div class="row">
+            <button onclick="generatePDF()" id='print-pdf'>Convert to PDF</button>
+        </div>
 
     </div>
 </body>

@@ -3,19 +3,17 @@ let grandTotal = 0;
 let fourthTotal = 0;
 let thirdTotal = 0;
 let secondTotal = 0;
-let patientSex = null;
-let inputArgs = null;
-let patienName = null;
-// patient age is defined elsewhere
-let birthDate = null
-let medRecno = null;
-let acctNo = null;
-let serviceDate = null;
-let admitDate = null;
-let roomBed = null;
-let ptLocation = null;
-let patientWoundImages = [];
 let slideIndex = 1;
+let manualMode = false;
+const sql = require('mssql');
+let envId = null;
+let setFakeData = false;
+
+let userData = {
+    userName: null,
+    userEsig: null,
+    userId: null
+};
 
 let patientInfo = {
     patientName: null,
@@ -25,7 +23,7 @@ let patientInfo = {
     birthDate: null,
     patientSex: null,
     admitDate: null
-}
+};
 
 Date.prototype.toDateInputValue = (function () {
     let local = new Date(this);
@@ -37,6 +35,7 @@ Date.prototype.toTimeInputValue = (function () {
     return `${local.getHours() > 9 ? local.getHours() : `0${local.getHours()}`}:${local.getMinutes() > 9 ? local.getMinutes() : `0${local.getMinutes()}`}`;
 });
 
+// once doc loads.....
 $(document).ready(() => {
     renderTableCells();
     $('#todayDate').val(new Date().toDateInputValue());
@@ -47,36 +46,26 @@ $(document).ready(() => {
     const args = require('electron').remote.process.argv;
     console.log('arguments passed...... ', args);
     connectDB(args);
-    initWoundImageCarousel();
+    if (setFakeData == true) { initWoundImageCarousel(); } // this shoudl be moved to execute if we get images in sql query
 });
 
-// odbc settings in args[7]
-// within odbc settings format: '<key1>=<value1>;<key2>=<value2>;....'
-// where keys are:
-// odbc: odbc[1],
-// dsn: odbc[2],
-// user: odbc[3],
-// password: odbc[4],
-// launchapp: odbc[5] - we want to set focus to this when we close with return code
-// machinename: odbc[6],
-// server: odbc[7]
-
-const form_data = {
-    patient_name: 'bill',
-    patient_age: 22,
-    sex: 'M',
-    pdf: 'data:png base64 string'
-}
-
 function connectDB(args) {
-    const envId = args && args[3] ? args[3].slice(5) : 'c7a19bba-abdb-4ff0-b6e4-fe8528c8a1ae';
-    const sql = require('mssql');
+    envId = args && args[3] ? args[3].slice(5) : 'c7a19bba-abdb-4ff0-b6e4-fe8528c8a1ae';
     const config = {
         user: 'wfadmin',
         password: 'hiswfadmin',
         server: 'localhost',
         database: 'HealthlineWorkflow',
     }
+
+    const userId = args && args[4] ? args[4].slice(6) : '';
+    userData.userId = userId;
+    // console.log('User ID extracted is.. ', userId);
+    const queryStringuserName = `
+                        select name, esig_placeholder
+                        from personnel 
+                        where personnel_id = convert(varbinary(max), '${userId}', 1)
+                        `;
 
     const queryStringpatName = `
                         select content_value
@@ -126,58 +115,23 @@ function connectDB(args) {
                         Where envelope_id = convert(uniqueidentifier, '${envId}') and
                         content_description = 'ADMISSION DATE'
                         `;
-    /* dont need location
-        const queryStringlocation = `
-                            select content_value
-                            From envelope_content
-                            Where envelope_id = convert(uniqueidentifier, '${envId}') and
-                            content_description = 'LOCATION'
-                            `;    
-        const queryStringroomBed = `
-                            select content_value
-                            From envelope_content
-                            Where envelope_id = convert(uniqueidentifier, '${envId}') and
-                            content_description = 'ROOM&BED'
-                            `;
-    
-    // service date is user entry
-        const queryStringserviceDate = `
-                            select content_value
-                            From envelope_content
-                            Where envelope_id = convert(uniqueidentifier, '${envId}') and
-                            content_description = 'SERVICE DATE'
-                            `;
-    */
 
     sql.connect(config).then(res => {
         console.log('res from connection.... ', res);
-        // below is the line to make a query... whatever queryString is, is what it will search
-
-        /* useful syntax below - extract result from array       
-        sql.query(queryString2).then(res2 => { // go get me envIDconverted
-            console.log('result from query to convert string... ', res2);
-            envIDconverted = res2.recordsets[0][0]['']; // this is now envIDconverted
-            console.log('ENVID converted...', envIDconverted); // once you have it execute next query...
- */
-
-        /*   // our winner below
-                   sql.query(`select content_value From envelope_content where envelope_id = 
-                   convert(uniqueidentifier, '${envId}') and
-                   content_description = 'PATIENT NAME' `).then(res4 => {
-                       console.log('result from PATIENT NAME query using converted from envid... ', res4);
-                       patientName = res4;
-       
-                   }).catch(err => {
-                       console.log('error processing PATIENT NAME query.... ', err);
-                   });
-       
-               }).catch(err => {
-                   console.log('error processing convert string query.... ', err);
-               });
-         */
+        sql.query(queryStringuserName).then(username => {
+            console.log('result from query user name is.... ', username);
+            // userName = username.recordset[0].content_value;
+            userData.userName = username.recordset[0].content_value;
+            userData.userEsig = username.recordset[0].content_value;
+            console.log('userData Name is.... ', userData.userName)
+            console.log('userData eSig is.... ', userData.userEsig)
+            initFields();
+        }).catch(err => {
+            console.log('query error retrieving User Info.... ', err);
+        });
 
         sql.query(queryStringpatName).then(name => {
-            console.log('result from query name is.... ', name);
+            console.log('result from query Name is.... ', name);
             patientName = name.recordset[0].content_value;
             patientInfo.patientName = name.recordset[0].content_value;
             initFields();
@@ -238,54 +192,39 @@ function connectDB(args) {
         }).catch(err => {
             console.log('error retrieving admit date in query.... ', err);
         });
-
-        /*   dont need location and date of service is entered by user
-        sql.query(queryStringlocation).then(res2 => {
-            console.log('result from query.... ', res2);
-            ptLocation = res2;
-        }).catch(err => {
-            console.log('error retrieving location in query.... ', err);
-        });
-
-        sql.query(queryStringroomBed).then(res2 => {
-            console.log('result from query.... ', res2);
-            roomBed = res2;
-        }).catch(err => {
-            console.log('error retrieving room bed no in query.... ', err);
-        });
-        
-        sql.query(queryStringserviceDate).then(res2 => {
-            console.log('result from query.... ', res2);
-            serviceDate = res2;
-        }).catch(err => {
-            console.log('error retrieving service date no in query.... ', err);
-        }); */
-
-
     }).catch(e => {
         console.log('error connecting to database.... ', e);
-        patientInfo = {
-            patientName: 'Russ Lane',
-            medRecno: 'M12345678',
-            acctNo: 'A12345678890',
-            patientAge: '56',
-            birthDate: '04/25/1963',
-            patientSex: 'M',
-            admitDate: '01/01/2019'
-        };
-        patientAge = '56'
-        initFields();
+        if (setFakeData == true) {
+            patientInfo = {
+                patientName: 'Russ Lane',
+                medRecno: 'M12345678',
+                acctNo: 'A12345678890',
+                patientAge: '56',
+                birthDate: '04/25/1963',
+                patientSex: 'M',
+                admitDate: '01/01/2019'
+            };
+            patientAge = '56'
+            initFields();
+        } else {
+            const manual = document.getElementById('manualPatientData');
+            const preset = document.getElementById('presetPatientData');
+            manual.style.display = 'block';
+            preset.style.display = 'none';
+            manualMode = true;
+        }
     });
 }
 
 function initFields() {
-    $('#dateOfAdmission').text(patientInfo.admitDate);
+    // $('#dateOfAdmission').text(patientInfo.admitDate);
     $('#patientName').text(patientInfo.patientName);
     $('#patientAge').text(patientInfo.patientAge);
     $('#patientDOB').text(patientInfo.birthDate);
     $('#patientSex').text(patientInfo.patientSex);
     $('#medNum').text(patientInfo.medRecno);
     $('#accNum').text(patientInfo.acctNo);
+    $('#dateOfAdmission').text(patientInfo.admitDate);
     renderTableCells();
 }
 
@@ -345,7 +284,6 @@ function initializeCanvas(c, d, e) {
     $(`#${c}`).on('mouseup', (e) => {
         mousedown = false;
     });
-
 
     //Mousemove
     $(`#${c}`).on('mousemove', (e) => {
@@ -442,7 +380,7 @@ function renderCalculation(row) {
 }
 
 function renderTableCells() {
-    // patientAge = $('#patientAge').val();
+    if (manualMode == true) { patientAge = $('#patientAge').val(); }
     let infant = Array.from(document.getElementsByClassName('infant'));
     let oneToFour = Array.from(document.getElementsByClassName('oneToFour'));
     let fiveToNine = Array.from(document.getElementsByClassName('fiveToNine'));
@@ -520,8 +458,21 @@ function alterTableDisplay(arr, hide) {
     });
 }
 
+function submitData(daBlob) {
+    const string = `INSERT INTO [dbo].[envelope_content] ([envelope_id],[content_description],[content_value], [content_type],[content_blob]) 
+    VALUES (convert(uniqueidentifier, '${envId}'), 'LB Form', 'Test PDF form insert', 'pdf','${daBlob}')`
+    // below did not work:  RequestError: Error converting data type varchar to varbinary.
+    // (convert(uniqueidentifier, '${envId}'), 'LB Form', 'Test PDF form insert', 'pdf', convert(varbinary(max),'${daBlob}',1))`
+    sql.query(string).then(res => {
+        console.log('result from inserting is.... ', res);
+    }).catch(err => {
+        console.log('query error inserting PDF.... ', err);
+    });
+}
+
 function generatePDF() {
     toggleViewImages(false);
+    toggleViewImagesCheckbox(true);
     const ogWidth = document.body.style.width;
     let tools = document.getElementById('canvasTools');
     let resetCanvasButton = document.getElementById('resetCanvasButton');
@@ -540,8 +491,9 @@ function generatePDF() {
             let pdf = new jsPDF('p', 'mm', 'a4', true); // A4 size page of PDF
             let position = window.innerWidth < 500 ? -90 : window.innerWidth > 500 && window.innerWidth < 1200 ? -4 : -8;
             pdf.addImage(contentDataURL, 'PNG', 0, position, imgWidth, imgHeight, '', 'FAST');
-            // let blob = pdf.output('blob');
+            // let blob = pdf.output('datauristring');
             pdf.save();
+            // submitData(pdf);
             document.body.style.width = ogWidth;
             tools.style.display = ogTools;
             resetCanvasButton.style.display = 'block';
@@ -577,12 +529,27 @@ function executeStyleUpdate(el, def) {
 function toggleViewImages(bool) {
     const divWrapper = document.getElementById('woundImages');
     const formWrapper = document.getElementById('formWrapper');
-    if (bool) {
-        divWrapper.style.display = 'block';
-        formWrapper.style.display = 'none';
-    } else {
-        divWrapper.style.display = 'none';
-        formWrapper.style.display = 'block';
+    if (divWrapper) {
+        if (bool) {
+            divWrapper.style.display = 'block';
+            // formWrapper.style.display = 'none';
+        } else {
+            divWrapper.style.display = 'none';
+            // formWrapper.style.display = 'block';
+        }
+    }
+}
+
+function toggleViewImagesCheckbox(force) {
+    const divWrapper = document.getElementById('woundImages');
+    const box = document.getElementById('imageCheckbox');
+    const bool = box.checked;
+    if (divWrapper) {
+        if (bool || force) {
+            divWrapper.style.display = 'block';
+        } else {
+            divWrapper.style.display = 'none';
+        }
     }
 }
 
@@ -609,7 +576,7 @@ function initWoundImageCarousel() {
         count--;
     });
     toggleWrapper.style.display = 'block';
-    radio.click();
+    if (radio) { radio.click(); }
     currentSlide(1);
 }
 
