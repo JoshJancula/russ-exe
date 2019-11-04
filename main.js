@@ -20,6 +20,7 @@ function createWindow () {
   // and load the index.html of the app.
   mainWindow.loadFile('./app/index.html');
   mainWindow.webContents.openDevTools();
+  mainWindow.setMenu(null);
   
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {
