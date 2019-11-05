@@ -25,6 +25,50 @@ let patientInfo = {
     admitDate: null
 };
 
+const tableRows = [
+    { name: 'head', infant: 19, oneToFour: 12, fiveToNine: 13, tenToFourteen: 11, fifteen: 8, adult: 7 },
+    { name: 'neck', infant: 2, oneToFour: 2, fiveToNine: 2, tenToFourteen: 2, fifteen: 2, adult: 2 },
+    { name: 'anteriorTrunk', infant: 13, oneToFour: 13, fiveToNine: 13, tenToFourteen: 13, fifteen: 13, adult: 13 },
+    { name: 'posteriorTrunk', infant: 13, oneToFour: 13, fiveToNine: 13, tenToFourteen: 13, fifteen: 13, adult: 13 },
+    { name: 'rightButtock', infant: 2.5, oneToFour: 2.5, fiveToNine: 2.5, tenToFourteen: 2.5, fifteen: 2.5, adult: 2.5 },
+    { name: 'leftButtock', infant: 2.5, oneToFour: 2.5, fiveToNine: 2.5, tenToFourteen: 2.5, fifteen: 2.5, adult: 2.5 },
+    { name: 'genetalia', infant: 1, oneToFour: 1, fiveToNine: 1, tenToFourteen: 1, fifteen: 1, adult: 1 },
+    { name: 'rightUpperArm', infant: 4, oneToFour: 4, fiveToNine: 4, tenToFourteen: 4, fifteen: 4, adult: 4 },
+    { name: 'leftUpperArm', infant: 4, oneToFour: 4, fiveToNine: 4, tenToFourteen: 4, fifteen: 4, adult: 4 },
+    { name: 'rightLowerArm', infant: 3, oneToFour: 3, fiveToNine: 3, tenToFourteen: 3, fifteen: 3, adult: 3 },
+    { name: 'leftLowerArm', infant: 3, oneToFour: 3, fiveToNine: 3, tenToFourteen: 3, fifteen: 3, adult: 3 },
+    { name: 'rightHand', infant: 2.5, oneToFour: 2.5, fiveToNine: 2.5, tenToFourteen: 2.5, fifteen: 2.5, adult: 2.5 },
+    { name: 'leftHand', infant: 2.5, oneToFour: 2.5, fiveToNine: 2.5, tenToFourteen: 2.5, fifteen: 2.5, adult: 2.5 },
+    { name: 'rightThigh', infant: 5.5, oneToFour: 6.5, fiveToNine: 8, tenToFourteen: 8.5, fifteen: 9, adult: 9.5 },
+    { name: 'leftThigh', infant: 5.5, oneToFour: 6.5, fiveToNine: 8, tenToFourteen: 8.5, fifteen: 9, adult: 9.5 },
+    { name: 'rightLeg', infant: 5, oneToFour: 5, fiveToNine: 5.5, tenToFourteen: 6, fifteen: 6.5, adult: 7 },
+    { name: 'leftLeg', infant: 5, oneToFour: 5, fiveToNine: 5.5, tenToFourteen: 6, fifteen: 6.5, adult: 7 },
+    { name: 'rightFoot', infant: 3.5, oneToFour: 3.5, fiveToNine: 3.5, tenToFourteen: 3.5, fifteen: 3.5, adult: 3.5 },
+    { name: 'leftFoot', infant: 3.5, oneToFour: 3.5, fiveToNine: 3.5, tenToFourteen: 3.5, fifteen: 3.5, adult: 3.5 }
+];
+
+let tableData = [
+    { name: 'head', secondDegree: 0, thirdDegree: 0, fourthDegree: 0, total: 0 },
+    { name: 'neck', infant: 2, secondDegree: 0, thirdDegree: 0, fourthDegree: 0, total: 0 },
+    { name: 'anteriorTrunk', secondDegree: 0, thirdDegree: 0, fourthDegree: 0, total: 0 },
+    { name: 'posteriorTrunk', secondDegree: 0, thirdDegree: 0, fourthDegree: 0, total: 0 },
+    { name: 'rightButtock', secondDegree: 0, thirdDegree: 0, fourthDegree: 0, total: 0 },
+    { name: 'leftButtock', secondDegree: 0, thirdDegree: 0, fourthDegree: 0, total: 0 },
+    { name: 'genetalia', secondDegree: 0, thirdDegree: 0, fourthDegree: 0, total: 0 },
+    { name: 'rightUpperArm', secondDegree: 0, thirdDegree: 0, fourthDegree: 0, total: 0 },
+    { name: 'leftUpperArm', secondDegree: 0, thirdDegree: 0, fourthDegree: 0, total: 0 },
+    { name: 'rightLowerArm', secondDegree: 0, thirdDegree: 0, fourthDegree: 0, total: 0 },
+    { name: 'leftLowerArm', secondDegree: 0, thirdDegree: 0, fourthDegree: 0, total: 0 },
+    { name: 'rightHand', secondDegree: 0, thirdDegree: 0, fourthDegree: 0, total: 0 },
+    { name: 'leftHand', secondDegree: 0, thirdDegree: 0, fourthDegree: 0, total: 0 },
+    { name: 'rightThigh', secondDegree: 0, thirdDegree: 0, fourthDegree: 0, total: 0 },
+    { name: 'leftThigh', secondDegree: 0, thirdDegree: 0, fourthDegree: 0, total: 0 },
+    { name: 'rightLeg', secondDegree: 0, thirdDegree: 0, fourthDegree: 0, total: 0 },
+    { name: 'leftLeg', secondDegree: 0, thirdDegree: 0, fourthDegree: 0, total: 0 },
+    { name: 'rightFoot', secondDegree: 0, thirdDegree: 0, fourthDegree: 0, total: 0 },
+    { name: 'leftFoot', secondDegree: 0, thirdDegree: 0, fourthDegree: 0, total: 0 }
+];
+
 Date.prototype.toDateInputValue = (function () {
     let local = new Date(this);
     return local.toJSON().slice(0, 10);
@@ -251,6 +295,29 @@ function resetCanvas() {
     tool1.click();
 }
 
+function saveCanvasStorage() {
+    const canvas = document.getElementById('canvas');
+    const url = canvas.toDataURL();
+    if (localStorage.getItem('savedCanvas')) { localStorage.removeItem('savedCanvas'); }
+    localStorage.setItem('savedCanvas', url);
+}
+
+function reDrawCanvas() {
+    const canvas = document.getElementById('canvas');
+    let ctx = canvas.getContext('2d');
+    const toDrawUrl = localStorage.getItem('savedCanvas');
+    drawDataURIOnCanvas(toDrawUrl, ctx);
+}
+
+function drawDataURIOnCanvas(strDataURI, context) {
+    'use strict';
+    let img = new window.Image();
+    img.addEventListener('load', () => {
+        context.drawImage(img, 0, 0);
+    });
+    img.setAttribute('src', strDataURI);
+}
+
 function initializeCanvas(c, d, e) {
 
     let canvasDiv = document.getElementById(c);
@@ -324,29 +391,6 @@ function setSex(sex) {
 }
 
 function calculateTotals() {
-
-    const tableRows = [
-        { name: 'head', infant: 19, oneToFour: 12, fiveToNine: 13, tenToFourteen: 11, fifteen: 8, adult: 7 },
-        { name: 'neck', infant: 2, oneToFour: 2, fiveToNine: 2, tenToFourteen: 2, fifteen: 2, adult: 2 },
-        { name: 'anteriorTrunk', infant: 13, oneToFour: 13, fiveToNine: 13, tenToFourteen: 13, fifteen: 13, adult: 13 },
-        { name: 'posteriorTrunk', infant: 13, oneToFour: 13, fiveToNine: 13, tenToFourteen: 13, fifteen: 13, adult: 13 },
-        { name: 'rightButtock', infant: 2.5, oneToFour: 2.5, fiveToNine: 2.5, tenToFourteen: 2.5, fifteen: 2.5, adult: 2.5 },
-        { name: 'leftButtock', infant: 2.5, oneToFour: 2.5, fiveToNine: 2.5, tenToFourteen: 2.5, fifteen: 2.5, adult: 2.5 },
-        { name: 'genetalia', infant: 1, oneToFour: 1, fiveToNine: 1, tenToFourteen: 1, fifteen: 1, adult: 1 },
-        { name: 'rightUpperArm', infant: 4, oneToFour: 4, fiveToNine: 4, tenToFourteen: 4, fifteen: 4, adult: 4 },
-        { name: 'leftUpperArm', infant: 4, oneToFour: 4, fiveToNine: 4, tenToFourteen: 4, fifteen: 4, adult: 4 },
-        { name: 'rightLowerArm', infant: 3, oneToFour: 3, fiveToNine: 3, tenToFourteen: 3, fifteen: 3, adult: 3 },
-        { name: 'leftLowerArm', infant: 3, oneToFour: 3, fiveToNine: 3, tenToFourteen: 3, fifteen: 3, adult: 3 },
-        { name: 'rightHand', infant: 2.5, oneToFour: 2.5, fiveToNine: 2.5, tenToFourteen: 2.5, fifteen: 2.5, adult: 2.5 },
-        { name: 'leftHand', infant: 2.5, oneToFour: 2.5, fiveToNine: 2.5, tenToFourteen: 2.5, fifteen: 2.5, adult: 2.5 },
-        { name: 'rightThigh', infant: 5.5, oneToFour: 6.5, fiveToNine: 8, tenToFourteen: 8.5, fifteen: 9, adult: 9.5 },
-        { name: 'leftThigh', infant: 5.5, oneToFour: 6.5, fiveToNine: 8, tenToFourteen: 8.5, fifteen: 9, adult: 9.5 },
-        { name: 'rightLeg', infant: 5, oneToFour: 5, fiveToNine: 5.5, tenToFourteen: 6, fifteen: 6.5, adult: 7 },
-        { name: 'leftLeg', infant: 5, oneToFour: 5, fiveToNine: 5.5, tenToFourteen: 6, fifteen: 6.5, adult: 7 },
-        { name: 'rightFoot', infant: 3.5, oneToFour: 3.5, fiveToNine: 3.5, tenToFourteen: 3.5, fifteen: 3.5, adult: 3.5 },
-        { name: 'leftFoot', infant: 3.5, oneToFour: 3.5, fiveToNine: 3.5, tenToFourteen: 3.5, fifteen: 3.5, adult: 3.5 }
-    ];
-
     grandTotal = 0;
     secondTotal = 0;
     thirdTotal = 0;
@@ -355,10 +399,15 @@ function calculateTotals() {
 }
 
 function renderCalculation(row) {
+    let dataRow = tableData.find(r => r.name === row.name);
     const second = $(`#${row.name}SecondDegree`).val();
     const third = $(`#${row.name}ThirdDegree`).val();
     const fourth = $(`#${row.name}FourthDegree`).val();
     const rowTotal = parseFloat(second ? second : 0) + parseFloat(third ? third : 0) + parseFloat(fourth ? fourth : 0);
+    dataRow.secondDegree = second;
+    dataRow.thirdDegree = third;
+    dataRow.fourthDegree = fourth;
+    dataRow.total = rowTotal;
     const maxAllowed = row[useThisRange];
     let totalBox = document.getElementById(`${row.name}Total`);
     $(`#${row.name}Total`).val(rowTotal > 0 ? rowTotal : null);
