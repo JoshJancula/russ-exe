@@ -299,7 +299,7 @@ function connectDB(args) {
             userData.userEsig = 'wubalubbadubdub';
             patientAge = '56'
             initFields();
-            // fakeTable();
+            fakeTable();
         } else {
             const manual = document.getElementById('manualPatientData');
             const preset = document.getElementById('presetPatientData');
@@ -323,10 +323,7 @@ function fakeTable() {
         {"name":"leftUpperArm","secondDegree":"","thirdDegree":"","fourthDegree":"","total":0},
         {"name":"rightLowerArm","secondDegree":"","thirdDegree":"","fourthDegree":"","total":0},
         {"name":"leftLowerArm","secondDegree":"","thirdDegree":"","fourthDegree":"","total":0},{"name":"rightHand","secondDegree":"","thirdDegree":"","fourthDegree":"","total":0},{"name":"leftHand","secondDegree":"","thirdDegree":"","fourthDegree":"","total":0},{"name":"rightThigh","secondDegree":"","thirdDegree":"","fourthDegree":"","total":0},{"name":"leftThigh","secondDegree":"","thirdDegree":"","fourthDegree":"","total":0},{"name":"rightLeg","secondDegree":"","thirdDegree":"","fourthDegree":"","total":0},{"name":"leftLeg","secondDegree":"","thirdDegree":"","fourthDegree":"","total":0},{"name":"rightFoot","secondDegree":"","thirdDegree":"","fourthDegree":"","total":0},{"name":"leftFoot","secondDegree":"","thirdDegree":"","fourthDegree":"","total":0}];
-    console.log('str... ', str);
-    console.log('str.toString... ', str.toString());
     tableData = str;
-    console.log('tableData.... ', JSON.parse(str));
     constructTable();
 }
 
@@ -369,8 +366,6 @@ function resetCanvas() {
 function saveCanvasStorage() {
     const canvas = document.getElementById('canvas');
     const url = canvas.toDataURL();
-    // if (localStorage.getItem('savedCanvas')) { localStorage.removeItem('savedCanvas'); }
-    // localStorage.setItem('savedCanvas', url);
     submitData(url.toString());
 }
 

@@ -40,6 +40,8 @@ th {
 td input {
     margin: 2%;
     border-bottom: none !important;
+    margin-left: 45% !important;
+    width: 30% !important;
 }
 
 .insertMoreButton {
@@ -58,7 +60,6 @@ body {
 
 .html2canvas-container { 
     width: 1000px !important; 
-    /* height: 2000px !important;  */
 }
 
 .infant-canvas {
