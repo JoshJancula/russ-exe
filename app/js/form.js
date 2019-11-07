@@ -254,8 +254,8 @@ function connectDB(args) {
         sql.query(queryStringcanvasData).then(canvasData => {
             console.log('result from query canvas data is.... ', canvasData);
             if (canvasData.recordset.length && canvasData.recordset[0].content_cblob) {
-            canvasExists = true;
-            reDrawCanvas(canvasData.recordset[0].content_cblob);
+                canvasExists = true;
+                reDrawCanvas(canvasData.recordset[0].content_cblob);
             } else { console.log('there was no canvas'); }
         }).catch(err => {
             console.log('error retrieving canvas data in query.... ', err);
@@ -268,17 +268,17 @@ function connectDB(args) {
                 // console.log('parse on its own.... ', JSON.parse(qd.recordset[0].content_cblob));
                 // console.log('stringify then parse??? ', JSON.parse(JSON.stringify(qd.recordset[0].content_cblob)));
                 // tableData = JSON.parse(qd.recordset[0].content_cblob);
-               try {
-                const d = JSON.parse(qd.recordset[0].content_cblob);
-                tableData = d;
-                tableExists = true;
-                constructTable();
-               } catch(e) {
-                console.log('error parsing json.... ', e);
-                tableData = qd.recordset[0].content_cblob;
-                tableExists = true;
-                constructTable();
-               }
+                try {
+                    const d = JSON.parse(qd.recordset[0].content_cblob);
+                    tableData = d;
+                    tableExists = true;
+                    constructTable();
+                } catch (e) {
+                    console.log('error parsing json.... ', e);
+                    tableData = qd.recordset[0].content_cblob;
+                    tableExists = true;
+                    constructTable();
+                }
             } else { console.log('there was no table data'); }
         }).catch(err => {
             console.log('error retrieving table data in query.... ', err);
@@ -311,18 +311,18 @@ function connectDB(args) {
 }
 
 function fakeTable() {
-    const str =  [
-        {"name":"head","secondDegree":"1","thirdDegree":"2","fourthDegree":"3","total":6},
-        {"name":"neck","secondDegree":"","thirdDegree":"","fourthDegree":"","total":0},
-        {"name":"anteriorTrunk","secondDegree":"","thirdDegree":"","fourthDegree":"","total":0},
-        {"name":"posteriorTrunk","secondDegree":"","thirdDegree":"","fourthDegree":"","total":0},
-        {"name":"rightButtock","secondDegree":"","thirdDegree":"","fourthDegree":"","total":0},
-        {"name":"leftButtock","secondDegree":"","thirdDegree":"","fourthDegree":"","total":0},
-        {"name":"genetalia","secondDegree":"","thirdDegree":"","total":0},
-        {"name":"rightUpperArm","secondDegree":"","thirdDegree":"","fourthDegree":"","total":0},
-        {"name":"leftUpperArm","secondDegree":"","thirdDegree":"","fourthDegree":"","total":0},
-        {"name":"rightLowerArm","secondDegree":"","thirdDegree":"","fourthDegree":"","total":0},
-        {"name":"leftLowerArm","secondDegree":"","thirdDegree":"","fourthDegree":"","total":0},{"name":"rightHand","secondDegree":"","thirdDegree":"","fourthDegree":"","total":0},{"name":"leftHand","secondDegree":"","thirdDegree":"","fourthDegree":"","total":0},{"name":"rightThigh","secondDegree":"","thirdDegree":"","fourthDegree":"","total":0},{"name":"leftThigh","secondDegree":"","thirdDegree":"","fourthDegree":"","total":0},{"name":"rightLeg","secondDegree":"","thirdDegree":"","fourthDegree":"","total":0},{"name":"leftLeg","secondDegree":"","thirdDegree":"","fourthDegree":"","total":0},{"name":"rightFoot","secondDegree":"","thirdDegree":"","fourthDegree":"","total":0},{"name":"leftFoot","secondDegree":"","thirdDegree":"","fourthDegree":"","total":0}];
+    const str = [
+        { "name": "head", "secondDegree": "1", "thirdDegree": "2", "fourthDegree": "3", "total": 6 },
+        { "name": "neck", "secondDegree": "", "thirdDegree": "", "fourthDegree": "", "total": 0 },
+        { "name": "anteriorTrunk", "secondDegree": "", "thirdDegree": "", "fourthDegree": "", "total": 0 },
+        { "name": "posteriorTrunk", "secondDegree": "", "thirdDegree": "", "fourthDegree": "", "total": 0 },
+        { "name": "rightButtock", "secondDegree": "", "thirdDegree": "", "fourthDegree": "", "total": 0 },
+        { "name": "leftButtock", "secondDegree": "", "thirdDegree": "", "fourthDegree": "", "total": 0 },
+        { "name": "genetalia", "secondDegree": "", "thirdDegree": "", "total": 0 },
+        { "name": "rightUpperArm", "secondDegree": "", "thirdDegree": "", "fourthDegree": "", "total": 0 },
+        { "name": "leftUpperArm", "secondDegree": "", "thirdDegree": "", "fourthDegree": "", "total": 0 },
+        { "name": "rightLowerArm", "secondDegree": "", "thirdDegree": "", "fourthDegree": "", "total": 0 },
+        { "name": "leftLowerArm", "secondDegree": "", "thirdDegree": "", "fourthDegree": "", "total": 0 }, { "name": "rightHand", "secondDegree": "", "thirdDegree": "", "fourthDegree": "", "total": 0 }, { "name": "leftHand", "secondDegree": "", "thirdDegree": "", "fourthDegree": "", "total": 0 }, { "name": "rightThigh", "secondDegree": "", "thirdDegree": "", "fourthDegree": "", "total": 0 }, { "name": "leftThigh", "secondDegree": "", "thirdDegree": "", "fourthDegree": "", "total": 0 }, { "name": "rightLeg", "secondDegree": "", "thirdDegree": "", "fourthDegree": "", "total": 0 }, { "name": "leftLeg", "secondDegree": "", "thirdDegree": "", "fourthDegree": "", "total": 0 }, { "name": "rightFoot", "secondDegree": "", "thirdDegree": "", "fourthDegree": "", "total": 0 }, { "name": "leftFoot", "secondDegree": "", "thirdDegree": "", "fourthDegree": "", "total": 0 }];
     tableData = str;
     constructTable();
 }
@@ -603,7 +603,7 @@ function submitData(daBlob) {
 }
 
 function generatePDF() {
-    toggleViewImages(false);
+    // toggleViewImages(false);
     toggleViewImagesCheckbox(true);
     const ogWidth = document.body.style.width;
     let tools = document.getElementById('canvasTools');
@@ -660,7 +660,7 @@ function executeStyleUpdate(el, def) {
 
 function toggleViewImages(bool) {
     const divWrapper = document.getElementById('woundImages');
-    const formWrapper = document.getElementById('formWrapper');
+    // const formWrapper = document.getElementById('formWrapper');
     if (divWrapper) {
         if (bool) {
             divWrapper.style.display = 'block';
@@ -677,10 +677,15 @@ function toggleViewImagesCheckbox(force) {
     const box = document.getElementById('imageCheckbox');
     const bool = box.checked;
     if (divWrapper) {
-        if (bool || force) {
-            divWrapper.style.display = 'block';
-        } else {
+        if (force) {
             divWrapper.style.display = 'none';
+            box.checked = false;
+        } else {
+            if (bool) {
+                divWrapper.style.display = 'block';
+            } else {
+                divWrapper.style.display = 'none';
+            }
         }
     }
 }
