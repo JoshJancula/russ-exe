@@ -7,7 +7,8 @@ let slideIndex = 1;
 let manualMode = false;
 const sql = require('mssql');
 let envId = null;
-let setFakeData = false;
+let setFakeData = true;
+let canvasExists = false;
 
 let userData = {
     userName: null,
@@ -49,7 +50,7 @@ const tableRows = [
 
 let tableData = [
     { name: 'head', secondDegree: 0, thirdDegree: 0, fourthDegree: 0, total: 0 },
-    { name: 'neck', infant: 2, secondDegree: 0, thirdDegree: 0, fourthDegree: 0, total: 0 },
+    { name: 'neck', secondDegree: 0, thirdDegree: 0, fourthDegree: 0, total: 0 },
     { name: 'anteriorTrunk', secondDegree: 0, thirdDegree: 0, fourthDegree: 0, total: 0 },
     { name: 'posteriorTrunk', secondDegree: 0, thirdDegree: 0, fourthDegree: 0, total: 0 },
     { name: 'rightButtock', secondDegree: 0, thirdDegree: 0, fourthDegree: 0, total: 0 },
@@ -159,16 +160,29 @@ function connectDB(args) {
                         Where envelope_id = convert(uniqueidentifier, '${envId}') and
                         content_description = 'ADMISSION DATE'
                         `;
+    const queryStringcanvasData = `
+                        select content_cblob
+                        From envelope_content
+                        Where envelope_id = convert(uniqueidentifier, '${envId}') and
+                        content_description = 'LB Form Canvas'
+                        `;
+
+    const queryStringtableData = `
+                        select content_cblob
+                        From envelope_content
+                        Where envelope_id = convert(uniqueidentifier, '${envId}') and
+                        content_description = 'LB Form Table'
+                        `;
 
     sql.connect(config).then(res => {
         console.log('res from connection.... ', res);
         sql.query(queryStringuserName).then(username => {
             console.log('result from query user name is.... ', username);
             // userName = username.recordset[0].content_value;
-            userData.userName = username.recordset[0].content_value;
-            userData.userEsig = username.recordset[0].content_value;
-            console.log('userData Name is.... ', userData.userName)
-            console.log('userData eSig is.... ', userData.userEsig)
+            userData.userName = username.recordset[0].esig_placeholder;
+            userData.userEsig = username.recordset[0].esig_placeholder;
+            console.log('userData Name is.... ', userData.userName);
+            console.log('userData eSig is.... ', userData.userEsig);
             initFields();
         }).catch(err => {
             console.log('query error retrieving User Info.... ', err);
@@ -236,6 +250,40 @@ function connectDB(args) {
         }).catch(err => {
             console.log('error retrieving admit date in query.... ', err);
         });
+
+        sql.query(queryStringcanvasData).then(canvasData => {
+            console.log('result from query canvas data is.... ', canvasData);
+            if (canvasData.recordset.length && canvasData.recordset[0].content_cblob) {
+            canvasExists = true;
+            reDrawCanvas(canvasData.recordset[0].content_cblob);
+            } else { console.log('there was no canvas'); }
+        }).catch(err => {
+            console.log('error retrieving canvas data in query.... ', err);
+        });
+
+        sql.query(queryStringtableData).then(qd => {
+            console.log('result from query table data is.... ', qd);
+            if (qd.recordset.length && qd.recordset[0].content_cblob) {
+                // console.log('straight string.... ', qd.recordset[0].content_cblob);
+                // console.log('parse on its own.... ', JSON.parse(qd.recordset[0].content_cblob));
+                // console.log('stringify then parse??? ', JSON.parse(JSON.stringify(qd.recordset[0].content_cblob)));
+                // tableData = JSON.parse(qd.recordset[0].content_cblob);
+               try {
+                const d = JSON.parse(qd.recordset[0].content_cblob);
+                tableData = d;
+                tableExists = true;
+                constructTable();
+               } catch(e) {
+                console.log('error parsing json.... ', e);
+                tableData = qd.recordset[0].content_cblob;
+                tableExists = true;
+                constructTable();
+               }
+            } else { console.log('there was no table data'); }
+        }).catch(err => {
+            console.log('error retrieving table data in query.... ', err);
+        });
+
     }).catch(e => {
         console.log('error connecting to database.... ', e);
         if (setFakeData == true) {
@@ -248,8 +296,10 @@ function connectDB(args) {
                 patientSex: 'M',
                 admitDate: '01/01/2019'
             };
+            userData.userEsig = 'wubalubbadubdub';
             patientAge = '56'
             initFields();
+            // fakeTable();
         } else {
             const manual = document.getElementById('manualPatientData');
             const preset = document.getElementById('presetPatientData');
@@ -258,6 +308,26 @@ function connectDB(args) {
             manualMode = true;
         }
     });
+}
+
+function fakeTable() {
+    const str =  [
+        {"name":"head","secondDegree":"1","thirdDegree":"2","fourthDegree":"3","total":6},
+        {"name":"neck","secondDegree":"","thirdDegree":"","fourthDegree":"","total":0},
+        {"name":"anteriorTrunk","secondDegree":"","thirdDegree":"","fourthDegree":"","total":0},
+        {"name":"posteriorTrunk","secondDegree":"","thirdDegree":"","fourthDegree":"","total":0},
+        {"name":"rightButtock","secondDegree":"","thirdDegree":"","fourthDegree":"","total":0},
+        {"name":"leftButtock","secondDegree":"","thirdDegree":"","fourthDegree":"","total":0},
+        {"name":"genetalia","secondDegree":"","thirdDegree":"","total":0},
+        {"name":"rightUpperArm","secondDegree":"","thirdDegree":"","fourthDegree":"","total":0},
+        {"name":"leftUpperArm","secondDegree":"","thirdDegree":"","fourthDegree":"","total":0},
+        {"name":"rightLowerArm","secondDegree":"","thirdDegree":"","fourthDegree":"","total":0},
+        {"name":"leftLowerArm","secondDegree":"","thirdDegree":"","fourthDegree":"","total":0},{"name":"rightHand","secondDegree":"","thirdDegree":"","fourthDegree":"","total":0},{"name":"leftHand","secondDegree":"","thirdDegree":"","fourthDegree":"","total":0},{"name":"rightThigh","secondDegree":"","thirdDegree":"","fourthDegree":"","total":0},{"name":"leftThigh","secondDegree":"","thirdDegree":"","fourthDegree":"","total":0},{"name":"rightLeg","secondDegree":"","thirdDegree":"","fourthDegree":"","total":0},{"name":"leftLeg","secondDegree":"","thirdDegree":"","fourthDegree":"","total":0},{"name":"rightFoot","secondDegree":"","thirdDegree":"","fourthDegree":"","total":0},{"name":"leftFoot","secondDegree":"","thirdDegree":"","fourthDegree":"","total":0}];
+    console.log('str... ', str);
+    console.log('str.toString... ', str.toString());
+    tableData = str;
+    console.log('tableData.... ', JSON.parse(str));
+    constructTable();
 }
 
 function initFields() {
@@ -269,6 +339,7 @@ function initFields() {
     $('#medNum').text(patientInfo.medRecno);
     $('#accNum').text(patientInfo.acctNo);
     $('#dateOfAdmission').text(patientInfo.admitDate);
+    $('#completedBy').val(userData.userEsig);
     renderTableCells();
 }
 
@@ -298,15 +369,15 @@ function resetCanvas() {
 function saveCanvasStorage() {
     const canvas = document.getElementById('canvas');
     const url = canvas.toDataURL();
-    if (localStorage.getItem('savedCanvas')) { localStorage.removeItem('savedCanvas'); }
-    localStorage.setItem('savedCanvas', url);
+    // if (localStorage.getItem('savedCanvas')) { localStorage.removeItem('savedCanvas'); }
+    // localStorage.setItem('savedCanvas', url);
+    submitData(url.toString());
 }
 
-function reDrawCanvas() {
+function reDrawCanvas(img) {
     const canvas = document.getElementById('canvas');
     let ctx = canvas.getContext('2d');
-    const toDrawUrl = localStorage.getItem('savedCanvas');
-    drawDataURIOnCanvas(toDrawUrl, ctx);
+    drawDataURIOnCanvas(img, ctx);
 }
 
 function drawDataURIOnCanvas(strDataURI, context) {
@@ -396,6 +467,17 @@ function calculateTotals() {
     thirdTotal = 0;
     fourthTotal = 0;
     tableRows.map(row => renderCalculation(row));
+}
+
+function constructTable() {
+    let count = tableData.length;
+    tableData.forEach(row => {
+        count--;
+        $(`#${row.name}SecondDegree`).val(row.secondDegree);
+        $(`#${row.name}ThirdDegree`).val(row.thirdDegree);
+        $(`#${row.name}FourthDegree`).val(row.fourthDegree);
+        if (count === 0) { calculateTotals(); }
+    });
 }
 
 function renderCalculation(row) {
@@ -508,14 +590,20 @@ function alterTableDisplay(arr, hide) {
 }
 
 function submitData(daBlob) {
-    const string = `INSERT INTO [dbo].[envelope_content] ([envelope_id],[content_description],[content_value], [content_type],[content_blob]) 
-    VALUES (convert(uniqueidentifier, '${envId}'), 'LB Form', 'Test PDF form insert', 'pdf','${daBlob}')`
+    const string = `INSERT INTO [dbo].[envelope_content] ([envelope_id],[content_description],[content_value], [content_type],[content_cblob]) 
+    VALUES (convert(uniqueidentifier, '${envId}'), 'LB Form Canvas', 'Canvas Data', 'canvas','${daBlob}')`
+
+    const string2 = `INSERT INTO [dbo].[envelope_content] ([envelope_id],[content_description],[content_value], [content_type],[content_cblob]) 
+    VALUES (convert(uniqueidentifier, '${envId}'), 'LB Form Table', 'Table Data', 'canvas','${JSON.stringify(tableData)}')`
     // below did not work:  RequestError: Error converting data type varchar to varbinary.
-    // (convert(uniqueidentifier, '${envId}'), 'LB Form', 'Test PDF form insert', 'pdf', convert(varbinary(max),'${daBlob}',1))`
+    // (convert(uniqueidentifier, '${envId}'), 'LB Form', '', 'pdf', convert(varbinary(max),'${daBlob}',1))`
     sql.query(string).then(res => {
-        console.log('result from inserting is.... ', res);
+        console.log('result from inserting Canvas data.... ', res);
+        sql.query(string2).then(res2 => {
+            console.log('result from 2nd insert of table data..... ', res2);
+        }).catch(err2 => { console.log('error inserting table data.... ', err2); });
     }).catch(err => {
-        console.log('query error inserting PDF.... ', err);
+        console.log('query error inserting Canvas data.... ', err);
     });
 }
 
