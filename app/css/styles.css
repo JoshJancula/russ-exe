@@ -38,7 +38,7 @@ th {
 }
 
 td input {
-    margin: 2%;
+    margin: 1%;
     border-bottom: none !important;
     margin-left: 45% !important;
     width: 30% !important;
@@ -107,9 +107,21 @@ body {
     background-image: url('../assets/BodyOutlines_AllFigures-01.png');
 }
 
- #woundImages {
+.legend {
+  position: relative;
+  top:1rem;
+  right: 1rem !important;
+  float: right;
+  margin-bottom: 1rem;
+}
+
+ #woundImages, #burnLegend, #skinLegend {
     display: none;
 }
+
+/* #woundImages, #burnLegend {
+  display: none;
+} */
 
 * {box-sizing:border-box}
 
@@ -188,12 +200,27 @@ body {
   background-color: #717171;
 }
 
+.bottom-button {
+  margin-right: 3%;
+}
+
 #toggleViewWrapper {
   display: none;
 }
 
 #manualPatientData {
   display: none;
+}
+
+#printView {
+  display: none;
+  /* height: 100%;
+  width: 100%; */
+}
+
+#undoCanvasReset {
+  display: none;
+  cursor: pointer;
 }
 
 /* Fading animation */

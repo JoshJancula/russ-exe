@@ -17,34 +17,36 @@
 
         <div class="row">
             <!-- Estimated Percentage -->
+            <!-- <button onclick="testPrint()">Test Print</button> -->
+
             <div class="col l6 m6 s12">
                 <!-- top row -->
                 <div id="formWrapper">
                     <!-- for inputting the top data, may reuse someday.... -->
                     <div id="manualPatientData">
-                    <div class="row">
-                        <div class="col l5 m6 s12" style="padding:0">
-                            <span>
-                                <h6>Name: </h6>
-                            </span><input type="text" id="name" />
-                        </div>
-                        <div class="col l3 m2 s6">
-                            <span>
-                                <h6>Age: </h6>
-                            </span><input min="0" value="0" oninput="renderTableCells()" id="patientAge"
-                                type="number" />
-                        </div>
-                        <div class="col l3 m4 s6 center" style="padding:0">
-                            <span>
-                                <h6>Sex: </h6>
-                            </span>
-                            <label style="margin: 2%"><input id="maleBox" type="checkbox"
-                                    onclick="setSex('m')" /><span>M</span></label>
-                            <label style="margin: 2%"><input id="femaleBox" type="checkbox"
-                                    onclick="setSex('f')" /><span>F</span></label>
+                        <div class="row">
+                            <div class="col l5 m6 s12" style="padding:0">
+                                <span>
+                                    <h6>Name: </h6>
+                                </span><input type="text" id="name" />
+                            </div>
+                            <div class="col l3 m2 s6">
+                                <span>
+                                    <h6>Age: </h6>
+                                </span><input min="0" value="0" oninput="renderTableCells()" id="patientAge"
+                                    type="number" />
+                            </div>
+                            <div class="col l3 m4 s6 center" style="padding:0">
+                                <span>
+                                    <h6>Sex: </h6>
+                                </span>
+                                <label style="margin: 2%"><input id="maleBox" type="checkbox"
+                                        onclick="setSex('m')" /><span>M</span></label>
+                                <label style="margin: 2%"><input id="femaleBox" type="checkbox"
+                                        onclick="setSex('f')" /><span>F</span></label>
+                            </div>
                         </div>
                     </div>
-                </div>
                     <div class="row" id="presetPatientData">
                         <h5><span id="patientName"></span></h5>
                         <h6><span id="patientSex"></span> <span id="patientAge"></span> <span id="patientDOB"></span>
@@ -58,14 +60,16 @@
                 </div>
 
                 <div class="row center" style="margin-top: 0">
-                    <h6>Form Type?</h6>
-                    <div class="row">
-                        <label class="td_wtt"><input type="radio" id="burnRadio" name="formType"
-                                onclick="setFormType('burn');" /><span>Burn</span></label>
-                        <label class="td_wtt"><input type="radio" id="skinRadio" name="formType"
-                                onclick="setFormType('skinDisease');" /><span>Skin Disease</span></label>
+                    <div id='formTypeWrapper'>
+                        <h6>Form Type?</h6>
+                        <div class="row">
+                            <label class="td_wtt"><input type="radio" id="burnRadio" name="formType"
+                                    onclick="setFormType('burn');" /><span>Burn</span></label>
+                            <label class="td_wtt"><input type="radio" id="skinRadio" name="formType"
+                                    onclick="setFormType('skinDisease');" /><span>Skin Disease</span></label>
+                        </div>
+                        <hr />
                     </div>
-                    <hr />
                     <div id="burnTypes">
                         <h6>Type of Burn Injury</h6>
                         <label class="td_wtt burnRadio"><input type="radio" name="burnType" />
@@ -102,32 +106,33 @@
                 </div>
                 <div id="lowerBurn" class="center">
                     <div classs="row center">
-                        <label class="td_wtt"><input type="radio" name="belowBurn" />
+                        <label class="td_wtt"><input type="radio" id="initialEstimate" name="belowBurn" />
                             <span>Initial Burn Estimation Chart</span></label><br>
-                        <label class="td_wtt"><input type="radio" name="belowBurn" />
+                        <label class="td_wtt"><input type="radio" id="amendedEstimate" name="belowBurn" />
                             <span>Amended Burn Estimation Chart</span></label><br>
-                        <label class="td_wtt"><input type="radio" name="belowBurn" />
+                        <label class="td_wtt"><input type="radio" id="dischargeEstimate" name="belowBurn" />
                             <span>Discharge Burn Estimation Chart</span></label>
                     </div>
                 </div>
 
                 <div class="row">
-                        <div class="col l6 m6 s6" style="margin-left: 0; padding-left: 0;">
-                            <h6>Date of Injury: <input type="date" /></h6>
-                        </div>
-                        <div class="col l6 m6 s6" style="margin-left: 0; padding-left: 0;">
-                            <h6>Time of Injury: <input type="time" /> </h6>
-                        </div>
+                    <div class="col l6 m6 s6" style="margin-left: 0; padding-left: 0;">
+                        <h6>Date of Injury: <input type="date" /></h6>
                     </div>
+                    <div class="col l6 m6 s6" style="margin-left: 0; padding-left: 0;">
+                        <h6>Time of Injury: <input type="time" /> </h6>
+                    </div>
+                </div>
 
                 <div class="row center" id="toggleViewWrapper" style="margin-bottom: 0;">
-                   <h6>Toggle View</h6>
-                   <!--   <label class="td_wtt"><input type="radio" id="formWrapperRadio" name="toggleWound"
+                    <!-- <h6>Toggle View</h6> -->
+                    <!--   <label class="td_wtt"><input type="radio" id="formWrapperRadio" name="toggleWound"
                             onclick="toggleViewImages(false);" /><span>Form Overview</span></label>
                     <label class="td_wtt"><input type="radio" id="woundImagesRadio" name="toggleWound"
                             onclick="toggleViewImages(true);" /><span>Wound Images</span></label> -->
-                            <label style="margin: 2%"><input id="imageCheckbox" type="checkbox"
-                                onclick="toggleViewImagesCheckbox()" /><span>View Wound Images</span></label> 
+                    <!-- <label style="margin: 2%"><input id="imageCheckbox" type="checkbox"
+                                onclick="toggleViewImagesCheckbox()" /><span>View Wound Images</span></label>  -->
+                    <button class="btn" id="openWoundImages">Open Wound Images</button>
                 </div>
 
                 <div id="woundImages">
@@ -140,13 +145,26 @@
 
             <div class="col l6 m6 s12">
                 <!-- canvas in here -->
+
+                <div id="burnLegend" class="legend">
+                    <span style="color:black;">Full Thickness</span><span
+                        style="display: inline-block; height: 12px; width: 12px; background: black; margin-left: 8px;"></span><br/>
+                    <span style="color: #ff0033;">Partial Thickness</span><span
+                        style="display: inline-block; height: 12px; width: 12px; background: #ff0033; margin-left: 8px;"></span>
+                </div>
+                <div id="skinLegend" class="legend">
+                    <span style="color: #0080FF;">Skin Disease</span><span
+                        style="display: inline-block; height: 12px; width: 12px; background: #0080FF; margin-left: 8px;"></span>
+                </div>
+
                 <div class="row" style="margin-left:7%;">
                     <div id="canvasDiv"></div>
                 </div>
 
-                <div class="row center">
+                <div class="row center" id="toolbar">
                     <a id="resetCanvasButton" style="cursor: pointer; margin-bottom: 12px; display: block"
                         onclick="resetCanvas()">Reset Canvas</a>
+                    <a id="undoCanvasReset" style="display:none;" onclick="undoCanvasClear()">Undo</a>
                     <div class="col l6 m12 s12 center">
                         <div class="row">Select Fill</div>
                         <div class="row">
@@ -169,8 +187,6 @@
                         </div>
                     </div>
                     <div id='canvasTools' class="col l6 m12 s12">
-                            <button onclick="saveCanvasStorage()">Save Canvas</button>
-                            <button onclick="reDrawCanvas()">Re-Draw Canvas</button>
                         <div class="row">Select Tool</div>
                         <div class="row">
                             <label class="td_wtt"><input type="radio" id="tool1" name="canvasTool"
@@ -475,11 +491,17 @@
             </div>
         </div>
 
-        <div class="row">
-            <button onclick="generatePDF()" id='print-pdf'>Convert to PDF</button>
+        <div class="row center" id="formActions">
+            <div class='col m4 center'><button onclick="generatePDF()" class='bottom-button btn' id='print-pdf'>Download
+                    PDF</button></div>
+            <div class='col m4 center'><button onclick="submitData()" class='bottom-button btn'
+                    id='submitData'>Save</button></div>
+            <div class='col m4 center'><button onclick="cancel()" class='bottom-button btn'
+                    id='cancelSession'>Cancel</button></div>
         </div>
 
     </div>
+    <iframe name="printf" style="display: none;" id="printf" frameborder="0"></iframe>
 </body>
 <script>window.html2canvas = require('html2canvas');</script>
 <script>window.jsPDF = require('jspdf');</script>
