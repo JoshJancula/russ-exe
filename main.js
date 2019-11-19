@@ -28,7 +28,7 @@ function createWindow() {
 
   mainWindow.on('closed', () => {
     mainWindow = null;
-    imageWindow.quit();
+   // imageWindow.quit();
   });
 }
 

@@ -280,6 +280,7 @@ function connectDB(args) {
         sql.query(queryStringcanvasData).then(canvasData => {
             if (canvasData.recordset.length && canvasData.recordset[0].content_cblob) {
                 canvasExists = true;
+                console.log('canvas??? ', canvasData.recordset[0]);
                 reDrawCanvas(canvasData.recordset[0].content_cblob);
                 setEstimationChart('a');
             } else { setEstimationChart('i'); console.log('there was no canvas'); }
@@ -644,8 +645,10 @@ function alterTableDisplay(arr, hide) {
 }
 
 function submitData(daBlob) {
+    const canvas = document.getElementById('canvas');
+    const url = canvas.toDataURL();
     const string = `INSERT INTO [dbo].[envelope_content] ([envelope_id],[content_description],[content_value], [content_type],[content_cblob]) 
-    VALUES (convert(uniqueidentifier, '${envId}'), 'LB Form Canvas', 'Canvas Data', 'canvas','${daBlob}')`
+    VALUES (convert(uniqueidentifier, '${envId}'), 'LB Form Canvas', 'Canvas Data', 'canvas','${url}')`
     const string2 = `INSERT INTO [dbo].[envelope_content] ([envelope_id],[content_description],[content_value], [content_type],[content_cblob]) 
     VALUES (convert(uniqueidentifier, '${envId}'), 'LB Form Table', 'Table Data', 'canvas','${JSON.stringify(tableData)}')`
     // below did not work:  RequestError: Error converting data type varchar to varbinary.

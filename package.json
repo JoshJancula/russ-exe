@@ -29,7 +29,7 @@
   "scripts": {
     "start": "electron .",
     "pack": "electron-builder --dir",
-    "dist": "electron-builder --prod",
+    "dist": "electron-builder",
     "package-win": "electron-packager . russ-exe-test --overwrite --platform=win32 --arch=ia32 --out=release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"Russ EXE Test\""
   },
   "author": "",
