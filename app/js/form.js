@@ -7,6 +7,7 @@ let slideIndex = 1;
 let manualMode = false;
 const sql = require('mssql');
 let envId = null;
+let tableExists = false;
 let setFakeData = true;
 const { ipcRenderer } = require('electron');
 
@@ -208,7 +209,7 @@ function connectDB(args) {
                         select content_cblob
                         From envelope_content
                         Where envelope_id = convert(uniqueidentifier, '${envId}') and
-                        content_description = 'LB Form Table'
+                        content_description = 'LB Form Data'
                         `;
 
     sql.connect(config).then(res => {
@@ -647,15 +648,26 @@ function alterTableDisplay(arr, hide) {
 function submitData(daBlob) {
     const canvas = document.getElementById('canvas');
     const url = canvas.toDataURL();
-    const string = `INSERT INTO [dbo].[envelope_content] ([envelope_id],[content_description],[content_value], [content_type],[content_cblob]) 
+    const stringI1 = `INSERT INTO [dbo].[envelope_content] ([envelope_id],[content_description],[content_value], [content_type],[content_cblob]) 
     VALUES (convert(uniqueidentifier, '${envId}'), 'LB Form Canvas', 'Canvas Data', 'canvas','${url}')`
-    const string2 = `INSERT INTO [dbo].[envelope_content] ([envelope_id],[content_description],[content_value], [content_type],[content_cblob]) 
-    VALUES (convert(uniqueidentifier, '${envId}'), 'LB Form Table', 'Table Data', 'canvas','${JSON.stringify(tableData)}')`
+    const stringI2 = `INSERT INTO [dbo].[envelope_content] ([envelope_id],[content_description],[content_value], [content_type],[content_cblob]) 
+    VALUES (convert(uniqueidentifier, '${envId}'), 'LB Form Data', 'Form Data', 'json','${JSON.stringify(tableData)}')`
+    const stringU1 = `UPDATE [dbo].[envelope_content] 
+    SET [content_value] = 'Canvas Data', 
+        [content_cblob] = '${url}' 
+        WHERE envelope_id = (convert(uniqueidentifier, '${envId}')) 
+            AND content_description = 'LB Form Canvas'`
+    const stringU2 = `UPDATE [dbo].[envelope_content] 
+    SET [content_value] = 'Form Data', 
+        [content_cblob] = '${JSON.stringify(tableData)}' 
+        WHERE envelope_id = (convert(uniqueidentifier, '${envId}')) 
+            AND content_description = 'LB Form Data'` 
+    
     // below did not work:  RequestError: Error converting data type varchar to varbinary.
     // (convert(uniqueidentifier, '${envId}'), 'LB Form', '', 'pdf', convert(varbinary(max),'${daBlob}',1))`
-    sql.query(string).then(res => {
+    sql.query(tableExists ? stringU1 : stringI1).then(res => {
         console.log('result from inserting Canvas data.... ', res);
-        sql.query(string2).then(res2 => {
+        sql.query(tableExists ? stringU2 : stringI2).then(res2 => {
             console.log('result from 2nd insert of table data..... ', res2);
             ipcRenderer.send('saved');
         }).catch(err2 => { console.log('error inserting table data.... ', err2); });
