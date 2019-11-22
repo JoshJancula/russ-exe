@@ -482,7 +482,7 @@ function initializeCanvas(c, d, e) {
     let canvasDiv = document.getElementById(c);
     canvas = document.createElement('canvas');
     canvas.setAttribute('width', 400);
-    canvas.setAttribute('height', 400);
+    canvas.setAttribute('height', 500);
     canvas.setAttribute('id', d);
     canvas.className = e;
     canvasDiv.appendChild(canvas);
@@ -715,7 +715,7 @@ function generatePDF() {
     alterViewForPdf(false);
     html2canvas(document.body).then((canvas) => {
         const imgWidth = 210;
-        const imgHeight = (canvas.height * imgWidth / canvas.width) + 30;
+        const imgHeight = (canvas.height * imgWidth / canvas.width) + 20;
         setTimeout(() => {
             const contentDataURL = canvas.toDataURL('image/png');
             let pdf = new jsPDF('p', 'mm', 'a4', true); // A4 size page of PDF

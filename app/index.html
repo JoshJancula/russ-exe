@@ -157,17 +157,17 @@
                         style="display: inline-block; height: 12px; width: 12px; background: #0080FF; margin-left: 8px;"></span>
                 </div>
 
-                <div class="row" style="margin-left:7%;">
+                <div class="row">
                     <div id="canvasDiv"></div>
                 </div>
 
-                <div class="row center" id="toolbar">
+                <div class="row center" style="margin-top: -3%;" id="toolbar">
                     <a id="resetCanvasButton" style="cursor: pointer; margin-bottom: 12px; display: block"
                         onclick="resetCanvas()">Reset Canvas</a>
                     <a id="undoCanvasReset" style="display:none;" onclick="undoCanvasClear()">Undo</a>
-                    <div class="col l6 m12 s12 center">
-                        <div class="row">Select Fill</div>
+                    <div style="margin-top: -5%;" class="col l6 m12 s12 center">
                         <div class="row">
+                            <h6>Select Fill</h6>
                             <div id="burnAnnotations">
                                 <label class="td_wtt"><input type="radio" id="fill1" name="canvasFill"
                                         onclick="setCanvasFill('#000306');" />
@@ -186,9 +186,9 @@
                             </div>
                         </div>
                     </div>
-                    <div id='canvasTools' class="col l6 m12 s12">
-                        <div class="row">Select Tool</div>
+                    <div id='canvasTools' style="margin-top: -5%;" class="col l6 m12 s12">
                         <div class="row">
+                            <h6>Select Tool</h6>
                             <label class="td_wtt"><input type="radio" id="tool1" name="canvasTool"
                                     onclick="useTool('draw');" /><span>Draw</span></label>
                             <label class="td_wtt"><input type="radio" name="canvasTool"

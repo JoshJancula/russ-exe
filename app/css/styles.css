@@ -64,7 +64,7 @@ body {
 
 .infant-canvas {
     background-position: center;
-    background-size: contain;
+    background-size: cover;
     background-repeat: no-repeat;
     background-image: url('../assets/BodyOutlines_AllFigures-06.png');
 }
@@ -72,14 +72,14 @@ body {
 
 .oneToFour-canvas {
     background-position: center;
-    background-size: contain;
+    background-size: cover;
     background-repeat: no-repeat;
     background-image: url('../assets/BodyOutlines_AllFigures-05.png');
 }
 
 .fiveToNine-canvas {
     background-position: center;
-    background-size: contain;
+    background-size: cover;
     background-repeat: no-repeat;
     background-image: url('../assets/BodyOutlines_AllFigures-04.png');
 }
@@ -87,14 +87,14 @@ body {
 
 .tenToFourteen-canvas {
     background-position: center;
-    background-size: contain;
+    background-size: cover;
     background-repeat: no-repeat;
     background-image: url('../assets/BodyOutlines_AllFigures-03.png');
 }
 
 .fifteen-canvas {
     background-position: center;
-    background-size: contain;
+    background-size: cover;
     background-repeat: no-repeat;
     background-image: url('../assets/BodyOutlines_AllFigures-02.png');
 }
@@ -102,7 +102,7 @@ body {
 
 .adult-canvas {
     background-position: center;
-    background-size: contain;
+    background-size: cover;
     background-repeat: no-repeat;
     background-image: url('../assets/BodyOutlines_AllFigures-01.png');
 }
