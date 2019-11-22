@@ -14,13 +14,14 @@ function useTool(tool) {
 }
 
 function setFormType(type) {
-    var burn = document.getElementById('burnTypes');
-    var skin = document.getElementById('skinTypes');
-    var lowerBurn = document.getElementById('lowerBurn');
-    var burnAnnotations = document.getElementById('burnAnnotations');
-    var skinAnnotations = document.getElementById('skinAnnotations');
-    var fill1 = document.getElementById('fill1');
-    var fill3 = document.getElementById('fill3');
+    let burn = document.getElementById('burnTypes');
+    let skin = document.getElementById('skinTypes');
+    let lowerBurn = document.getElementById('lowerBurn');
+    let burnAnnotations = document.getElementById('burnAnnotations');
+    let skinAnnotations = document.getElementById('skinAnnotations');
+    let selectFill = document.getElementById('selectFill');
+    let fill1 = document.getElementById('fill1');
+    let fill3 = document.getElementById('fill3');
 
     if (type === 'burn') {
         formType = 'burn';
@@ -29,6 +30,7 @@ function setFormType(type) {
         skin.style.display = 'none';
         burnAnnotations.style.display = 'inline';
         skinAnnotations.style.display = 'none';
+        selectFill.style.display = 'block';
         fill1.click();
     } else {
         formType = 'skinDisease';
@@ -37,6 +39,7 @@ function setFormType(type) {
         skin.style.display = 'inline';
         burnAnnotations.style.display = 'none';
         skinAnnotations.style.display = 'inline';
+        selectFill.style.display = 'none';
         fill3.click();
     }
     dataObject.formType = type;
