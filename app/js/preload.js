@@ -1,7 +1,7 @@
-var patientAge = 0;
-var tooltype = 'draw';
-var canvasFillColor = "#000306";
-var formType = 'burn';
+let patientAge = 0;
+let tooltype = 'draw';
+let canvasFillColor = "#000306";
+let formType = 'burn';
 
 function setCanvasFill(color) {
     canvasFillColor = color;
@@ -39,5 +39,6 @@ function setFormType(type) {
         skinAnnotations.style.display = 'inline';
         fill3.click();
     }
+    dataObject.formType = type;
     resetCanvas(true);
 }

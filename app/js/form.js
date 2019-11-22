@@ -7,9 +7,18 @@ let slideIndex = 1;
 let manualMode = false;
 const sql = require('mssql');
 let envId = null;
-let tableExists = false;
+let editMode = false;
 let setFakeData = true;
 const { ipcRenderer } = require('electron');
+
+let dataObject = {
+    tableData: null,
+    formType: null,
+    burnType: null,
+    skinType: null,
+    createdBy: null,
+    amendmentHistory: []
+};
 
 let userData = {
     userName: null,
@@ -281,7 +290,6 @@ function connectDB(args) {
         sql.query(queryStringcanvasData).then(canvasData => {
             if (canvasData.recordset.length && canvasData.recordset[0].content_cblob) {
                 canvasExists = true;
-                console.log('canvas??? ', canvasData.recordset[0]);
                 reDrawCanvas(canvasData.recordset[0].content_cblob);
                 setEstimationChart('a');
             } else { setEstimationChart('i'); console.log('there was no canvas'); }
@@ -293,18 +301,23 @@ function connectDB(args) {
             if (qd.recordset.length && qd.recordset[0].content_cblob) {
                 try {
                     const d = JSON.parse(qd.recordset[0].content_cblob);
-                    tableData = d;
-                    tableExists = true;
+                    dataObject = d;
+                    tableData = d.tableData;
+                    formType = d.formType;
+                    editMode = true;
                     constructTable();
                     setEstimationChart('a');
+                    setFormType(formType);
+                    if (dataObject.burnType) { setBurnType(dataObject.burnType); }
+                    if (dataObject.skinType) { setSkinType(dataObject.skinType); }
+                    if (dataObject.createdBy && dataObject.amendmentHistory.length) { buildAmendmentHistory(); }
                 } catch (e) {
                     console.log('error parsing json.... ', e);
-                    tableData = qd.recordset[0].content_cblob;
-                    tableExists = true;
-                    constructTable();
-                    setEstimationChart('a');
                 }
-            } else { setEstimationChart('i'); console.log('there was no table data'); }
+            } else {
+                 setEstimationChart('i'); console.log('there was no table data');
+                 dataObject.createdBy = userData.userName;
+                 }
         }).catch(err => {
             console.log('error retrieving table data in query.... ', err);
         });
@@ -327,6 +340,7 @@ function connectDB(args) {
             fakeTable();
             renderFakeImages();
             setEstimationChart('a');
+            setBurnType('friction');
         } else {
             const manual = document.getElementById('manualPatientData');
             const preset = document.getElementById('presetPatientData');
@@ -339,8 +353,6 @@ function connectDB(args) {
 }
 
 function renderFakeImages() {
-    // const data = JSON.parse(fakeImageData);
-    console.log('data.... ', fakeImageData);
     initWoundImageCarousel(fakeImageData);
 }
 
@@ -359,6 +371,14 @@ function fakeTable() {
         { "name": "leftLowerArm", "secondDegree": "", "thirdDegree": "", "fourthDegree": "", "total": 0 }, { "name": "rightHand", "secondDegree": "", "thirdDegree": "", "fourthDegree": "", "total": 0 }, { "name": "leftHand", "secondDegree": "", "thirdDegree": "", "fourthDegree": "", "total": 0 }, { "name": "rightThigh", "secondDegree": "", "thirdDegree": "", "fourthDegree": "", "total": 0 }, { "name": "leftThigh", "secondDegree": "", "thirdDegree": "", "fourthDegree": "", "total": 0 }, { "name": "rightLeg", "secondDegree": "", "thirdDegree": "", "fourthDegree": "", "total": 0 }, { "name": "leftLeg", "secondDegree": "", "thirdDegree": "", "fourthDegree": "", "total": 0 }, { "name": "rightFoot", "secondDegree": "", "thirdDegree": "", "fourthDegree": "", "total": 0 }, { "name": "leftFoot", "secondDegree": "", "thirdDegree": "", "fourthDegree": "", "total": 0 }];
     tableData = str;
     constructTable();
+}
+
+function buildAmendmentHistory() {
+    const div = document.getElementById('amendment_history');
+    dataObject.amendmentHistory.forEach((item) => {
+        const snip = ` <h6>${item.userData.userName === createdBy ? 'Created' : 'Amended '} by <span>${item.userData.userName}</span> on <span>${item.date}</span></h6><br />`;
+        div.innerHTML += snip;
+    });
 }
 
 function initFields() {
@@ -380,6 +400,18 @@ function setRadios() {
     tool1.click();
     fill1.click();
     burn.click();
+}
+
+function setBurnType(type) {
+    const el = document.getElementById(`${type}_radio`);
+    dataObject.burnType = type;
+    el.checked = true;
+}
+
+function setSkinType(type) {
+    const el = document.getElementById(`${type}_radio`);
+    dataObject.skinType = type;
+    el.checked = true;
 }
 
 function setEstimationChart(type) {
@@ -645,29 +677,29 @@ function alterTableDisplay(arr, hide) {
     });
 }
 
-function submitData(daBlob) {
+function submitData() {
+    dataObject.tableData = tableData;
+    dataObject.amendmentHistory.push({ userData: userData, date: `${new Date().toISOString()}` });
     const canvas = document.getElementById('canvas');
     const url = canvas.toDataURL();
-    const stringI1 = `INSERT INTO [dbo].[envelope_content] ([envelope_id],[content_description],[content_value], [content_type],[content_cblob]) 
+    const insert1 = `INSERT INTO [dbo].[envelope_content] ([envelope_id],[content_description],[content_value], [content_type],[content_cblob]) 
     VALUES (convert(uniqueidentifier, '${envId}'), 'LB Form Canvas', 'Canvas Data', 'canvas','${url}')`
-    const stringI2 = `INSERT INTO [dbo].[envelope_content] ([envelope_id],[content_description],[content_value], [content_type],[content_cblob]) 
-    VALUES (convert(uniqueidentifier, '${envId}'), 'LB Form Data', 'Form Data', 'json','${JSON.stringify(tableData)}')`
-    const stringU1 = `UPDATE [dbo].[envelope_content] 
+    const insert2 = `INSERT INTO [dbo].[envelope_content] ([envelope_id],[content_description],[content_value], [content_type],[content_cblob]) 
+    VALUES (convert(uniqueidentifier, '${envId}'), 'LB Form Data', 'Form Data', 'json','${JSON.stringify(dataObject)}')`
+    const update1 = `UPDATE [dbo].[envelope_content] 
     SET [content_value] = 'Canvas Data', 
         [content_cblob] = '${url}' 
         WHERE envelope_id = (convert(uniqueidentifier, '${envId}')) 
             AND content_description = 'LB Form Canvas'`
-    const stringU2 = `UPDATE [dbo].[envelope_content] 
+    const update2 = `UPDATE [dbo].[envelope_content] 
     SET [content_value] = 'Form Data', 
-        [content_cblob] = '${JSON.stringify(tableData)}' 
+        [content_cblob] = '${JSON.stringify(dataObject)}' 
         WHERE envelope_id = (convert(uniqueidentifier, '${envId}')) 
             AND content_description = 'LB Form Data'` 
     
-    // below did not work:  RequestError: Error converting data type varchar to varbinary.
-    // (convert(uniqueidentifier, '${envId}'), 'LB Form', '', 'pdf', convert(varbinary(max),'${daBlob}',1))`
-    sql.query(tableExists ? stringU1 : stringI1).then(res => {
+    sql.query(editMode ? update1 : insert1).then(res => {
         console.log('result from inserting Canvas data.... ', res);
-        sql.query(tableExists ? stringU2 : stringI2).then(res2 => {
+        sql.query(editMode ? update2 : insert2).then(res2 => {
             console.log('result from 2nd insert of table data..... ', res2);
             ipcRenderer.send('saved');
         }).catch(err2 => { console.log('error inserting table data.... ', err2); });
@@ -687,15 +719,10 @@ function generatePDF() {
         setTimeout(() => {
             const contentDataURL = canvas.toDataURL('image/png');
             let pdf = new jsPDF('p', 'mm', 'a4', true); // A4 size page of PDF
-            let position = window.innerWidth < 500 ? -90 : window.innerWidth > 500 && window.innerWidth < 1200 ? -4 : -8;
-            pdf.addImage(contentDataURL, 'PNG', 0, position, imgWidth, imgHeight, '', 'FAST');
-            pdf.save(`L&B_Form_${patientInfo.patientName}_${new Date().toDateInputValue()}_${new Date().toTimeInputValue()}`);
-            // const b = pdf.output('blob');
-            // const blob = URL.createObjectURL(b);
-            // const blob = pdf.output('datauristring');
-            // pdf.autoPrint();
-            // console.log('blob... ', pdf);
-            // ipcRenderer.send('print', blob);
+            // let position = window.innerWidth < 500 ? -90 : window.innerWidth > 500 && window.innerWidth < 1200 ? -4 : -8;
+            // pdf.addImage(contentDataURL, 'PNG', 0, position, imgWidth, imgHeight, '', 'FAST');
+            pdf.addImage(contentDataURL, 'PNG', 0, null, imgWidth, imgHeight, '', 'FAST');
+            pdf.save(`L&B_Form_${patientInfo.acctNo}_${new Date().toDateInputValue()}_${new Date().toTimeInputValue()}`);
             alterViewForPdf(true, ogWidth, ogTools);
         }, 300);
     }).catch((err) => {
@@ -730,6 +757,7 @@ function alterViewForPdf(reset, ogWidth, ogTools) {
     let burnLegend = document.getElementById('burnLegend');
     let skinLegend = document.getElementById('skinLegend');
     let formActions = document.getElementById('formActions');
+    let amendmentHistory = document.getElementById('amendment_history');
 
     if (!reset) {
         makeCellsDarker(false);
@@ -748,6 +776,7 @@ function alterViewForPdf(reset, ogWidth, ogTools) {
         openWoundImages.style.display = 'none';
         toolbar.style.display = 'none';
         formActions.style.display = 'none';
+        amendmentHistory.style.display = 'none';
     } else {
         document.body.style.width = ogWidth;
         tools.style.display = ogTools;
@@ -757,6 +786,7 @@ function alterViewForPdf(reset, ogWidth, ogTools) {
         openWoundImages.style.display = 'block';
         toolbar.style.display = 'block';
         formActions.style.display = 'block';
+        amendmentHistory.style.display = 'block';
         if (burnLegend) { burnLegend.style.display = 'none'; }
         if (skinLegend) { skinLegend.style.display = 'none'; }
         makeCellsDarker(true);
