@@ -23,7 +23,7 @@ function createWindow() {
 
   mainWindow.setTitle('Lund & Browder Form');
   mainWindow.loadFile('./app/index.html');
-  // mainWindow.webContents.openDevTools();
+  mainWindow.webContents.openDevTools();
   mainWindow.setMenu(null);
 
   mainWindow.on('closed', () => {

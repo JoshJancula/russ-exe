@@ -117,10 +117,10 @@
 
                 <div class="row">
                     <div class="col l6 m6 s6" style="margin-left: 0; padding-left: 0;">
-                        <h6>Date of Injury: <input type="date" /></h6>
+                        <h6>Date of Injury: <input id="dateOfInjury" type="date" /></h6>
                     </div>
                     <div class="col l6 m6 s6" style="margin-left: 0; padding-left: 0;">
-                        <h6>Time of Injury: <input type="time" /> </h6>
+                        <h6>Time of Injury: <input id="timeOfInjury" type="time" /> </h6>
                     </div>
                 </div>
 
@@ -226,9 +226,9 @@
                     <td class="tenToFourteen">11%</td>
                     <td class="fifteen">9%</td>
                     <td class="adult">7%</td>
-                    <td> <input type="number" oninput="calculateTotals()" id="headSecondDegree" /></td>
-                    <td><input type="number" oninput="calculateTotals()" id="headThirdDegree" /></td>
-                    <td><input type="number" oninput="calculateTotals()" id="headFourthDegree" /></td>
+                    <td> <input type="number" min="0" oninput="calculateTotals()" id="headSecondDegree" /></td>
+                    <td><input type="number" min="0" oninput="calculateTotals()" id="headThirdDegree" /></td>
+                    <td><input type="number" min="0" oninput="calculateTotals()" id="headFourthDegree" /></td>
                     <td><input type="number" readonly id="headTotal" /></td>
                 </tr>
                 <tr>
@@ -239,9 +239,9 @@
                     <td class="tenToFourteen">2%</td>
                     <td class="fifteen">2%</td>
                     <td class="adult">2%</td>
-                    <td> <input type="number" oninput="calculateTotals()" id="neckSecondDegree" /></td>
-                    <td><input type="number" oninput="calculateTotals()" id="neckThirdDegree" /></td>
-                    <td><input type="number" oninput="calculateTotals()" id="neckFourthDegree" /></td>
+                    <td> <input type="number" min="0" oninput="calculateTotals()" id="neckSecondDegree" /></td>
+                    <td><input type="number" min="0" oninput="calculateTotals()" id="neckThirdDegree" /></td>
+                    <td><input type="number" min="0" oninput="calculateTotals()" id="neckFourthDegree" /></td>
                     <td><input type="number" readonly id="neckTotal" /></td>
                 </tr>
                 <tr>
@@ -252,9 +252,9 @@
                     <td class="tenToFourteen">13%</td>
                     <td class="fifteen">13%</td>
                     <td class="adult">13%</td>
-                    <td> <input type="number" oninput="calculateTotals()" id="anteriorTrunkSecondDegree" /></td>
-                    <td><input type="number" oninput="calculateTotals()" id="anteriorTrunkThirdDegree" /></td>
-                    <td><input type="number" oninput="calculateTotals()" id="anteriorTrunkFourthDegree" /></td>
+                    <td> <input type="number" min="0" oninput="calculateTotals()" id="anteriorTrunkSecondDegree" /></td>
+                    <td><input type="number" min="0" oninput="calculateTotals()" id="anteriorTrunkThirdDegree" /></td>
+                    <td><input type="number" min="0" oninput="calculateTotals()" id="anteriorTrunkFourthDegree" /></td>
                     <td><input type="number" readonly id="anteriorTrunkTotal" /></td>
                 </tr>
                 <tr>
@@ -265,9 +265,9 @@
                     <td class="tenToFourteen">13%</td>
                     <td class="fifteen">13%</td>
                     <td class="adult">13%</td>
-                    <td> <input type="number" oninput="calculateTotals()" id="posteriorTrunkSecondDegree" /></td>
-                    <td><input type="number" oninput="calculateTotals()" id="posteriorTrunkThirdDegree" /></td>
-                    <td><input type="number" oninput="calculateTotals()" id="posteriorTrunkFourthDegree" /></td>
+                    <td> <input type="number" min="0" oninput="calculateTotals()" id="posteriorTrunkSecondDegree" /></td>
+                    <td><input type="number" min="0" oninput="calculateTotals()" id="posteriorTrunkThirdDegree" /></td>
+                    <td><input type="number" min="0" oninput="calculateTotals()" id="posteriorTrunkFourthDegree" /></td>
                     <td><input type="number" readonly id="posteriorTrunkTotal" /></td>
                 </tr>
                 <tr>
@@ -278,9 +278,9 @@
                     <td class="tenToFourteen">2.5%</td>
                     <td class="fifteen">2.5%</td>
                     <td class="adult">2.5%</td>
-                    <td> <input type="number" oninput="calculateTotals()" id="rightButtockSecondDegree" /></td>
-                    <td><input type="number" oninput="calculateTotals()" id="rightButtockThirdDegree" /></td>
-                    <td><input type="number" oninput="calculateTotals()" id="rightButtockFourthDegree" /></td>
+                    <td> <input type="number" min="0" oninput="calculateTotals()" id="rightButtockSecondDegree" /></td>
+                    <td><input type="number" min="0" oninput="calculateTotals()" id="rightButtockThirdDegree" /></td>
+                    <td><input type="number" min="0" oninput="calculateTotals()" id="rightButtockFourthDegree" /></td>
                     <td><input type="number" readonly id="rightButtockTotal" /></td>
                 </tr>
                 <tr>
@@ -291,9 +291,9 @@
                     <td class="tenToFourteen">2.5%</td>
                     <td class="fifteen">2.5%</td>
                     <td class="adult">2.5%</td>
-                    <td> <input type="number" oninput="calculateTotals()" id="leftButtockSecondDegree" /></td>
-                    <td><input type="number" oninput="calculateTotals()" id="leftButtockThirdDegree" /></td>
-                    <td><input type="number" oninput="calculateTotals()" id="leftButtockFourthDegree" /></td>
+                    <td> <input type="number" min="0" oninput="calculateTotals()" id="leftButtockSecondDegree" /></td>
+                    <td><input type="number" min="0" oninput="calculateTotals()" id="leftButtockThirdDegree" /></td>
+                    <td><input type="number" min="0" oninput="calculateTotals()" id="leftButtockFourthDegree" /></td>
                     <td><input type="number" readonly id="leftButtockTotal" /></td>
                 </tr>
                 <tr>
@@ -304,9 +304,9 @@
                     <td class="tenToFourteen">1%</td>
                     <td class="fifteen">1%</td>
                     <td class="adult">1%</td>
-                    <td> <input type="number" oninput="calculateTotals()" id="genetaliaSecondDegree" /></td>
-                    <td><input type="number" oninput="calculateTotals()" id="genetaliaThirdDegree" /></td>
-                    <td><input type="number" oninput="calculateTotals()" id="genetaliaourthDegree" /></td>
+                    <td> <input type="number" min="0" oninput="calculateTotals()" id="genetaliaSecondDegree" /></td>
+                    <td><input type="number" min="0" oninput="calculateTotals()" id="genetaliaThirdDegree" /></td>
+                    <td><input type="number" min="0" oninput="calculateTotals()" id="genetaliaourthDegree" /></td>
                     <td><input type="number" readonly id="genetaliaTotal" /></td>
                 </tr>
                 <tr>
@@ -317,9 +317,9 @@
                     <t class="tenToFourteen" d>4%</td>
                         <td class="fifteen">4%</td>
                         <td class="adult">4%</td>
-                        <td> <input type="number" oninput="calculateTotals()" id="rightUpperArmSecondDegree" /></td>
-                        <td><input type="number" oninput="calculateTotals()" id="rightUpperArmThirdDegree" /></td>
-                        <td><input type="number" oninput="calculateTotals()" id="rightUpperArmFourthDegree" /></td>
+                        <td> <input type="number" min="0" oninput="calculateTotals()" id="rightUpperArmSecondDegree" /></td>
+                        <td><input type="number" min="0" oninput="calculateTotals()" id="rightUpperArmThirdDegree" /></td>
+                        <td><input type="number" min="0" oninput="calculateTotals()" id="rightUpperArmFourthDegree" /></td>
                         <td><input type="number" readonly id="rightUpperArmTotal" /></td>
                 </tr>
                 <tr>
@@ -330,9 +330,9 @@
                     <td class="tenToFourteen">4%</td>
                     <td class="fifteen">4%</td>
                     <td class="adult">4%</td>
-                    <td> <input type="number" oninput="calculateTotals()" id="leftUpperArmSecondDegree" /></td>
-                    <td><input type="number" oninput="calculateTotals()" id="leftUpperArmThirdDegree" /></td>
-                    <td><input type="number" oninput="calculateTotals()" id="leftUpperArmFourthDegree" /></td>
+                    <td> <input type="number" min="0" oninput="calculateTotals()" id="leftUpperArmSecondDegree" /></td>
+                    <td><input type="number" min="0" oninput="calculateTotals()" id="leftUpperArmThirdDegree" /></td>
+                    <td><input type="number" min="0" oninput="calculateTotals()" id="leftUpperArmFourthDegree" /></td>
                     <td><input type="number" readonly id="leftUpperArmTotal" /></td>
                 </tr>
                 <tr>
@@ -343,9 +343,9 @@
                     <td class="tenToFourteen">3%</td>
                     <td class="fifteen">3%</td>
                     <td class="adult">3%</td>
-                    <td> <input type="number" oninput="calculateTotals()" id="rightLowerArmSecondDegree" /></td>
-                    <td><input type="number" oninput="calculateTotals()" id="rightLowerArmThirdDegree" /></td>
-                    <td><input type="number" oninput="calculateTotals()" id="rightLowerArmFourthDegree" /></td>
+                    <td> <input type="number" min="0" oninput="calculateTotals()" id="rightLowerArmSecondDegree" /></td>
+                    <td><input type="number" min="0" oninput="calculateTotals()" id="rightLowerArmThirdDegree" /></td>
+                    <td><input type="number" min="0" oninput="calculateTotals()" id="rightLowerArmFourthDegree" /></td>
                     <td><input type="number" readonly id="rightLowerArmTotal" /></td>
                 </tr>
                 <tr>
@@ -356,9 +356,9 @@
                     <td class="tenToFourteen">3%</td>
                     <td class="fifteen">3%</td>
                     <td class="adult">3%</td>
-                    <td> <input type="number" oninput="calculateTotals()" id="leftLowerArmSecondDegree" /></td>
-                    <td><input type="number" oninput="calculateTotals()" id="leftLowerArmThirdDegree" /></td>
-                    <td><input type="number" oninput="calculateTotals()" id="leftLowerArmFourthDegree" /></td>
+                    <td> <input type="number" min="0" oninput="calculateTotals()" id="leftLowerArmSecondDegree" /></td>
+                    <td><input type="number" min="0" oninput="calculateTotals()" id="leftLowerArmThirdDegree" /></td>
+                    <td><input type="number" min="0" oninput="calculateTotals()" id="leftLowerArmFourthDegree" /></td>
                     <td><input type="number" readonly id="leftLowerArmTotal" /></td>
                 </tr>
                 <tr>
@@ -369,9 +369,9 @@
                     <td class="tenToFourteen">2.5%</td>
                     <td class="fifteen">2.5%</td>
                     <td class="adult">2.5%</td>
-                    <td> <input type="number" oninput="calculateTotals()" id="rightHandSecondDegree" /></td>
-                    <td><input type="number" oninput="calculateTotals()" id="rightHandThirdDegree" /></td>
-                    <td> <input type="number" oninput="calculateTotals()" id="rightHandFourthDegree" /></td>
+                    <td> <input type="number" min="0" oninput="calculateTotals()" id="rightHandSecondDegree" /></td>
+                    <td><input type="number" min="0" oninput="calculateTotals()" id="rightHandThirdDegree" /></td>
+                    <td> <input type="number" min="0" oninput="calculateTotals()" id="rightHandFourthDegree" /></td>
                     <td><input type="number" readonly id="rightHandTotal" /></td>
                 </tr>
                 <tr>
@@ -382,9 +382,9 @@
                     <td class="tenToFourteen">2.5%</td>
                     <td class="fifteen">2.5%</td>
                     <td class="adult">2.5%</td>
-                    <td> <input type="number" oninput="calculateTotals()" id="leftHandSecondDegree" /></td>
-                    <td><input type="number" oninput="calculateTotals()" id="leftHandThirdDegree" /></td>
-                    <td><input type="number" oninput="calculateTotals()" id="leftHandFourthDegree" />
+                    <td> <input type="number" min="0" oninput="calculateTotals()" id="leftHandSecondDegree" /></td>
+                    <td><input type="number" min="0" oninput="calculateTotals()" id="leftHandThirdDegree" /></td>
+                    <td><input type="number" min="0" oninput="calculateTotals()" id="leftHandFourthDegree" />
                     </td>
                     <td><input type="number" readonly id="leftHandTotal" /></td>
                 </tr>
@@ -396,9 +396,9 @@
                     <td class="tenToFourteen">8.5%</td>
                     <td class="fifteen">9%</td>
                     <td class="adult">9.5%</td>
-                    <td> <input type="number" oninput="calculateTotals()" id="rightThighSecondDegree" /></td>
-                    <td><input type="number" oninput="calculateTotals()" id="rightThighThirdDegree" /></td>
-                    <td><input type="number" oninput="calculateTotals()" id="rightThighFourthDegree" /></td>
+                    <td> <input type="number" min="0" oninput="calculateTotals()" id="rightThighSecondDegree" /></td>
+                    <td><input type="number" min="0" oninput="calculateTotals()" id="rightThighThirdDegree" /></td>
+                    <td><input type="number" min="0" oninput="calculateTotals()" id="rightThighFourthDegree" /></td>
                     <td><input type="number" readonly id="rightThighTotal" /></td>
                 </tr>
                 <tr>
@@ -409,9 +409,9 @@
                     <td class="tenToFourteen">8.5%</td>
                     <td class="fifteen">9%</td>
                     <td class="adult">9.5%</td>
-                    <td> <input type="number" oninput="calculateTotals()" id="leftThighSecondDegree" /></td>
-                    <td><input type="number" oninput="calculateTotals()" id="leftThighThirdDegree" /></td>
-                    <td><input type="number" oninput="calculateTotals()" id="leftThighFourthDegree" /></td>
+                    <td> <input type="number" min="0" oninput="calculateTotals()" id="leftThighSecondDegree" /></td>
+                    <td><input type="number" min="0" oninput="calculateTotals()" id="leftThighThirdDegree" /></td>
+                    <td><input type="number" min="0" oninput="calculateTotals()" id="leftThighFourthDegree" /></td>
                     <td><input type="number" readonly id="leftThighTotal" /></td>
                 </tr>
                 <tr>
@@ -422,9 +422,9 @@
                     <td class="tenToFourteen">6%</td>
                     <td class="fifteen">6.5%</td>
                     <td class="adult">7%</td>
-                    <td> <input type="number" oninput="calculateTotals()" id="rightLegSecondDegree" /></td>
-                    <td><input type="number" oninput="calculateTotals()" id="rightLegThirdDegree" /></td>
-                    <td><input type="number" oninput="calculateTotals()" id="rightLegFourthDegree" /></td>
+                    <td> <input type="number" min="0" oninput="calculateTotals()" id="rightLegSecondDegree" /></td>
+                    <td><input type="number" min="0" oninput="calculateTotals()" id="rightLegThirdDegree" /></td>
+                    <td><input type="number" min="0" oninput="calculateTotals()" id="rightLegFourthDegree" /></td>
                     <td><input type="number" readonly id="rightLegTotal" /></td>
                 </tr>
                 <tr>
@@ -435,9 +435,9 @@
                     <td class="tenToFourteen">6%</td>
                     <td class="fifteen">6.5%</td>
                     <td class="adult">7%</td>
-                    <td> <input type="number" oninput="calculateTotals()" id="leftLegSecondDegree" /></td>
-                    <td><input type="number" oninput="calculateTotals()" id="leftLegThirdDegree" /></td>
-                    <td><input type="number" oninput="calculateTotals()" id="leftLegFourthDegree" /></td>
+                    <td> <input type="number" min="0" oninput="calculateTotals()" id="leftLegSecondDegree" /></td>
+                    <td><input type="number" min="0" oninput="calculateTotals()" id="leftLegThirdDegree" /></td>
+                    <td><input type="number" min="0" oninput="calculateTotals()" id="leftLegFourthDegree" /></td>
                     <td><input type="number" readonly id="leftLegTotal" /></td>
                 </tr>
                 <tr>
@@ -448,9 +448,9 @@
                     <td class="tenToFourteen">3.5%</td>
                     <td class="fifteen">3.5%</td>
                     <td class="adult">3.5%</td>
-                    <td> <input type="number" oninput="calculateTotals()" id="rightFootSecondDegree" /></td>
-                    <td><input type="number" oninput="calculateTotals()" id="rightFootThirdDegree" /></td>
-                    <td><input type="number" oninput="calculateTotals()" id="rightFootFourthDegree" /></td>
+                    <td> <input type="number" min="0" oninput="calculateTotals()" id="rightFootSecondDegree" /></td>
+                    <td><input type="number" min="0" oninput="calculateTotals()" id="rightFootThirdDegree" /></td>
+                    <td><input type="number" min="0" oninput="calculateTotals()" id="rightFootFourthDegree" /></td>
                     <td><input type="number" readonly id="rightFootTotal" /></td>
                 </tr>
                 <tr>
@@ -461,9 +461,9 @@
                     <td class="tenToFourteen">3.5%</td>
                     <td class="fifteen">3.5%</td>
                     <td class="adult">3.5%</td>
-                    <td> <input type="number" oninput="calculateTotals()" id="leftFootSecondDegree" /></td>
-                    <td><input type="number" oninput="calculateTotals()" id="leftFootThirdDegree" /></td>
-                    <td><input type="number" oninput="calculateTotals()" id="leftFootFourthDegree" /></td>
+                    <td> <input type="number" min="0" oninput="calculateTotals()" id="leftFootSecondDegree" /></td>
+                    <td><input type="number" min="0" oninput="calculateTotals()" id="leftFootThirdDegree" /></td>
+                    <td><input type="number" min="0" oninput="calculateTotals()" id="leftFootFourthDegree" /></td>
                     <td><input type="number" readonly id="leftFootTotal" /></td>
                 </tr>
 

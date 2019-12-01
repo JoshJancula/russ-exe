@@ -1,46 +1,11 @@
 const ipcRenderer = require('electron').ipcRenderer;
 
-const fakeImageData = [
-    {
-        "wound_no": "Wound-4",
-        "wound_desc": "PI; Medial; Forearm; Left; POA = ?; ",
-        "wound_dos": "04/03/2019",
-        "src": "https://pixmobile.eastus.cloudapp.azure.com/HealthEPixMobileWeb/GetImage.aspx?h=localhost:3002&k=6181888a-0285-4a7a-ba8e-901c936280c0:2019062018142500992012_07F4EBFE;jpg"
-    },
-    {
-        "wound_no": "Wound-1",
-        "wound_desc": "PI; Plantar; Finger; 2nd left; POA = ?; ",
-        "wound_dos": "04/22/2019",
-        "src": "https://pixmobile.eastus.cloudapp.azure.com/HealthEPixMobileWeb/GetImage.aspx?h=localhost:3002&k=6181888a-0285-4a7a-ba8e-901c936280c0:2019052217245303388001_C7864049;jpg"
-    },
-    {
-        "wound_no": "Wound-5",
-        "wound_desc": "PI; Anterior; Arm Lower; Left; POA = ?; ",
-        "wound_dos": "09/10/2019", "src": "https://pixmobile.eastus.cloudapp.azure.com/HealthEPixMobileWeb/GetImage.aspx?h=localhost:3002&k=6181888a-0285-4a7a-ba8e-901c936280c0:2019091018100801184004_2A635C72;jpg"
-    },
-    {
-        "wound_no": "Wound-11", "wound_desc": "PI; Inferior; Forearm; Right; POA = ?; ",
-        "wound_dos": "09/18/2019",
-        "src": "https://pixmobile.eastus.cloudapp.azure.com/HealthEPixMobileWeb/GetImage.aspx?h=localhost:3002&k=6181888a-0285-4a7a-ba8e-901c936280c0:2019101422241500592000_54D956AB;jpg"
-    },
-    {
-        "wound_no": "Wound-9",
-        "wound_desc": "PI; Anterior; Arm Lower; Right; POA = ?; ",
-        "wound_dos": "09/20/2019", "src": "https://pixmobile.eastus.cloudapp.azure.com/HealthEPixMobileWeb/GetImage.aspx?h=localhost:3002&k=6181888a-0285-4a7a-ba8e-901c936280c0:2019092712394000892006_7CB1F16E;jpg"
-    }
-];
-
-
 $(document).ready(() => {
     const args = require('electron').remote.process.argv;
-    console.log('args..... ', args);
     ipcRenderer.send('image-window-loaded');
-    // initWoundImageCarousel(fakeImageData);
     ipcRenderer.on('loaded-response', function (event, args) {
-        console.log('event... ', event);
-        console.log('args... ', args);
         initWoundImageCarousel(args);
-      });
+    });
 });
 
 function initWoundImageCarousel(data) {
