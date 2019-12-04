@@ -385,12 +385,19 @@ function fakeTable() {
 function buildAmendmentHistory() { // construct a section to display everyone
     const div = document.getElementById('amendment_history'); // thats edited the form
     dataObject.amendmentHistory.forEach((item) => {
-        const snip = ` <h6>${item.userData.userName === dataObject.createdBy ? 'Created' : 'Amended '} by ${item.userData.userName} on ${item.date}</h6><br />`;
+        const snip = ` <h6>${item.userData.userName === dataObject.createdBy && whichIsFirst(dataObject.amendmentHistory)[0] === item ? 'Created' : 'Amended '} by ${item.userData.userName} on ${item.date}</h6><br style="height: 1px;" />`;
         div.innerHTML += snip;
     });
 }
 
-function initFields() { 
+function whichIsFirst(arr) {
+    arr.sort((a, b) => {
+        return new Date(b.date) - new Date(a.date);
+    });
+    return arr;
+}
+
+function initFields() {
     $('#patientName').text(patientInfo.patientName);
     $('#patientAge').text(patientInfo.patientAge);
     $('#patientDOB').text(patientInfo.birthDate);
@@ -427,10 +434,13 @@ function setEstimationChart(type) {
     const initial = document.getElementById('initialEstimate');
     const amended = document.getElementById('amendedEstimate');
     const discharge = document.getElementById('dischargeEstimate');
+    const formTypeWrapper = document.getElementById('formTypeWrapper');
+
     if (type && type === 'i') {
         initial.checked = true;
     } else if (type && type === 'a') {
         amended.checked = true;
+        formTypeWrapper.style.display = 'none';
     } else if (type && type === 'd') {
         discharge.checked = true;
     } else {
@@ -723,7 +733,7 @@ function generatePDF() { // to generate a pdf to save
     let tools = document.getElementById('canvasTools');
     let ogTools = tools.style.display;
     alterViewForPdf(false); // alter the view
-    html2canvas(document.body).then((canvas) => { 
+    html2canvas(document.body).then((canvas) => {
         const imgWidth = 210; // create a canvas of doc to append to pdf as img
         const imgHeight = (canvas.height * imgWidth / canvas.width) + 20;
         setTimeout(() => {
