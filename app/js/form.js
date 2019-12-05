@@ -385,7 +385,7 @@ function fakeTable() {
 function buildAmendmentHistory() { // construct a section to display everyone
     const div = document.getElementById('amendment_history'); // thats edited the form
     dataObject.amendmentHistory.forEach((item) => {
-        const snip = ` <h6>${item.userData.userName === dataObject.createdBy && whichIsFirst(dataObject.amendmentHistory)[0] === item ? 'Created' : 'Amended '} by ${item.userData.userName} on ${item.date}</h6><br style="height: 1px;" />`;
+        const snip = ` <h6>${item.userData.userName === dataObject.createdBy && whichIsFirst(dataObject.amendmentHistory).date === item.date ? 'Created' : 'Amended '} by ${item.userData.userName} on ${item.date}</h6><br style="height: 1px;" />`;
         div.innerHTML += snip;
     });
 }
@@ -394,7 +394,7 @@ function whichIsFirst(arr) {
     arr.sort((a, b) => {
         return new Date(b.date) - new Date(a.date);
     });
-    return arr;
+    return arr[0];
 }
 
 function initFields() {
