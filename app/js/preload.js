@@ -1,3 +1,8 @@
+
+window.html2canvas = require('html2canvas');
+window.jsPDF = require('jspdf');
+window.$ = window.jQuery = require('jquery');
+
 let patientAge = 0;
 let tooltype = 'draw';
 let canvasFillColor = "#000306";

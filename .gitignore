@@ -65,3 +65,5 @@ russ-exe-darwin-x64
 dist
 
 /dist
+
+/ion_app
