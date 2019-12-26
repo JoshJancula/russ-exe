@@ -1,0 +1,261 @@
+
+<ion-content>
+    <div id="mainForm">
+        <div class="row">
+
+            <div class="col l6 m6 s12">
+                <!-- top row -->
+                <div id="formWrapper">
+                    <!-- for inputting the top data, may reuse someday.... -->
+                    <div *ngIf="manualMode" id="manualPatientData">
+                        <div class="row">
+                            <div class="col l5 m6 s12" style="padding:0">
+                                <!-- <span>
+                                    <h6>Name: </h6>
+                                </span> -->
+                                <!-- <input type="text" id="name" /> -->
+                                <ion-item>
+                                  <ion-label position="floating">Name</ion-label>
+                                  <ion-input id="name"></ion-input>
+                                </ion-item>
+                            </div>
+                            <div class="col l3 m2 s6">
+                                <!-- <span>
+                                    <h6>Age: </h6>
+                                </span><input min="0" value="0" (input)="renderTableCells()" id="patientAge"
+                                    type="number" /> -->
+                                    <ion-item>
+                                      <ion-label position="floating">Age</ion-label>
+                                      <ion-input id="patientAge" (input)="renderTableCells()"></ion-input>
+                                    </ion-item>
+                            </div>
+                            <div class="col l3 m4 s6 center" style="padding:0">
+                                <span>
+                                    <h6>Sex: </h6>
+                                </span>
+                                <!-- <label style="margin: 2%"><input id="maleBox" type="checkbox"
+                                        (click)="setSex('m')" /><span>M</span></label>
+                                <label style="margin: 2%"><input id="femaleBox" type="checkbox"
+                                        (click)="setSex('f')" /><span>F</span></label> -->
+                                        <ion-item>
+                                          <ion-label>Male</ion-label>
+                                          <ion-checkbox ></ion-checkbox>
+                                        </ion-item>
+                                        <ion-item>
+                                          <ion-label>Female</ion-label>
+                                          <ion-checkbox></ion-checkbox>
+                                        </ion-item>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" *ngIf="!manualMode" id="presetPatientData">
+                        <h5><span id="patientName">{{ patientInfo.patientName }}</span></h5>
+                        <h6><span id="patientSex">{{ patientInfo.patientSex }}</span> <span id="patientAge">{{ patientInfo.patientAge }}</span> <span id="patientDOB">{{ patientInfo.birthDate }}</span>
+                        </h6>
+                        <h6>ADMIT DATE: <span id="dateOfAdmission">{{ patientInfo.admitDate }}</span> / <span id="medNum">{{ patientInfo.medRecno }}</span> / <span
+                                id="accNum">{{ patientInfo.acctNo }}</span></h6>
+                    </div>
+                    <!-- <div class="row">
+                        <h6>Date Completed: <input type="date" /></h6>
+                    </div> -->
+                </div>
+
+                <div class="row center" style="margin-top: 0">
+                    <div id='formTypeWrapper'>
+                        <h6>Form Type?</h6>
+                        <div class="row">
+                            <label class="td_wtt"><input [checked]="dataObject.formType === 'burn'" type="radio" id="burnRadio" name="formType"
+                                    (click)="setFormType('burn');" /><span>Burn</span></label>
+                            <label class="td_wtt"><input type="radio" id="skinRadio" name="formType"
+                                    (click)="setFormType('skinDisease');" [checked]="dataObject.formType !== 'burn'" /><span>Skin Disease</span></label>
+                        </div>
+                        <hr />
+                    </div>
+                    <div  *ngIf="dataObject.formType === 'burn'" id="burnTypes">
+                        <h6>Type of Burn Injury</h6>
+                        <label class="td_wtt burnRadio"><input [checked]="dataObject.burnType === 'thermal'" (click)="setBurnType('thermal')" id="thermal_radio" type="radio" name="burnType" />
+                            <span>Thermal</span></label>
+
+                        <label class="td_wtt burnRadio"><input [checked]="dataObject.burnType === 'chemical'"  (click)="setBurnType('chemical')" id="chemical_radio" type="radio" name="burnType" />
+                            <span>Chemical</span></label>
+
+                        <label class="td_wtt burnRadio"><input [checked]="dataObject.burnType === 'electrical'"  (click)="setBurnType('electrical')" id="electrical_radio" type="radio" name="burnType" />
+                            <span>Electrical</span></label>
+
+                        <label class="td_wtt burnRadio"><input [checked]="dataObject.burnType === 'scald'"  (click)="setBurnType('scald')" id="scald_radio" type="radio" name="burnType" />
+                            <span>Scald</span></label>
+
+                        <label class="td_wtt burnRadio"><input [checked]="dataObject.burnType === 'friction'"  (click)="setBurnType('friction')" id="friction_radio" type="radio" name="burnType" />
+                            <span>Friction</span></label>
+
+                    </div>
+                    <div *ngIf="dataObject.formType !== 'burn'" id="skinTypes">
+                        <h6>Type of Skin Disease</h6>
+                        <label class="td_wtt burnRadio"><input [checked]="dataObject.skinType === 'tens/sjs'"  (click)="setSkinType('tens/sjs')" id="tens/sjs_radio" type="radio" name="burnType" />
+                            <span>TENS/SJS</span></label>
+                        <label class="td_wtt burnRadio"><input [checked]="dataObject.skinType === 'ssss'"  (click)="setSkinType('ssss')" type="radio" id="ssss_radio" name="burnType" />
+                            <span>SSSS</span></label>
+
+                        <label class="td_wtt burnRadio"><input [checked]="dataObject.skinType === 'purpura_fulminams'" (click)="setSkinType('purpura_fulminams')" id="purpura_fulminams_radio" type="radio" name="burnType" />
+                            <span>Purpura Fulminans </span></label>
+
+                        <label class="td_wtt burnRadio"><input [checked]="dataObject.skinType === 'bullous_pemphigold'" (click)="setSkinType('bullous_pemphigold')" id="bullous_pemphigold_radio" type="radio" name="burnType" />
+                            <span>Bullous Pemphigold </span></label>
+                    </div>
+                    <hr />
+
+                </div>
+                <div *ngIf="dataObject.formType === 'burn'" id="lowerBurn" class="center">
+                    <div classs="row center">
+                        <label class="td_wtt"><input type="radio" id="initialEstimate" name="belowBurn" />
+                            <span>Initial Burn Estimation Chart</span></label><br>
+                        <label class="td_wtt"><input type="radio" id="amendedEstimate" name="belowBurn" />
+                            <span>Amended Burn Estimation Chart</span></label><br>
+                        <label class="td_wtt"><input type="radio" id="dischargeEstimate" name="belowBurn" />
+                            <span>Discharge Burn Estimation Chart</span></label>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col l6 m6 s6" style="margin-left: 0; padding-left: 0;">
+                        <h6>Date of Injury: <input id="dateOfInjury" type="date" /></h6>
+                    </div>
+                    <div class="col l6 m6 s6" style="margin-left: 0; padding-left: 0;">
+                        <h6>Time of Injury: <input id="timeOfInjury" type="time" /> </h6>
+                    </div>
+                </div>
+
+                <div class="row center" id="toggleViewWrapper" style="margin-bottom: 0;">
+                    <button class="btn" id="openWoundImages">Open Wound Images</button>
+                </div>
+
+                <div id="woundImages">
+                    <div class='slideshow-container' id="carouselDiv"></div>
+                    <div id="carouselDots" style="text-align:center"></div>
+                </div>
+
+            </div>
+
+            <div class="col l6 m6 s12">
+                <!-- canvas in here -->
+
+                <div *ngIf="dataObject.formType === 'burn'" id="burnLegend" class="legend">
+                    <span style="color:black;">Full Thickness</span><span
+                        style="display: inline-block; height: 12px; width: 12px; background: black; margin-left: 8px;"></span><br/>
+                    <span style="color: #ff0033;">Partial Thickness</span><span
+                        style="display: inline-block; height: 12px; width: 12px; background: #ff0033; margin-left: 8px;"></span>
+                </div>
+                <div *ngIf="dataObject.formType !== 'burn'" id="skinLegend" class="legend">
+                    <span style="color: #0080FF;">Skin Disease</span><span
+                        style="display: inline-block; height: 12px; width: 12px; background: #0080FF; margin-left: 8px;"></span>
+                </div>
+
+                <div class="row">
+                    <div id="canvasDiv">
+                        <canvas [ngClass]="returnCanvasClass()" #canvas></canvas>
+                    </div>
+                </div>
+
+                <div class="row center" style="margin-top: -3%;" id="toolbar">
+                    <a id="resetCanvasButton" style="cursor: pointer; margin-bottom: 12px; display: block"
+                        (click)="resetCanvas()">Reset Canvas</a>
+                    <a id="undoCanvasReset" style="display:none;" onclick="undoCanvasClear()">Undo</a>
+                    <div *ngIf="cx" style="margin-top: -3%;" class="col l6 m12 s12 center">
+                        <div class="row" id="selectFill">
+                            <h6>Select Fill</h6>
+                            <div *ngIf="dataObject.formType === 'burn'" id="burnAnnotations">
+                                <label class="td_wtt"><input [checked]="cx.strokeStyle === '#000306'" type="radio" id="fill1" name="canvasFill"
+                                        (click)="setCanvasFill('#000306');" />
+                                    <span style="color:black;">Full Thickness</span><span
+                                        style="display: inline-block; height: 12px; width: 12px; background: black; margin-left: 8px;"></span></label>
+                                <label class="td_wtt"><input [checked]="cx.strokeStyle === '#ff0033'" type="radio" id="fill2" name="canvasFill"
+                                        (click)="setCanvasFill('#ff0033');" />
+                                    <span style="color: #ff0033;">Partial Thickness</span><span
+                                        style="display: inline-block; height: 12px; width: 12px; background: #ff0033; margin-left: 8px;"></span></label>
+                            </div>
+                            <div *ngIf="dataObject.formType !== 'burn'" id="skinAnnotations">
+                                <label class="td_wtt"><input [checked]="cx.strokeStyle === '#0080FF'" type="radio" id="fill3" name="canvasFill"
+                                        (click)="setCanvasFill('#0080FF');" />
+                                    <span style="color: #0080FF;">Skin Disease</span><span
+                                        style="display: inline-block; height: 12px; width: 12px; background: #0080FF; margin-left: 8px;"></span></label>
+                            </div>
+                        </div>
+                    </div>
+                    <div id='canvasTools' style="margin-top: -5%;" class="col l6 m12 s12">
+                        <div class="row">
+                            <h6>Select Tool</h6>
+                            <label class="td_wtt"><input [checked]="formTool === 'draw'" type="radio" id="tool1" name="canvasTool"
+                                    (click)="useTool('draw');" /><span>Draw</span></label>
+                            <label class="td_wtt"><input [checked]="formTool === 'erase'" type="radio" name="canvasTool"
+                                    (click)="useTool('erase');" /><span>Erase</span></label>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="sectionBreak"></div>
+        <div class="row">
+            <div class="row center">
+                <h6>Lund and Browder Chart - Burn Estimate - Age vs. Area</h6>
+            </div>
+            <table *ngIf="patientInfo">
+                <tr>
+                    <th>Area</th>
+                    <th *ngIf="patientInfo.patientAge < 1" class="infant">0-1 yr</th>
+                    <th *ngIf="patientInfo.patientAge >= 1 && patientInfo.patientAge < 5" class="oneToFour">1-4 yr</th>
+                    <th *ngIf="patientInfo.patientAge >= 5 && patientInfo.patientAge < 10"  class="fiveToNine">5-9 yr</th>
+                    <th *ngIf="patientInfo.patientAge >= 10 && patientInfo.patientAge < 15" class="tenToFourteen">10-14 yr</th>
+                    <th *ngIf="patientInfo.patientAge === 15" class="fifteen">15 yr</th>
+                    <th *ngIf="patientInfo.patientAge >= 16" class="adult">Adult</th>
+                    <th>2nd Degree</th>
+                    <th>3rd Degree</th>
+                    <th>4th Degree</th>
+                    <th>TBSA %</th>
+                </tr>
+                <tr *ngFor="let row of tableRows; index as i">
+                    <td>{{ row.display }}</td>
+                    <td class="adult">{{ row[useThisRange()] }}</td>
+                    <td><input [(ngModel)]="dataObject.tableData[i].secondDegree" type="number" min="0" (input)="calculateTotals()" /></td>
+                    <td><input [(ngModel)]="dataObject.tableData[i].thirdDegree" type="number" min="0" (input)="calculateTotals()"  /></td>
+                    <td><input [(ngModel)]="dataObject.tableData[i].fourthDegree" type="number" min="0" (input)="calculateTotals()" /></td>
+                    <td class="totalRow" [ngClass]="{'hasError': dataObject.tableData[i].hasError}"><input class="totalRow" [ngClass]="{'hasError': dataObject.tableData[i].hasError}" [(ngModel)]="dataObject.tableData[i].total" type="number" readonly  /></td>
+                </tr>
+
+                <tr>
+                    <td colspan="2" class="right-align">
+                        <h5 style="margin-right:16px">Totals: </h5>
+                    </td>
+                    <td><input readonly [(ngModel)]="secondTotal" id="secondTotal" /></td>
+                    <td><input readonly [(ngModel)]="thirdTotal" id="thirdTotal" /></td>
+                    <td><input readonly [(ngModel)]="fourthTotal" id="fourthTotal" /></td>
+                    <td><input readonly [(ngModel)]="grandTotal" id="grandTotal" /></td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="row">
+            <div class="col l6 m6 s12">
+                <h6>Completed by: <input id="completedBy" type="text" /></h6>
+            </div>
+            <div class="col l3 m3 s6">
+                <h6>Date: <input readonly type="date" id="todayDate" /></h6>
+            </div>
+            <div class="col l3 m3 s6">
+                <h6>Time: <input readonly id="currentTime" type="time" /> </h6>
+            </div>
+        </div>
+
+        <div class="row" id="amendment_history"></div>
+
+        <div class="row center" id="formActions">
+            <div class='col m4 center'><button (click)="generatePDF()" class='bottom-button btn' id='print-pdf'>Download
+                    PDF</button></div>
+            <div class='col m4 center'><button (click)="submitData()" class='bottom-button btn'
+                    id='submitData'>Save</button></div>
+            <div class='col m4 center'><button (click)="cancel()" class='bottom-button btn'
+                    id='cancelSession'>Cancel</button></div>
+        </div>
+
+    </div>
+</ion-content>

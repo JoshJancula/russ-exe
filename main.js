@@ -1,5 +1,4 @@
 const { app, BrowserWindow } = require('electron');
-const path = require('path');
 let mainWindow = null;
 let imageWindow = null;
 let hasOpenImageWindow = false;
@@ -9,6 +8,24 @@ const fs = require('fs');
 const { ipcMain } = require('electron');
 const { shell } = require('electron');
 
+const server = require('./server');
+const { protocol } = require( 'electron' )
+const nfs = require( 'fs' )
+const npjoin = require( 'path' ).join
+const es6Path = npjoin( __dirname, '/ion_app/www' )
+
+protocol.registerStandardSchemes( [ 'es6' ] )
+
+app.on( 'ready', () => {
+  protocol.registerBufferProtocol( 'es6', ( req, cb ) => {
+    nfs.readFile(
+      npjoin( es6Path, req.url.replace( 'es6://', '' ) ),
+      (e, b) => { cb( { mimeType: 'text/javascript', data: b } ) }
+    );
+  });
+  createWindow();
+});
+
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 800,
@@ -17,12 +34,15 @@ function createWindow() {
     minWidth: 460,
     icon: __dirname + '/app/assets/healthline_logo.ico',
     webPreferences: {
-      nodeIntegration: true
+      nodeIntegration: true,
+      webSecurity: false
     }
   });
 
   mainWindow.setTitle('Lund & Browder Form');
-  mainWindow.loadFile('./app/index.html');
+  // mainWindow.loadFile('./app/index.html');
+  // mainWindow.loadURL('http://localhost:4200');
+  mainWindow.loadFile('./ion_app/www/index.html');
   mainWindow.webContents.openDevTools();
   mainWindow.setMenu(null);
 
@@ -65,16 +85,16 @@ ipcMain.on('close-images', (evt, arg) => {
   // imageWindow.exit();
 });
 
-app.on('ready', createWindow);
+// app.on('ready', createWindow);
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
   app.quit();
 });
 
-app.on('activate', () => {
-  if (mainWindow === null) createWindow();
-});
+// app.on('activate', () => {
+//   if (mainWindow === null) createWindow();
+// });
 
 async function createImageWindow(imgs) {
   hasOpenImageWindow = true;
@@ -102,18 +122,5 @@ async function createImageWindow(imgs) {
   imageWindow.on('closed', () => {
     imageWindow = null;
     hasOpenImageWindow = false;
-  });
-}
-
-function print(text) {
-  let win = new BrowserWindow({ show: true })
-  // fs.writeFile(path.join(__dirname,'print.pdf'), text);
-  // URL.createObjectURL(text);
-  win.loadURL(text);
-  win.webContents.on('did-finish-load', () => {
-    win.webContents.print({ silent: false })
-    setTimeout(() => {
-      win.close();
-    }, 1000);
   });
 }
