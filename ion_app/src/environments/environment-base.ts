@@ -32,7 +32,7 @@ export const environment = {
     medRecno: 'M12345678',
     acctNo: 'A1234567889null',
     patientAge: '56',
-    birthDate: 'null4/25/1963',
+    birthDate: '04/25/1963',
     patientSex: 'M',
     admitDate: '9/19/2019'
 },
