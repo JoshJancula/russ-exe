@@ -26,7 +26,7 @@ require("./api/routes")(app);
 // App start up
 http.createServer(app).listen(8080);
 console.log('---------------------------------------------------');
-console.log('Service running on port: ' + '8675');
+console.log('Service running on port: ' + '8080');
 console.log('---------------------------------------------------');
 
 module.exports = app;
