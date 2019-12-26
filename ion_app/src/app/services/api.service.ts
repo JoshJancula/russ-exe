@@ -8,7 +8,7 @@ export class ApiService {
 
   constructor(protected http: HttpClient) { }
 
-  private localUrl: string = `http://localhost:8080`;
+  private localUrl: string = `http://localhost:8675`;
 
   public async getArgs(): Promise<any> {
     const httpOptions = {
