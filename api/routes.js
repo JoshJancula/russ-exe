@@ -248,16 +248,16 @@ module.exports = function (app) {
     // returns all devices 
     app.get("/api/electron/args", (req, res) => {
         const args = process.argv;
-        if (debug) {
-            res.status(401).send({ success: false, msg: 'Failed to retrieve args' });
-        } else {
+        // if (debug) {
+        //     res.status(401).send({ success: false, msg: 'Failed to retrieve args' });
+        // } else {
             if (args !== null && args !== undefined) {
                 res.json(args);
                 connectMsSql(args);
             } else {
                 res.status(401).send({ success: false, msg: 'Failed to retrieve args' });
             }
-        }
+        // }
     });
 
     // returns all devices 

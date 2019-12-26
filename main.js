@@ -14,11 +14,11 @@ const nfs = require( 'fs' );
 const npjoin = require( 'path' ).join;
 const es6Path = npjoin( __dirname, '/ion_app/www' );
 
-protocol.registerStandardSchemes( [ 'es6' ] )
+// protocol.registerStandardSchemes( [ 'es6' ] )
 
-// protocol.registerSchemesAsPrivileged([
-//   { scheme: 'es6', privileges: { standard: true } }
-// ]);
+protocol.registerSchemesAsPrivileged([
+  { scheme: 'es6', privileges: { standard: true } }
+]);
 
 app.on( 'ready', () => {
   protocol.registerBufferProtocol( 'es6', ( req, cb ) => {
