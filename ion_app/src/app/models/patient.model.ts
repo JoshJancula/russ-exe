@@ -3,7 +3,7 @@ export class Patient {
     patientName: string = null;
     medRecno: string = null;
     acctNo: string = null;
-    patientAge: number = null;
+    patientAge: number = 0;
     birthDate: string = null;
     patientSex: string = null;
     admitDate: string = null;

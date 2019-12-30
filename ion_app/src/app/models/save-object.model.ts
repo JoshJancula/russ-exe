@@ -1,3 +1,5 @@
+import * as moment from 'moment';
+
 export class SaveObject {
 
     tableData: any[] = [];
@@ -11,6 +13,12 @@ export class SaveObject {
 
     constructor(values?: any) {
         if (values) {
+
+            if (values.dateOfInjury) {
+                const m = moment(values.dateOfInjury);
+                values.dateOfInjury = m.format('YYYY-MM-DD');
+            }
+
             Object.keys(values).forEach(key => {
                 this[key] = values[key];
             });

@@ -11,6 +11,7 @@ import { StoreModule } from '@ngrx/store';
 import { reducers } from './redux-store/app.reducer';
 import { storageSyncMetaReducer } from 'ngrx-store-persist';
 import { HttpClientModule } from '@angular/common/http';
+import { NgxElectronModule } from 'ngx-electron';
 
 @NgModule({
   declarations: [AppComponent],
@@ -18,10 +19,11 @@ import { HttpClientModule } from '@angular/common/http';
   imports: [
     BrowserModule,
     HttpClientModule,
-     IonicModule.forRoot(),
-     StoreModule.forRoot(reducers, { metaReducers: [storageSyncMetaReducer] }),
-      AppRoutingModule
-    ],
+    IonicModule.forRoot(),
+    StoreModule.forRoot(reducers, { metaReducers: [storageSyncMetaReducer] }),
+    AppRoutingModule,
+    NgxElectronModule
+  ],
   providers: [
     StatusBar,
     MainStateActions,
@@ -30,4 +32,4 @@ import { HttpClientModule } from '@angular/common/http';
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule {}
+export class AppModule { }

@@ -28,6 +28,7 @@
     "@ngrx/store-devtools": "^8.6.0",
     "@ngx-translate/core": "^11.0.1",
     "@ngx-translate/http-loader": "^4.0.0",
+    "@types/electron": "^1.6.10",
     "core-js": "^2.5.4",
     "html2canvas": "^1.0.0-rc.5",
     "jquery": "^3.4.1",
@@ -35,6 +36,7 @@
     "moment": "^2.24.0",
     "mssql": "^5.1.0",
     "ngrx-store-persist": "^1.0.20",
+    "ngx-electron": "^2.2.0",
     "rxjs": "~6.5.1",
     "tslib": "^1.9.0",
     "zone.js": "~0.9.1"

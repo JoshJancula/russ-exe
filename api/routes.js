@@ -243,27 +243,54 @@ function connectMsSql() {
     });
 }
 
+function submitMsSql(edit, url, obj) {
+    return new Promise((resolve, reject) => {
+        const insert1 = `INSERT INTO [dbo].[envelope_content] ([envelope_id],[content_description],[content_value], [content_type],[content_cblob]) 
+    VALUES (convert(uniqueidentifier, '${envId}'), 'LB Form Canvas', 'Canvas Data', 'canvas','${url}')`
+        const insert2 = `INSERT INTO [dbo].[envelope_content] ([envelope_id],[content_description],[content_value], [content_type],[content_cblob]) 
+    VALUES (convert(uniqueidentifier, '${envId}'), 'LB Form Data', 'Form Data', 'json','${JSON.stringify(obj)}')`
+        const update1 = `UPDATE [dbo].[envelope_content] 
+    SET [content_value] = 'Canvas Data', 
+        [content_cblob] = '${url}' 
+        WHERE envelope_id = (convert(uniqueidentifier, '${envId}')) 
+            AND content_description = 'LB Form Canvas'`
+        const update2 = `UPDATE [dbo].[envelope_content] 
+    SET [content_value] = 'Form Data', 
+        [content_cblob] = '${JSON.stringify(obj)}' 
+        WHERE envelope_id = (convert(uniqueidentifier, '${envId}')) 
+            AND content_description = 'LB Form Data'`
+        // if in editMode do an update else insert new
+        sql.query(edit ? update1 : insert1).then(res => {
+            sql.query(edit ? update2 : insert2).then(res2 => {
+                // ipcRenderer.send('saved');
+                resolve()
+            }).catch(err2 => { reject(err2); console.log('error inserting table data.... ', err2); });
+        }).catch(err => {
+            reject(err);
+            console.log('query error inserting Canvas data.... ', err);
+        });
+    });
+}
+
 module.exports = function (app) {
 
     // returns all devices 
     app.get("/api/electron/args", (req, res) => {
         const args = process.argv;
-        // if (debug) {
-        //     res.status(401).send({ success: false, msg: 'Failed to retrieve args' });
-        // } else {
-            if (args !== null && args !== undefined) {
-                res.json(args);
+        if (args !== null && args !== undefined) {
+            res.json(args);
+            if (!debug) {
                 connectMsSql(args);
-            } else {
-                res.status(401).send({ success: false, msg: 'Failed to retrieve args' });
             }
-        // }
+        } else {
+            res.status(409).send({ success: false, msg: 'Failed to retrieve args' });
+        }
     });
 
     // returns all devices 
     app.get("/api/mssql/saved-info", (req, res) => {
         if (debug) {
-            res.status(401).send({ success: false, msg: 'Failed to connect to mssql' });
+            res.status(409).send({ success: false, msg: 'Failed to connect to mssql' });
         } else if (mssqlQueryCount >= 10) {
             res.json({
                 user_data: userData,
@@ -295,6 +322,17 @@ module.exports = function (app) {
                     res.status(401).send({ success: false, msg: 'Failed to connect to mssql' });
                 });
             }
+        }
+    });
+
+    app.post("/api/mssql/submit", (req, res) => {
+        console.log('req.body.... ', req.body);
+        if (!debug) {
+            submitMsSql(req.body.editMode, req.body.canvasUrl, req.body.data).then(() => {
+                res.status(200).send({ success: true, msg: 'Submitted Data' });
+            }).catch(e => {
+                res.status(403).send({ success: false, msg: e });
+            });
         }
     });
 

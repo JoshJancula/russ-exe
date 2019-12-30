@@ -227,4 +227,16 @@ $element-bottom-margin: ($gutter-width*2)/3 !default;
     color: red;
 }
 
+.ion-app, .ion-content, .ion-page, ion-content, ion-app {
+  overflow: auto !important;
+}
+
+.hasError {
+  color: white;
+  background: red;
+}
+
+.html2canvas-container { width: 1400px !important; height: 8400px !important; }
+
+
   

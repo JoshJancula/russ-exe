@@ -21,7 +21,8 @@ export class MainStateActions {
   constructor(
     private store: Store<AppState>,
     private apiService: ApiService
-  ) { }
+  ) {
+  }
 
   public setUserInfo(data: any): void {
     return this.store.dispatch({ type: MainActionsTypes.SET_USER_INFO, payload: new User(data) });
@@ -47,21 +48,37 @@ export class MainStateActions {
     return this.apiService.getArgs().then((res: any) => {
       console.log('electron args... ', res);
     }).catch((e: any) => {
-      console.log('e.... ', e);
+      console.log('e..... ', e);
     });
   }
 
   public async fetchSavedData(): Promise<any> {
     return this.apiService.getAppData().then((res: any) => {
       console.log('data... ', res);
+      this.setPatientInfo(res.patient_data);
+      this.setUserInfo(res.user_data);
+      if (!res.data_object.tableData) {
+        this.setSaveData({ ...res.data_object, ...{ tableData: environment.defaultTableData } });
+      } else {
+        this.setSaveData(res.data_object);
+      }
+      this.setCanvasUrl(res.canvas_string);
     }).catch((err: any) => {
-      console.log('error.... ', err);
       if (environment.enableTestData) {
         // set fake data
         this.setPatientInfo(environment.defaultPatientInfo);
         this.setUserInfo(environment.defaultUserData);
-        this.setSaveData({...environment.defaultDataObject, ...{ tableData: environment.defaultTableData }});
+        this.setSaveData({ ...environment.dummyDataObject, ...{ tableData: environment.defaultTableData } });
+      } else {
+        this.setSaveData({ ...environment.defaultDataObject, ...{ tableData: environment.defaultTableData } });
       }
+    });
+  }
+
+  public async submitFormData(data: any): Promise<any> {
+    return this.apiService.submitData(data).then(() => {
+    }).catch((err: any) => {
+      console.log('error.... ', err);
     });
   }
 

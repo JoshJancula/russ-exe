@@ -28,4 +28,13 @@ export class ApiService {
     return this.http.get(`${this.localUrl}/api/mssql/saved-info`).toPromise();
   }
 
+  public async submitData(data: any): Promise<any> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        Authorization: localStorage.getItem('jwtToken') ? localStorage.getItem('jwtToken') : null,
+      })
+    };
+    return this.http.post(`${this.localUrl}/api/mssql/submit`, data).toPromise();
+  }
+
 }

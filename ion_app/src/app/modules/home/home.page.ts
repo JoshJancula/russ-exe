@@ -7,7 +7,10 @@ import { MainStateActions } from 'src/app/redux-store/main/main.actions';
 import { Store } from '@ngrx/store';
 import { AppState } from 'src/app/redux-store/app.state';
 import { environment } from 'src/environments/environment';
-import { pairwise, switchMap, takeUntil } from 'rxjs/operators';
+import { pairwise, switchMap, takeUntil, first } from 'rxjs/operators';
+import { ElectronService } from 'ngx-electron';
+import * as moment from 'moment';
+import { PdfService } from 'src/app/services/pdf.service';
 
 @Component({
   selector: 'app-home',
@@ -21,6 +24,8 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
   public dataObject: SaveObject;
   private subs: Subscription[] = [];
   public manualMode: boolean = true;
+  public estimationType: string = null;
+  public pdfView: boolean = false;
 
   public grandTotal: number = 0;
   public secondTotal: number = 0;
@@ -31,6 +36,12 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
   public cx: CanvasRenderingContext2D;
   public drawingSubscription: Subscription;
   public formTool: string = 'draw';
+  public prevURL: string = null;
+  public hasDrawnOnCanvas: boolean = false;
+
+  public currentDate: string = null;
+  public currentTime: string = null;
+  private timeInterval: any = null;
 
   public tableRows: any[] = [
     { display: 'Head', name: 'head', infant: 19, oneToFour: 12, fiveToNine: 13, tenToFourteen: 11, fifteen: 8, adult: 7 },
@@ -57,17 +68,20 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
   constructor(
     private appActions: MainStateActions,
     private store: Store<AppState>,
+    private electronService: ElectronService,
+    private pdfService: PdfService
   ) {
     if (environment.isElectron) {
       this.initElectron();
     }
+    this.timeInterval = setInterval(() => { this.setTimeAndDate(); }, 1000);
   }
 
   ngOnInit(): void {
     this.subs.push(this.store.select(state => state.main.patientInfo).subscribe((p: Patient) => {
       if (p) {
         this.patientInfo = p;
-        if (this.patientInfo.patientName) {
+        if (this.patientInfo.medRecno) {
           this.manualMode = false;
         }
       }
@@ -77,15 +91,27 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
         this.userInfo = u;
       }
     }));
+    this.subs.push(this.store.select(state => state.main.canvasUrl).subscribe((url: string) => {
+      if (url) {
+        this.drawDataURIOnCanvas(url, this.cx);
+      }
+    }));
     this.subs.push(this.store.select(state => state.main.saveData).subscribe((d: SaveObject) => {
       if (d) {
         this.dataObject = d;
+        console.log('data... ', d);
+        if (this.dataObject.amendmentHistory.length) {
+          this.estimationType = 'amended';
+        } else {
+          this.estimationType = 'initial';
+        }
       }
     }));
   }
 
   ngOnDestroy(): void {
     this.subs.map(s => s.unsubscribe());
+    clearInterval(this.timeInterval);
   }
 
   ngAfterViewInit(): void {
@@ -112,35 +138,78 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  public renderTableCells(): void {
-    //
+  private setTimeAndDate() {
+    this.currentDate = moment(new Date().toISOString()).format('MM/DD/YYYY');
+    this.currentTime = moment(new Date().toISOString()).format('hh:mm a');
   }
 
   public setSex(sex: string): void {
-    //
+    if (sex === 'm') {
+      this.patientInfo.patientSex = 'male';
+      const box: HTMLInputElement | any = document.getElementById('femaleBox');
+      box.checked = false;
+    } else {
+      this.patientInfo.patientSex = 'female';
+      const box: HTMLInputElement | any = document.getElementById('maleBox');
+      box.checked = false;
+    }
+    this.appActions.setPatientInfo(this.patientInfo);
+  }
+
+  public updatePatientInfo(): void {
+    this.appActions.setPatientInfo(this.patientInfo);
   }
 
   public setFormType(type: string): void {
     this.dataObject.formType = type;
     this.appActions.setSaveData(this.dataObject);
+    this.setCanvasFill(type === 'burn' ? '#000306' : '#0080FF');
+    this.resetCanvas(true);
   }
 
   public setBurnType(type: string): void {
     this.dataObject.burnType = type;
     this.appActions.setSaveData(this.dataObject);
+    this.useTool('draw');
   }
 
   public setSkinType(type: string): void {
     this.dataObject.skinType = type;
     this.appActions.setSaveData(this.dataObject);
+    this.useTool('draw');
   }
 
-  public resetCanvas(): void {
-    //
+  public resetCanvas(noReset?: boolean): void {
+    if (!noReset) { this.savePrevCanvas(); }
+    const canvas: HTMLCanvasElement | any = document.getElementById('canvas');
+    this.cx.clearRect(0, 0, canvas.width, canvas.height);
+    this.hasDrawnOnCanvas = false;
+  }
+
+  private savePrevCanvas(): void {
+    const canvas: HTMLCanvasElement | any = document.getElementById('canvas');
+    const url = canvas.toDataURL();
+    this.prevURL = url;
+  }
+
+  public undoCanvasClear(): void {
+    this.resetCanvas(true);
+    this.drawDataURIOnCanvas(this.prevURL, this.cx);
+  }
+
+  private drawDataURIOnCanvas(strDataURI: string, context: CanvasRenderingContext2D): void {
+    const img = new Image();
+    img.addEventListener('load', () => {
+      context.drawImage(img, 0, 0);
+    });
+    img.setAttribute('src', strDataURI);
+    this.hasDrawnOnCanvas = true;
+    this.prevURL = null;
   }
 
   public setCanvasFill(color: string): void {
     this.cx.strokeStyle = color;
+    this.useTool('draw');
   }
 
   public useTool(tool: string): void {
@@ -155,18 +224,146 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
   }
 
   public cancel(): void {
-    //
+    this.electronService.ipcRenderer.send('cancel');
+  }
+
+  public setEstimationType(type: string): void {
+    this.estimationType = type;
   }
 
   public submitData(): void {
-    //
+    const canvas: HTMLCanvasElement | any = document.getElementById('canvas');
+    const url = canvas.toDataURL();
+    const obj = {
+      data: this.dataObject,
+      canvasUrl: url,
+      editMode: this.estimationType === 'initial' ? false : true
+    };
+
+    this.appActions.submitFormData(obj).then(() => {
+      if (environment.isElectron) {
+        this.electronService.ipcRenderer.send('saved');
+      }
+    }).catch((e: any) => {
+      console.log('e... ', e);
+    });
   }
 
   public generatePDF(): void {
-    //
+    this.pdfView = true;
+    const ogWidth = document.body.style.width;
+    document.body.style.width = '1400px';
+    const div = document.getElementById('mainForm');
+    const ogWidth2 = div.style.width;
+    div.style.width = '1200px';
+    this.resetForPDF().then(() => {
+      this.pdfService.generatePDF('download', document.querySelector('#mainForm'), 'test', this.countRows()).then(() => {
+        setTimeout(() => {
+          this.makeCellsDarker(true);
+          document.getElementById('mainForm').style.width = ogWidth2;
+          document.body.style.width = ogWidth;
+          this.pdfView = false;
+        }, 300);
+      }).catch((e: any) => {
+        this.pdfView = false;
+        this.makeCellsDarker(true);
+        document.getElementById('mainForm').style.width = ogWidth2;
+        document.body.style.width = ogWidth;
+        console.log('e... ', e);
+      });
+    });
   }
 
-  public returnCanvasClass() {
+  private countRows(): number {
+    let count = 0;
+    this.dataObject.tableData.forEach((r: any, i) => {
+      if (r.total > 0) {
+        count++;
+      }
+    });
+    return count;
+  }
+
+  private resetForPDF(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.makeCellsDarker(false);
+      setTimeout(() => resolve(), 500);
+    });
+  }
+
+  public displayRow(row: any, i: number): boolean {
+    if (this.pdfView && environment.onlyAddValidRowsToPDF) {
+      if (this.grandTotal > 0) {
+        if (this.dataObject.tableData[i].total === null || this.dataObject.tableData[i].total <= 0) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  private constructNewTable(): Promise<any> {
+    const test = true;
+    return new Promise((resolve, reject) => {
+      if (this.grandTotal > 0 && !test) {
+        const table = document.getElementById('printTable');
+        const str = `<tr>
+                  <th class="center">Area</th>
+                  <th class="center">${this.useThisRange(true)}</th>
+                  <th class="center">2nd Degree</th>
+                  <th class="center">3rd Degree</th>
+                  <th class="center">4th Degree</th>
+                  <th class="center">TBSA %</th>
+               </tr>`;
+        table.innerHTML += str;
+        this.dataObject.tableData.forEach((row: any, i) => {
+          if (row.total > 0) {
+            const str2 = `<tr>
+                        <td>${this.tableRows[i].display}</td>
+                        <td class="center">${this.tableRows[i][this.useThisRange()]}</td>
+                        <td class="center">${this.dataObject.tableData[i].secondDegree ? this.dataObject.tableData[i].secondDegree : 0}</td>
+                        <td class="center">${this.dataObject.tableData[i].thirdDegree ? this.dataObject.tableData[i].thirdDegree : 0}</td>
+                        <td class="center">${this.dataObject.tableData[i].fourthDegree ? this.dataObject.tableData[i].fourthDegree : 0}</td>
+                        <td class="center totalRow ${this.dataObject.tableData[i].hasError ? 'hasError' : null}">${this.dataObject.tableData[i].total}</td>
+                      </tr>`;
+            table.innerHTML += str2;
+          }
+          if (i === (this.dataObject.tableData.length - 1)) {
+            const str3 = `<tr>
+                        <td colspan="2"><h6>Totals: </h6></td>
+                        <td class="center">${this.secondTotal}</td>
+                        <td class="center">${this.thirdTotal}</td>
+                        <td class="center">${this.fourthTotal}</td>
+                        <td class="center">${this.grandTotal}</td>
+                        </tr>`;
+            table.innerHTML += str3;
+            setTimeout(() => resolve(), 500);
+          }
+        });
+      } else {
+        resolve();
+      }
+    });
+  }
+
+  private makeCellsDarker(def: boolean): void {
+    const tds = Array.from(document.getElementsByTagName('td'));
+    const ths = Array.from(document.getElementsByTagName('th'));
+    const hrs = Array.from(document.getElementsByTagName('hr'));
+    tds.map(t => this.executeStyleUpdate(t, def));
+    ths.map(t => this.executeStyleUpdate(t, def));
+    hrs.map(t => this.executeStyleUpdate(t, def));
+  }
+
+  private executeStyleUpdate(el: any, def: boolean): void {
+    if (!def) {
+      el.style.border = '1px solid rgba(0, 0, 0, 0.5)';
+    } else {
+      el.style.border = '1px solid rgba(0, 0, 0, 0.12)';
+    }
+  }
+
+  public returnCanvasClass(): string {
     return `${this.useThisRange()}-canvas`;
   }
 
@@ -178,7 +375,7 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
     this.tableRows.map(row => this.renderCalculation(row));
   }
 
-  private renderCalculation(row: any) { // get the row total
+  private renderCalculation(row: any): void { // get the row total
     const dataRow = this.dataObject.tableData.find(r => r.name === row.name);
     const second = dataRow.secondDegree;
     const third = dataRow.thirdDegree;
@@ -201,19 +398,19 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
     this.appActions.setSaveData(this.dataObject);
   }
 
-  public useThisRange(): string {
+  public useThisRange(display?: boolean): string {
     if (this.patientInfo.patientAge < 1 || !this.patientInfo.patientAge) {
-      return 'infant';
+      return display ? '0-1 yr' : 'infant';
     } else if (this.patientInfo.patientAge >= 1 && this.patientInfo.patientAge < 5) {
-      return 'oneToFour';
+      return display ? '1-4 yr' : 'oneToFour';
     } else if (this.patientInfo.patientAge >= 5 && this.patientInfo.patientAge < 10) {
-      return 'fiveToNine';
+      return display ? '5-9 yr' : 'fiveToNine';
     } else if (this.patientInfo.patientAge >= 10 && this.patientInfo.patientAge < 15) {
-      return 'tenToFourteen';
+      return display ? '10-14 yr' : 'tenToFourteen';
     } else if (this.patientInfo.patientAge === 15) {
-      return 'fifteen';
+      return display ? '15 yr' : 'fifteen';
     } else if (this.patientInfo.patientAge >= 16) {
-      return 'adult';
+      return display ? 'Adult' : 'adult';
     }
   }
 
@@ -226,6 +423,7 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
       );
     })
     ).subscribe((res: [MouseEvent, MouseEvent]) => {
+      this.hasDrawnOnCanvas = true;
       const rect = canvasEl.getBoundingClientRect();
       const prevPos = {
         x: res[0].clientX - rect.left,
@@ -246,7 +444,7 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
     if (!this.cx) { return; }
     this.cx.beginPath();
     if (prevPos) {
-      this.cx.moveTo(prevPos.x, prevPos.y); // from
+      this.cx.moveTo(prevPos.x, prevPos.y);
       this.cx.lineTo(currentPos.x, currentPos.y);
       this.cx.stroke();
     }

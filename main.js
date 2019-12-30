@@ -7,24 +7,32 @@ let printData = null;
 const fs = require('fs');
 const { ipcMain } = require('electron');
 const { shell } = require('electron');
-
 const server = require('./server');
-const { protocol } = require( 'electron' );
-const nfs = require( 'fs' );
-const npjoin = require( 'path' ).join;
-const es6Path = npjoin( __dirname, '/ion_app/www' );
+const { protocol } = require('electron');
+const nfs = require('fs');
+const npjoin = require('path').join;
+const es6Path = npjoin(__dirname, '/ion_app/www');
 
-// protocol.registerStandardSchemes( [ 'es6' ] )
+// need to setup the pdf stuff
+// need to reconfig the pdf sizing n stuff for pdf
+// update to moment for date inputs
+// prefill completed by
+// need to prefill the amendment history stuff / convert to ngFor
+// update the radios to run on ngFors
 
-protocol.registerSchemesAsPrivileged([
-  { scheme: 'es6', privileges: { standard: true } }
-]);
+if (process.platform !== 'darwin') {
+  protocol.registerSchemesAsPrivileged([
+    { scheme: 'es6', privileges: { standard: true } }
+  ]);
+} else {
+  protocol.registerStandardSchemes(['es6']);
+}
 
-app.on( 'ready', () => {
-  protocol.registerBufferProtocol( 'es6', ( req, cb ) => {
+app.on('ready', () => {
+  protocol.registerBufferProtocol('es6', (req, cb) => {
     nfs.readFile(
-      npjoin( es6Path, req.url.replace( 'es6://', '' ) ),
-      (e, b) => { cb( { mimeType: 'text/javascript', data: b } ) }
+      npjoin(es6Path, req.url.replace('es6://', '')),
+      (e, b) => { cb({ mimeType: 'text/javascript', data: b }) }
     );
   });
   createWindow();
@@ -44,9 +52,9 @@ function createWindow() {
   });
 
   mainWindow.setTitle('Lund & Browder Form');
-  // mainWindow.loadFile('./app/index.html');
-  // mainWindow.loadURL('http://localhost:4200');
-  mainWindow.loadFile('./ion_app/www/index.html');
+  // mainWindow.loadFile('./app/index.html'); // jquery build
+  mainWindow.loadURL('http://localhost:4200'); // angular dev 
+  // mainWindow.loadFile('./ion_app/www/index.html'); //angular build
   mainWindow.webContents.openDevTools();
   mainWindow.setMenu(null);
 
@@ -77,7 +85,7 @@ ipcMain.on('open-images', async (evt, arg) => {
     await createImageWindow(arg);
   } else {
     imageWindow.hide();
-    imageWindow.show();    
+    imageWindow.show();
   }
 });
 
