@@ -245,20 +245,28 @@ function connectMsSql() {
 
 function submitMsSql(edit, url, obj) {
     return new Promise((resolve, reject) => {
-        const insert1 = `INSERT INTO [dbo].[envelope_content] ([envelope_id],[content_description],[content_value], [content_type],[content_cblob]) 
-    VALUES (convert(uniqueidentifier, '${envId}'), 'LB Form Canvas', 'Canvas Data', 'canvas','${url}')`
-        const insert2 = `INSERT INTO [dbo].[envelope_content] ([envelope_id],[content_description],[content_value], [content_type],[content_cblob]) 
-    VALUES (convert(uniqueidentifier, '${envId}'), 'LB Form Data', 'Form Data', 'json','${JSON.stringify(obj)}')`
-        const update1 = `UPDATE [dbo].[envelope_content] 
-    SET [content_value] = 'Canvas Data', 
+        const insert1 = `
+        INSERT INTO [dbo].[envelope_content] ([envelope_id],[content_description],[content_value], [content_type],[content_cblob]) 
+        VALUES (convert(uniqueidentifier, '${envId}'), 'LB Form Canvas', 'Canvas Data', 'canvas','${url}')
+        `;
+        const insert2 = `
+        INSERT INTO [dbo].[envelope_content] ([envelope_id],[content_description],[content_value], [content_type],[content_cblob]) 
+        VALUES (convert(uniqueidentifier, '${envId}'), 'LB Form Data', 'Form Data', 'json','${JSON.stringify(obj)}')
+        `;
+        const update1 = `
+        UPDATE [dbo].[envelope_content] 
+        SET [content_value] = 'Canvas Data', 
         [content_cblob] = '${url}' 
         WHERE envelope_id = (convert(uniqueidentifier, '${envId}')) 
-            AND content_description = 'LB Form Canvas'`
-        const update2 = `UPDATE [dbo].[envelope_content] 
-    SET [content_value] = 'Form Data', 
+        AND content_description = 'LB Form Canvas'
+        `;
+        const update2 = `
+        UPDATE [dbo].[envelope_content] 
+        SET [content_value] = 'Form Data', 
         [content_cblob] = '${JSON.stringify(obj)}' 
         WHERE envelope_id = (convert(uniqueidentifier, '${envId}')) 
-            AND content_description = 'LB Form Data'`
+        AND content_description = 'LB Form Data'
+        `;
         // if in editMode do an update else insert new
         sql.query(edit ? update1 : insert1).then(res => {
             sql.query(edit ? update2 : insert2).then(res2 => {

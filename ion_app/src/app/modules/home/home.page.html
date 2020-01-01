@@ -1,4 +1,7 @@
 <ion-content>
+    <div *ngIf="pdfView || loading" class="loader">
+    </div>
+    <ion-spinner *ngIf="pdfView || loading"></ion-spinner>
     <div id="mainForm" style="padding: 2%; overflow: auto;">
         <div class="row">
 
@@ -143,66 +146,11 @@
 
             <div class="col l6 m6 s12">
                 <!-- canvas in here -->
-
-                <div *ngIf="dataObject.formType === 'burn' && pdfView" id="burnLegend" class="legend">
-                    <span style="color:black;">Full Thickness</span><span
-                        style="display: inline-block; height: 12px; width: 12px; background: black; margin-left: 8px;"></span><br />
-                    <span style="color: #ff0033;">Partial Thickness</span><span
-                        style="display: inline-block; height: 12px; width: 12px; background: #ff0033; margin-left: 8px;"></span>
-                </div>
-                <div *ngIf="dataObject.formType !== 'burn' && pdfView" id="skinLegend" class="legend">
-                    <span style="color: #0080FF;">Skin Disease</span><span
-                        style="display: inline-block; height: 12px; width: 12px; background: #0080FF; margin-left: 8px;"></span>
-                </div>
-
-                <div class="row">
-                    <div id="canvasDiv">
-                        <canvas id="canvas" [ngClass]="returnCanvasClass()" #canvas></canvas>
-                    </div>
-                </div>
-
-                <div class="row center" style="margin-top: -3%;" *ngIf="!pdfView" id="toolbar">
-                    <a id="resetCanvasButton" *ngIf="hasDrawnOnCanvas && !pdfView"
-                        style="cursor: pointer; margin-bottom: 12px; display: block" (click)="resetCanvas()">Reset
-                        Canvas</a>
-                    <a id="undoCanvasReset" *ngIf="prevURL" (click)="undoCanvasClear()">Undo</a>
-                    <div *ngIf="cx" style="margin-top: -3%;" class="col l6 m12 s12 center">
-                        <div class="row" id="selectFill">
-                            <h6>Select Fill</h6>
-                            <div *ngIf="dataObject.formType === 'burn'" id="burnAnnotations">
-                                <label class="td_wtt"><input [checked]="cx.strokeStyle === '#000306'" type="radio"
-                                        id="fill1" name="canvasFill" (click)="setCanvasFill('#000306');" />
-                                    <span style="color:black;">Full Thickness</span><span
-                                        style="display: inline-block; height: 12px; width: 12px; background: black; margin-left: 8px;"></span></label>
-                                <label class="td_wtt"><input [checked]="cx.strokeStyle === '#ff0033'" type="radio"
-                                        id="fill2" name="canvasFill" (click)="setCanvasFill('#ff0033');" />
-                                    <span style="color: #ff0033;">Partial Thickness</span><span
-                                        style="display: inline-block; height: 12px; width: 12px; background: #ff0033; margin-left: 8px;"></span></label>
-                            </div>
-                            <div *ngIf="dataObject.formType !== 'burn' " id="skinAnnotations">
-                                <label class="td_wtt"><input
-                                        [checked]="cx.strokeStyle === '#0080FF' || cx.strokeStyle === '#0080ff' "
-                                        type="radio" id="fill3" name="canvasFill" (click)="setCanvasFill('#0080FF');" />
-                                    <span style="color: #0080FF;">Skin Disease</span><span
-                                        style="display: inline-block; height: 12px; width: 12px; background: #0080FF; margin-left: 8px;"></span></label>
-                            </div>
-                        </div>
-                    </div>
-                    <div id='canvasTools' *ngIf="!pdfView" style="margin-top: -5%;" class="col l6 m12 s12">
-                        <div class="row">
-                            <h6>Select Tool</h6>
-                            <label class="td_wtt"><input [checked]="formTool === 'draw'" type="radio" id="tool1"
-                                    name="canvasTool" (click)="useTool('draw');" /><span>Draw</span></label>
-                            <label class="td_wtt"><input [checked]="formTool === 'erase'" type="radio" name="canvasTool"
-                                    (click)="useTool('erase');" /><span>Erase</span></label>
-                        </div>
-                    </div>
-                </div>
-
+                <app-burn-canvas #burnCanvas></app-burn-canvas>
             </div>
         </div>
-        <div class="sectionBreak"></div>
-        <div class="row" id="table">
+        <div *ngIf="!pdfView" class="sectionBreak"></div>
+        <div class="row table" id="table" [ngClass]="{'pullUp': pdfView }">
             <div class="row center">
                 <h6>Lund and Browder Chart - Burn Estimate - Age vs. Area</h6>
             </div>
@@ -246,7 +194,6 @@
                     <td><input readonly [(ngModel)]="grandTotal" id="grandTotal" /></td>
                 </tr>
             </table>
-            <!-- <table *ngIf="pdfView" id="printTable"></table> -->
         </div>
 
         <div class="row" [ngStyle]="{'height': pdfView ? '220px' : 'auto'}">
@@ -264,7 +211,7 @@
 
         <div class="row" *ngIf="!pdfView" id="amendment_history"></div>
 
-        <div class="row center" id="formActions" [ngStyle]="{'height': !pdfView ? '100px' : auto}">
+        <div class="row center" id="formActions">
             <div *ngIf="!pdfView" class='col m4 center'><button (click)="generatePDF();" class='bottom-button btn'
                     id='print-pdf'>Download
                     PDF</button></div>

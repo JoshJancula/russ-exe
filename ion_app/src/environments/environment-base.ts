@@ -3,6 +3,7 @@ export const environment = {
   baseUrl: 'http://localhost:8080',
   isMobileApp: false,
   isElectron: true,
+  useIpcForApi: true,
   enableTestData: true,
   persistRedux: false,
   onlyAddValidRowsToPDF: true,

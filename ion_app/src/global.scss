@@ -234,9 +234,20 @@ $element-bottom-margin: ($gutter-width*2)/3 !default;
 .hasError {
   color: white;
   background: red;
+  font-weight: bold;
 }
 
 .html2canvas-container { width: 1400px !important; height: 8400px !important; }
 
-
+ion-spinner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    height: 80px;
+    width: 200px;
+    color: grey;
+}
   

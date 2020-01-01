@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { Patient } from 'src/app/models/patient.model';
 import { User } from 'src/app/models/user.model';
 import { SaveObject } from 'src/app/models/save-object.model';
@@ -7,17 +7,17 @@ import { MainStateActions } from 'src/app/redux-store/main/main.actions';
 import { Store } from '@ngrx/store';
 import { AppState } from 'src/app/redux-store/app.state';
 import { environment } from 'src/environments/environment';
-import { pairwise, switchMap, takeUntil, first } from 'rxjs/operators';
 import { ElectronService } from 'ngx-electron';
 import * as moment from 'moment';
 import { PdfService } from 'src/app/services/pdf.service';
+import { BurnCanvasComponent } from './components/burn-canvas/burn-canvas.component';
 
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
 })
-export class HomePage implements OnInit, AfterViewInit, OnDestroy {
+export class HomePage implements OnInit, OnDestroy {
 
   public patientInfo: Patient;
   public userInfo: User;
@@ -26,18 +26,14 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
   public manualMode: boolean = true;
   public estimationType: string = null;
   public pdfView: boolean = false;
+  public loading: boolean = false;
 
   public grandTotal: number = 0;
   public secondTotal: number = 0;
   public thirdTotal: number = 0;
   public fourthTotal: number = 0;
 
-  @ViewChild('canvas', null) canvas: ElementRef;
-  public cx: CanvasRenderingContext2D;
-  public drawingSubscription: Subscription;
-  public formTool: string = 'draw';
-  public prevURL: string = null;
-  public hasDrawnOnCanvas: boolean = false;
+  @ViewChild('burnCanvas', null) burnCanvas: BurnCanvasComponent;
 
   public currentDate: string = null;
   public currentTime: string = null;
@@ -81,6 +77,7 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
     this.subs.push(this.store.select(state => state.main.patientInfo).subscribe((p: Patient) => {
       if (p) {
         this.patientInfo = p;
+        this.burnCanvas.patientInfo = p;
         if (this.patientInfo.medRecno) {
           this.manualMode = false;
         }
@@ -93,13 +90,13 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
     }));
     this.subs.push(this.store.select(state => state.main.canvasUrl).subscribe((url: string) => {
       if (url) {
-        this.drawDataURIOnCanvas(url, this.cx);
+        this.burnCanvas.drawDataURIOnCanvas(url, this.burnCanvas.cx);
       }
     }));
     this.subs.push(this.store.select(state => state.main.saveData).subscribe((d: SaveObject) => {
       if (d) {
         this.dataObject = d;
-        console.log('data... ', d);
+        this.burnCanvas.dataObject = d;
         if (this.dataObject.amendmentHistory.length) {
           this.estimationType = 'amended';
         } else {
@@ -114,27 +111,19 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
     clearInterval(this.timeInterval);
   }
 
-  ngAfterViewInit(): void {
-    // get the context
-    const canvasEl: HTMLCanvasElement = this.canvas.nativeElement;
-    this.cx = canvasEl.getContext('2d');
-    canvasEl.width = 400;
-    canvasEl.height = 500;
-    this.cx.lineWidth = 5;
-    this.cx.lineCap = 'round';
-    this.cx.strokeStyle = '#000306';
-    this.captureEvents(canvasEl);
-  }
-
   private initElectron(): void {
+    this.loading = true;
     this.appActions.getElectronArgs().then(() => {
       this.appActions.fetchSavedData().then((data: any) => {
         console.log('data... ', data);
+        this.loading = false;
       }).catch(err => {
         console.log('error getting saved data... ', err);
+        this.loading = false;
       });
     }).catch(e => {
       console.log('error getting args.... ', e);
+      this.loading = false;
     });
   }
 
@@ -163,64 +152,20 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
   public setFormType(type: string): void {
     this.dataObject.formType = type;
     this.appActions.setSaveData(this.dataObject);
-    this.setCanvasFill(type === 'burn' ? '#000306' : '#0080FF');
-    this.resetCanvas(true);
+    this.burnCanvas.setCanvasFill(type === 'burn' ? '#000306' : '#0080FF');
+    this.burnCanvas.resetCanvas(true);
   }
 
   public setBurnType(type: string): void {
     this.dataObject.burnType = type;
     this.appActions.setSaveData(this.dataObject);
-    this.useTool('draw');
+    this.burnCanvas.useTool('draw');
   }
 
   public setSkinType(type: string): void {
     this.dataObject.skinType = type;
     this.appActions.setSaveData(this.dataObject);
-    this.useTool('draw');
-  }
-
-  public resetCanvas(noReset?: boolean): void {
-    if (!noReset) { this.savePrevCanvas(); }
-    const canvas: HTMLCanvasElement | any = document.getElementById('canvas');
-    this.cx.clearRect(0, 0, canvas.width, canvas.height);
-    this.hasDrawnOnCanvas = false;
-  }
-
-  private savePrevCanvas(): void {
-    const canvas: HTMLCanvasElement | any = document.getElementById('canvas');
-    const url = canvas.toDataURL();
-    this.prevURL = url;
-  }
-
-  public undoCanvasClear(): void {
-    this.resetCanvas(true);
-    this.drawDataURIOnCanvas(this.prevURL, this.cx);
-  }
-
-  private drawDataURIOnCanvas(strDataURI: string, context: CanvasRenderingContext2D): void {
-    const img = new Image();
-    img.addEventListener('load', () => {
-      context.drawImage(img, 0, 0);
-    });
-    img.setAttribute('src', strDataURI);
-    this.hasDrawnOnCanvas = true;
-    this.prevURL = null;
-  }
-
-  public setCanvasFill(color: string): void {
-    this.cx.strokeStyle = color;
-    this.useTool('draw');
-  }
-
-  public useTool(tool: string): void {
-    this.formTool = tool;
-    if (tool === 'draw') {
-      this.cx.globalCompositeOperation = 'source-over';
-      this.cx.lineWidth = 3;
-    } else if (tool === 'erase') {
-      this.cx.globalCompositeOperation = 'destination-out';
-      this.cx.lineWidth = 5;
-    }
+    this.burnCanvas.useTool('draw');
   }
 
   public cancel(): void {
@@ -232,6 +177,7 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
   }
 
   public submitData(): void {
+    this.loading = true;
     const canvas: HTMLCanvasElement | any = document.getElementById('canvas');
     const url = canvas.toDataURL();
     const obj = {
@@ -241,21 +187,24 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
     };
 
     this.appActions.submitFormData(obj).then(() => {
+      this.loading = false;
       if (environment.isElectron) {
         this.electronService.ipcRenderer.send('saved');
       }
     }).catch((e: any) => {
+      this.loading = false;
       console.log('e... ', e);
     });
   }
 
   public generatePDF(): void {
     this.pdfView = true;
-    const ogWidth = document.body.style.width;
-    document.body.style.width = '1400px';
+    this.burnCanvas.pdfView = true;
     const div = document.getElementById('mainForm');
+    const ogWidth = document.body.style.width;
     const ogWidth2 = div.style.width;
-    div.style.width = '1200px';
+    div.style.width = '1000px';
+    document.body.style.width = '1000px';
     this.resetForPDF().then(() => {
       this.pdfService.generatePDF('download', document.querySelector('#mainForm'), 'test', this.countRows()).then(() => {
         setTimeout(() => {
@@ -263,9 +212,11 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
           document.getElementById('mainForm').style.width = ogWidth2;
           document.body.style.width = ogWidth;
           this.pdfView = false;
+          this.burnCanvas.pdfView = false;
         }, 300);
       }).catch((e: any) => {
         this.pdfView = false;
+        this.burnCanvas.pdfView = false;
         this.makeCellsDarker(true);
         document.getElementById('mainForm').style.width = ogWidth2;
         document.body.style.width = ogWidth;
@@ -302,50 +253,6 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
     return true;
   }
 
-  private constructNewTable(): Promise<any> {
-    const test = true;
-    return new Promise((resolve, reject) => {
-      if (this.grandTotal > 0 && !test) {
-        const table = document.getElementById('printTable');
-        const str = `<tr>
-                  <th class="center">Area</th>
-                  <th class="center">${this.useThisRange(true)}</th>
-                  <th class="center">2nd Degree</th>
-                  <th class="center">3rd Degree</th>
-                  <th class="center">4th Degree</th>
-                  <th class="center">TBSA %</th>
-               </tr>`;
-        table.innerHTML += str;
-        this.dataObject.tableData.forEach((row: any, i) => {
-          if (row.total > 0) {
-            const str2 = `<tr>
-                        <td>${this.tableRows[i].display}</td>
-                        <td class="center">${this.tableRows[i][this.useThisRange()]}</td>
-                        <td class="center">${this.dataObject.tableData[i].secondDegree ? this.dataObject.tableData[i].secondDegree : 0}</td>
-                        <td class="center">${this.dataObject.tableData[i].thirdDegree ? this.dataObject.tableData[i].thirdDegree : 0}</td>
-                        <td class="center">${this.dataObject.tableData[i].fourthDegree ? this.dataObject.tableData[i].fourthDegree : 0}</td>
-                        <td class="center totalRow ${this.dataObject.tableData[i].hasError ? 'hasError' : null}">${this.dataObject.tableData[i].total}</td>
-                      </tr>`;
-            table.innerHTML += str2;
-          }
-          if (i === (this.dataObject.tableData.length - 1)) {
-            const str3 = `<tr>
-                        <td colspan="2"><h6>Totals: </h6></td>
-                        <td class="center">${this.secondTotal}</td>
-                        <td class="center">${this.thirdTotal}</td>
-                        <td class="center">${this.fourthTotal}</td>
-                        <td class="center">${this.grandTotal}</td>
-                        </tr>`;
-            table.innerHTML += str3;
-            setTimeout(() => resolve(), 500);
-          }
-        });
-      } else {
-        resolve();
-      }
-    });
-  }
-
   private makeCellsDarker(def: boolean): void {
     const tds = Array.from(document.getElementsByTagName('td'));
     const ths = Array.from(document.getElementsByTagName('th'));
@@ -361,10 +268,6 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
     } else {
       el.style.border = '1px solid rgba(0, 0, 0, 0.12)';
     }
-  }
-
-  public returnCanvasClass(): string {
-    return `${this.useThisRange()}-canvas`;
   }
 
   public calculateTotals(): void {
@@ -411,42 +314,6 @@ export class HomePage implements OnInit, AfterViewInit, OnDestroy {
       return display ? '15 yr' : 'fifteen';
     } else if (this.patientInfo.patientAge >= 16) {
       return display ? 'Adult' : 'adult';
-    }
-  }
-
-  private captureEvents(canvasEl: HTMLCanvasElement): void {
-    this.drawingSubscription = fromEvent(canvasEl, 'mousedown').pipe(switchMap(e => {
-      return fromEvent(canvasEl, 'mousemove').pipe(
-        takeUntil(fromEvent(canvasEl, 'mouseup')),
-        takeUntil(fromEvent(canvasEl, 'mouseleave')),
-        pairwise()
-      );
-    })
-    ).subscribe((res: [MouseEvent, MouseEvent]) => {
-      this.hasDrawnOnCanvas = true;
-      const rect = canvasEl.getBoundingClientRect();
-      const prevPos = {
-        x: res[0].clientX - rect.left,
-        y: res[0].clientY - rect.top
-      };
-
-      const currentPos = {
-        x: res[1].clientX - rect.left,
-        y: res[1].clientY - rect.top
-      };
-
-      this.drawOnCanvas(prevPos, currentPos);
-      this.subs.push(this.drawingSubscription);
-    });
-  }
-
-  public drawOnCanvas(prevPos: { x: number; y: number }, currentPos: { x: number; y: number }): void {
-    if (!this.cx) { return; }
-    this.cx.beginPath();
-    if (prevPos) {
-      this.cx.moveTo(prevPos.x, prevPos.y);
-      this.cx.lineTo(currentPos.x, currentPos.y);
-      this.cx.stroke();
     }
   }
 

@@ -8,17 +8,11 @@ if (environment.production) {
   enableProdMode();
 }
 
-if (environment.persistRedux) {
-  getAllDataFromLocalForage({
-    driver: localForage.LOCALSTORAGE,
-    keys: ['main'],
-  }).then(() => {
-    platformBrowserDynamic()
-      .bootstrapModule(AppModule)
-      .catch(err => console.log(err));
-  });
-} else {
+getAllDataFromLocalForage({
+  driver: localForage.LOCALSTORAGE,
+  keys: environment.persistRedux ? ['main'] : [],
+}).then(() => {
   platformBrowserDynamic()
     .bootstrapModule(AppModule)
     .catch(err => console.log(err));
-}
+});

@@ -53,77 +53,6 @@ body {
     padding: 2%;
 }
 
-// #burnTypes,
-// #skinTypes,
-// #fill3 {
-//     display: none;
-// }
-
-.html2canvas-container { 
-    width: 1000px !important; 
-}
-
-.infant-canvas {
-    background-position: center;
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-image: url('../../../assets/BodyOutlines_AllFigures-06.png');
-}
-
-
-.oneToFour-canvas {
-    background-position: center;
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-image: url('../../../assets/BodyOutlines_AllFigures-05.png');
-}
-
-.fiveToNine-canvas {
-    background-position: center;
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-image: url('../../../assets/BodyOutlines_AllFigures-04.png');
-}
-
-
-.tenToFourteen-canvas {
-    background-position: center;
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-image: url('../../../assets/BodyOutlines_AllFigures-03.png');
-}
-
-.fifteen-canvas {
-    background-position: center;
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-image: url('../../../assets/BodyOutlines_AllFigures-02.png');
-}
-
-
-.adult-canvas {
-    background-position: center;
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-image: url('../../../assets/BodyOutlines_AllFigures-01.png');
-}
-
-.legend {
-  position: relative;
-  top:1rem;
-  right: 1rem !important;
-  float: right;
-  margin-bottom: 1rem;
-}
-
-//  #woundImages, #burnLegend, #skinLegend {
-//     display: none;
-// }
-
-/* #woundImages, #burnLegend {
-  display: none;
-} */
-
 * {box-sizing:border-box}
 
 /* Slideshow container */
@@ -244,4 +173,20 @@ body {
 .totalRow.hasError {
   background: red;
   color: white;
+}
+
+.table.pullUp {
+  margin-top: -100px;
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.loader{
+  position: fixed;
+  left: 0px;
+  top: 0px;
+  width: 100%;
+  height: 100%;
+  background: black;
+  opacity: .2;
 }

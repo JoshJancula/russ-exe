@@ -11,12 +11,12 @@ export class PdfService {
 
   public generatePDF(action: string, div: any, title: string, totalRows?: number): Promise<any> {
     return new Promise((resolve, reject) => {
-      html2canvas(div, {height: 3200 }).then((canvas: any) => {
+      html2canvas(div, { height: 3200 }).then((canvas: any) => {
         const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF('p', 'mm', 'a4');
+        const pdf = new jsPDF('p', 'mm', 'a4', true);
         const pdfWidth = pdf.internal.pageSize.getWidth();
         const pdfHeight = pdf.internal.pageSize.getHeight();
-        const position = window.innerWidth < 600 ? -80 : window.innerWidth >= 600 && window.innerWidth < 800 ? -60 : -20;
+        const position = window.innerWidth < 600 ? -80 : window.innerWidth >= 600 && window.innerWidth < 800 ? -60 : -40;
         setTimeout(() => {
           pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight, '', 'FAST');
           if (action === 'download') {
