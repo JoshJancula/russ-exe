@@ -217,9 +217,9 @@ export class HomePage implements OnInit, OnDestroy {
 
     this.appActions.submitFormData(obj).then(() => {
       this.loading = false;
-      if (environment.isElectron) {
-        this.electronService.ipcRenderer.send('saved');
-      }
+      // if (environment.isElectron) {
+      //   this.electronService.ipcRenderer.send('saved');
+      // }
     }).catch((e: any) => {
       this.loading = false;
       console.log('e... ', e);
