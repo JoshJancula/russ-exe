@@ -162,7 +162,7 @@ async function createImageWindow(imgs) {
 ipcMain.on('get-args', (evt, arg) => {
   evt.sender.send('args-response', process.argv);
   if (!debug) {
-    connectMsSql(args);
+    connectMsSql(process.argv);
   }
 });
 
