@@ -55,7 +55,7 @@ export class MainStateActions {
 
   public async fetchSavedData(): Promise<any> {
     return this.apiService.getAppData().then((res: any) => {
-      alert('fetched data in app actions.... ' + JSON.stringify(res));
+      // alert('fetched data in app actions.... ' + JSON.stringify(res));
       this.setPatientInfo(res.patient_data);
       this.setUserInfo(res.user_data);
       if (!res.data_object.tableData) {

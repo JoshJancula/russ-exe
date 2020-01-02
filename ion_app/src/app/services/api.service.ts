@@ -14,7 +14,7 @@ export class ApiService {
 
   public async getArgs(): Promise<any> {
     if (environment.isElectron && environment.useIpcForApi) {
-      return this.getArgsIPC();
+      return await this.getArgsIPC();
     } else {
       const httpOptions = {
         headers: new HttpHeaders({
@@ -29,7 +29,7 @@ export class ApiService {
     return new Promise((resolve, reject) => {
       this.electronService.ipcRenderer.send('get-args');
       this.electronService.ipcRenderer.on('args-response', (event, args) => {
-        alert('args... ' + JSON.stringify(args));
+        // alert('args... ' + JSON.stringify(args));
         resolve(args);
       });
     });
@@ -37,7 +37,7 @@ export class ApiService {
 
   public async getAppData(): Promise<any> {
     if (environment.isElectron && environment.useIpcForApi) {
-      return this.getAppDataIPC();
+      return await this.getAppDataIPC();
     } else {
       const httpOptions = {
         headers: new HttpHeaders({
@@ -52,7 +52,7 @@ export class ApiService {
     return new Promise((resolve, reject) => {
       this.electronService.ipcRenderer.send('connect-mssql');
       this.electronService.ipcRenderer.on('mssql-response', (event, args) => {
-        alert('app data.... ' + JSON.stringify(args));
+        alert('strait from the source... ' + args);
         if (args.err) {
           reject(args.err);
         } else {
@@ -64,7 +64,7 @@ export class ApiService {
 
   public async submitData(data: any): Promise<any> {
     if (environment.isElectron && environment.useIpcForApi) {
-      return this.submitDataIPC(data);
+      return await this.submitDataIPC(data);
     } else {
       const httpOptions = {
         headers: new HttpHeaders({

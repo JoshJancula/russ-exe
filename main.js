@@ -163,9 +163,9 @@ async function createImageWindow(imgs) {
 
 ipcMain.on('get-args', (evt, arg) => {
   evt.sender.send('args-response', process.argv);
-  if (!debug && process.argv) {
-    connectMsSql(process.argv);
-  }
+  // if (!debug && process.argv) {
+  //   connectMsSql(process.argv);
+  // }
 });
 
 ipcMain.on('connect-mssql', (evt, arg) => {
@@ -356,6 +356,7 @@ function executeMsSqlQueries(args) { // get the envelope id from args passed or 
 
     sql.query(queryStringpatientSex).then(sex => {
       patientInfo.patientSex = sex.recordset[0].content_value;
+      console.log('patient sex is.... ', patientInfo.patientSex)
       mssqlQueryCount++;
       if (mssqlQueryCount >= 10) { resolve(); }
     }).catch(err => {
