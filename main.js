@@ -169,7 +169,7 @@ ipcMain.on('get-args', (evt, arg) => {
 ipcMain.on('connect-mssql', (evt, arg) => {
   if (!debug) { // not in debug mode
     if (!mssqlConnected && mssqlQueryCount < 10 && !connectionInProgress) { // connection not established
-      connectMsSql().then(() => {
+      connectMsSql(process.argv).then(() => {
         executeMsSqlQueries(process.argv).then(() => {
           const d = {
             user_data: userData,
