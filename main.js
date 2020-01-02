@@ -17,7 +17,7 @@ let envId = null;
 let mssqlConnected = false;
 let mssqlQueryCount = 0;
 let connectionInProgress = false;
-let debug = true;
+let debug = false;
 
 let dataObject = {
   tableData: null,
@@ -82,7 +82,7 @@ function createWindow() {
   // mainWindow.loadURL('http://localhost:4200'); // angular dev 
   mainWindow.loadFile('./ion_app/www/index.html'); // angular build
   mainWindow.webContents.openDevTools();
-  mainWindow.setMenu(null);
+  // mainWindow.setMenu(null);
 
   mainWindow.on('closed', () => {
     mainWindow = null;
