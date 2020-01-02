@@ -402,7 +402,7 @@ function executeMsSqlQueries(args) { // get the envelope id from args passed or 
         mssqlQueryCount++;
         if (mssqlQueryCount >= 10) { resolve(); }
       } else { // there was no form yet so set initial state
-        dataObject.createdBy = userData.userName;
+        // dataObject.createdBy = userData.userName;
         mssqlQueryCount++;
         if (mssqlQueryCount >= 10) { resolve(); }
       }
