@@ -80,6 +80,7 @@ export class ApiService {
       this.electronService.ipcRenderer.send('submit-mssql', data);
       this.electronService.ipcRenderer.on('submit-response', (event, args) => {
         if (args.err) {
+          alert('error submitting... ' + JSON.stringify(args.err));
           reject(args.err);
         } else {
           resolve(args);

@@ -46,7 +46,7 @@ let patientInfo = {
   admitDate: null
 };
 
-let bypassStandard = true;
+let bypassStandard = false;
 
 if (process.platform !== 'darwin' || bypassStandard) {
   protocol.registerSchemesAsPrivileged([
@@ -205,14 +205,18 @@ ipcMain.on('connect-mssql', (evt, arg) => {
 });
 
 ipcMain.on('submit-mssql', (evt, arg) => {
-  console.log('evt... ', evt);
-  console.log('args... ', arg);
+  // console.log('evt... ', evt);
+  // console.log('args... ', arg);
   if (!debug) {
+    console.log('arg.edit.... ', arg.editMode);
+    console.log('arg.canvas.... ', arg.canvasUrl);
+    console.log('arg.data.... ', arg.data);
+
     submitMsSql(arg.editMode, arg.canvasUrl, arg.data).then(() => {
       evt.sender.send('submit-response', { success: true });
     }).catch(err => {
       console.log('failed to submit... ', err);
-      evt.sender.send('submit-response', err);
+      evt.sender.send('submit-response', { success: false, msg: 'Failed to submit data to mssql', err: err });
     });
   } else {
     // not sure what to do...
@@ -375,19 +379,19 @@ function executeMsSqlQueries(args) { // get the envelope id from args passed or 
       if (mssqlQueryCount >= 10) { resolve(); }
     });
 
-    sql.query(queryStringcanvasData).then(canvasData => { // look to see if we had a canvas already
+    sql.query(queryStringcanvasData).then((canvasData) => { // look to see if we had a canvas already
       if (canvasData.recordset.length && canvasData.recordset[0].content_cblob) {
         canvasString = canvasData.recordset[0].content_cblob;
       }
       mssqlQueryCount++;
       if (mssqlQueryCount >= 10) { resolve(); }
-    }).catch(err => {
+    }).catch((err) => {
       mssqlQueryCount++;
       console.log('error retrieving canvas data in query.... ', err);
       if (mssqlQueryCount >= 10) { resolve(); }
     });
 
-    sql.query(queryStringtableData).then(qd => { // if there was data from request
+    sql.query(queryStringtableData).then((qd) => { // if there was data from request
       if (qd.recordset.length && qd.recordset[0].content_cblob) {
         try { // try to parse the json and set info.....
           const d = JSON.parse(qd.recordset[0].content_cblob);
@@ -402,7 +406,7 @@ function executeMsSqlQueries(args) { // get the envelope id from args passed or 
         mssqlQueryCount++;
         if (mssqlQueryCount >= 10) { resolve(); }
       }
-    }).catch(err => {
+    }).catch((err) => {
       mssqlQueryCount++;
       console.log('error retrieving table data in query.... ', err);
       if (mssqlQueryCount >= 10) { resolve(); }
@@ -419,11 +423,11 @@ function connectMsSql() {
       server: 'localhost',
       database: 'HealthlineWorkflow',
     };
-    sql.connect(config).then(res => {
+    sql.connect(config).then((res) => {
       mssqlConnected = true;
       connectionInProgress = false;
       resolve();
-    }).catch(e => {
+    }).catch((e) => {
       connectionInProgress = false;
       console.log('err... ', e);
       reject();
@@ -456,12 +460,12 @@ function submitMsSql(edit, url, obj) {
         AND content_description = 'LB Form Data'
         `;
     // if in editMode do an update else insert new
-    sql.query(edit ? update1 : insert1).then(res => {
-      sql.query(edit ? update2 : insert2).then(res2 => {
+    sql.query(edit ? update1 : insert1).then(() => {
+      sql.query(edit ? update2 : insert2).then(() => {
         // ipcRenderer.send('saved');
         resolve()
-      }).catch(err2 => { reject(err2); console.log('error inserting table data.... ', err2); });
-    }).catch(err => {
+      }).catch((err2) => { reject(err2); console.log('error inserting table data.... ', err2); });
+    }).catch((err) => {
       reject(err);
       console.log('query error inserting Canvas data.... ', err);
     });
