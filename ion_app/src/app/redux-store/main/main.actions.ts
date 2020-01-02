@@ -47,6 +47,7 @@ export class MainStateActions {
   public async getElectronArgs(): Promise<any> {
     return this.apiService.getArgs().then((res: any) => {
       console.log('electron args... ', res);
+      return res;
     }).catch((e: any) => {
       console.log('e..... ', e);
     });
@@ -54,7 +55,7 @@ export class MainStateActions {
 
   public async fetchSavedData(): Promise<any> {
     return this.apiService.getAppData().then((res: any) => {
-      console.log('data... ', res);
+      alert('fetched data in app actions.... ' + JSON.stringify(res));
       this.setPatientInfo(res.patient_data);
       this.setUserInfo(res.user_data);
       if (!res.data_object.tableData) {

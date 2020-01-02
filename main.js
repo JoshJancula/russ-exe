@@ -46,7 +46,9 @@ let patientInfo = {
   admitDate: null
 };
 
-if (process.platform !== 'darwin') {
+let bypassStandard = true;
+
+if (process.platform !== 'darwin' || bypassStandard) {
   protocol.registerSchemesAsPrivileged([
     { scheme: 'es6', privileges: { standard: true } }
   ]);
@@ -161,7 +163,7 @@ async function createImageWindow(imgs) {
 
 ipcMain.on('get-args', (evt, arg) => {
   evt.sender.send('args-response', process.argv);
-  if (!debug) {
+  if (!debug && process.argv) {
     connectMsSql(process.argv);
   }
 });
@@ -169,21 +171,25 @@ ipcMain.on('get-args', (evt, arg) => {
 ipcMain.on('connect-mssql', (evt, arg) => {
   if (!debug) { // not in debug mode
     if (!mssqlConnected && mssqlQueryCount < 10 && !connectionInProgress) { // connection not established
-      connectMsSql(process.argv).then(() => {
-        executeMsSqlQueries(process.argv).then(() => {
-          const d = {
-            user_data: userData,
-            patient_data: patientInfo,
-            data_object: dataObject,
-            canvas_string: canvasString
-          };
-          evt.sender.send('mssql-response', d);
-        }).catch(e => {
-          evt.sender.send('mssql-response', e);
+      if (process.argv) {
+        connectMsSql(process.argv).then(() => {
+          executeMsSqlQueries(process.argv).then(() => {
+            const d = {
+              user_data: userData,
+              patient_data: patientInfo,
+              data_object: dataObject,
+              canvas_string: canvasString
+            };
+            evt.sender.send('mssql-response', d);
+          }).catch(e => {
+            evt.sender.send('mssql-response', { success: false, msg: 'Failed to connect to mssql', err: e });
+          });
+        }).catch(err => {
+          evt.sender.send('mssql-response', { success: false, msg: 'Failed to connect to mssql', err: err });
         });
-      }).catch(err => {
-        evt.sender.send('mssql-response', err);
-      });
+      } else {
+        evt.sender.send('mssql-response', { success: false, msg: 'Failed to connect to mssql, args were null' });
+      }
     } else { // mssql already connected...
       const d = {
         user_data: userData,

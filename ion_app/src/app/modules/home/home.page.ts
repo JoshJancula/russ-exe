@@ -123,7 +123,7 @@ export class HomePage implements OnInit, OnDestroy {
 
   private initElectron(): void {
     this.loading = true;
-    this.appActions.getElectronArgs().then(() => {
+    this.appActions.getElectronArgs().then((args: any) => {
       this.appActions.fetchSavedData().then((data: any) => {
         console.log('data... ', data);
         this.loading = false;

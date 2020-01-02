@@ -29,6 +29,7 @@ export class ApiService {
     return new Promise((resolve, reject) => {
       this.electronService.ipcRenderer.send('get-args');
       this.electronService.ipcRenderer.on('args-response', (event, args) => {
+        alert('args... ' + JSON.stringify(args));
         resolve(args);
       });
     });
@@ -51,7 +52,12 @@ export class ApiService {
     return new Promise((resolve, reject) => {
       this.electronService.ipcRenderer.send('connect-mssql');
       this.electronService.ipcRenderer.on('mssql-response', (event, args) => {
-        resolve(args);
+        alert('app data.... ' + JSON.stringify(args));
+        if (args.err) {
+          reject(args.err);
+        } else {
+          resolve(args);
+        }
       });
     });
   }
@@ -73,7 +79,11 @@ export class ApiService {
     return new Promise((resolve, reject) => {
       this.electronService.ipcRenderer.send('submit-mssql', data);
       this.electronService.ipcRenderer.on('submit-response', (event, args) => {
-        resolve(args);
+        if (args.err) {
+          reject(args.err);
+        } else {
+          resolve(args);
+        }
       });
     });
   }
