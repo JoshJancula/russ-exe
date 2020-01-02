@@ -59,7 +59,10 @@ export const environment = {
     createdBy: 'Frank Reynolds',
     dateOfInjury: '09/19/2019',
     timeOfInjury: '18:24',
-    amendmentHistory: []
+    amendmentHistory: [
+      { name: 'Frank Reynolds', date: '09/19/2019' },
+      { name: 'Jessie Gemstone', date: '09/22/2019' }
+    ]
   },
 
   defaultUserData: {
@@ -99,6 +102,21 @@ export const environment = {
       wound_dos: '09/20/2019',
       src: 'https://pixmobile.eastus.cloudapp.azure.com/HealthEPixMobileWeb/GetImage.aspx?h=localhost:3002&k=6181888a-0285-4a7a-ba8e-901c936280c0:2019092712394000892006_7CB1F16E;jpg'
     }
-  ]
+  ],
+
+  burnRadios: [
+    { arg: 'thermal', name: 'burnType', display: 'Thermal' },
+    { arg: 'chemical', name: 'burnType', display: 'Chemical' },
+    { arg: 'electrical', name: 'burnType', display: 'Electrical' },
+    { arg: 'scald', name: 'burnType', display: 'Scald' },
+    { arg: 'friction', name: 'burnType', display: 'Friction' }
+  ],
+
+  skinRadios: [
+    { arg: 'tens/sjs', display: 'TENS/SJS', name: 'skinType' },
+    { arg: 'ssss', display: 'SSSS', name: 'skinType' },
+    { arg: 'purpura_fulminams', display: 'Purpura Fulminans', name: 'skinType' },
+    { arg: 'bullous_pemphigold', display: 'Bullous Pemphigold', name: 'skinType' },
+  ],
 
 };

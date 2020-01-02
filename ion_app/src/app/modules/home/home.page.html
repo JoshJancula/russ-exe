@@ -6,34 +6,10 @@
         <div class="row">
 
             <div class="col l6 m6 s12">
-                <!-- top row -->
                 <div id="formWrapper">
                     <!-- manual patient info input -->
                     <div *ngIf="manualMode && patientInfo" id="manualPatientData">
-                        <div class="row">
-                            <div class="col l5 m6 s12" style="padding:0">
-                                <span>
-                                    <h6>Name: </h6>
-                                </span>
-                                <input type="text" [(ngModel)]="patientInfo.patientName" (change)="updatePatientInfo()"
-                                    id="name" />
-                            </div>
-                            <div class="col l3 m2 s6">
-                                <span>
-                                    <h6>Age: </h6>
-                                </span><input min="0" value="0" [(ngModel)]="patientInfo.patientAge"
-                                    (input)="updatePatientInfo();" id="patientAge" type="number" />
-                            </div>
-                            <div class="col l3 m4 s6 center" style="padding:0">
-                                <span>
-                                    <h6>Sex: </h6>
-                                </span>
-                                <label style="margin: 2%"><input id="maleBox" type="checkbox"
-                                        (click)="setSex('m')" /><span>M</span></label>
-                                <label style="margin: 2%"><input id="femaleBox" type="checkbox"
-                                        (click)="setSex('f')" /><span>F</span></label>
-                            </div>
-                        </div>
+                        <ng-container *ngTemplateOutlet="manualPatientInfo"></ng-container>
                     </div>
                     <div class="row" *ngIf="!manualMode" id="presetPatientData">
                         <h5><span id="patientName">{{ patientInfo.patientName }}</span></h5>
@@ -47,80 +23,12 @@
                     </div>
                 </div>
 
-                <div class="row center" style="margin-top: 0">
-                    <div id='formTypeWrapper' *ngIf="!pdfView">
-                        <h6>Form Type?</h6>
-                        <div class="row">
-                            <label class="td_wtt"><input [checked]="dataObject.formType === 'burn'" type="radio"
-                                    id="burnRadio" name="formType"
-                                    (click)="setFormType('burn');" /><span>Burn</span></label>
-                            <label class="td_wtt"><input type="radio" id="skinRadio" name="formType"
-                                    (click)="setFormType('skinDisease');"
-                                    [checked]="dataObject.formType !== 'burn'" /><span>Skin Disease</span></label>
-                        </div>
-                        <hr />
-                    </div>
-                    <div *ngIf="dataObject.formType === 'burn'" id="burnTypes">
-                        <h6>Type of Burn Injury</h6>
-                        <label class="td_wtt burnRadio"><input [checked]="dataObject.burnType === 'thermal'"
-                                (click)="setBurnType('thermal')" id="thermal_radio" type="radio" name="burnType" />
-                            <span>Thermal</span></label>
+                <!-- form type and burn/skin radios -->
+                <ng-container *ngTemplateOutlet="formTypeAndRadios"></ng-container>
 
-                        <label class="td_wtt burnRadio"><input [checked]="dataObject.burnType === 'chemical'"
-                                (click)="setBurnType('chemical')" id="chemical_radio" type="radio" name="burnType" />
-                            <span>Chemical</span></label>
+                <!-- estimation types -->
+                <ng-container *ngTemplateOutlet="estimationTypeWrapper"></ng-container>
 
-                        <label class="td_wtt burnRadio"><input [checked]="dataObject.burnType === 'electrical'"
-                                (click)="setBurnType('electrical')" id="electrical_radio" type="radio"
-                                name="burnType" />
-                            <span>Electrical</span></label>
-
-                        <label class="td_wtt burnRadio"><input [checked]="dataObject.burnType === 'scald'"
-                                (click)="setBurnType('scald')" id="scald_radio" type="radio" name="burnType" />
-                            <span>Scald</span></label>
-
-                        <label class="td_wtt burnRadio"><input [checked]="dataObject.burnType === 'friction'"
-                                (click)="setBurnType('friction')" id="friction_radio" type="radio" name="burnType" />
-                            <span>Friction</span></label>
-
-                    </div>
-                    <div *ngIf="dataObject.formType !== 'burn'" id="skinTypes">
-                        <h6>Type of Skin Disease</h6>
-                        <label class="td_wtt burnRadio"><input [checked]="dataObject.skinType === 'tens/sjs'"
-                                (click)="setSkinType('tens/sjs')" id="tens/sjs_radio" type="radio" name="burnType" />
-                            <span>TENS/SJS</span></label>
-                        <label class="td_wtt burnRadio"><input [checked]="dataObject.skinType === 'ssss'"
-                                (click)="setSkinType('ssss')" type="radio" id="ssss_radio" name="burnType" />
-                            <span>SSSS</span></label>
-
-                        <label class="td_wtt burnRadio"><input [checked]="dataObject.skinType === 'purpura_fulminams'"
-                                (click)="setSkinType('purpura_fulminams')" id="purpura_fulminams_radio" type="radio"
-                                name="burnType" />
-                            <span>Purpura Fulminans </span></label>
-
-                        <label class="td_wtt burnRadio"><input [checked]="dataObject.skinType === 'bullous_pemphigold'"
-                                (click)="setSkinType('bullous_pemphigold')" id="bullous_pemphigold_radio" type="radio"
-                                name="burnType" />
-                            <span>Bullous Pemphigold </span></label>
-                    </div>
-                    <hr />
-
-                </div>
-                <div *ngIf="dataObject.formType === 'burn'" id="lowerBurn" class="center">
-                    <div classs="row center">
-                        <label class="td_wtt"><input type="radio" [checked]="estimationType === 'initial' "
-                                (click)="setEstimationType('initial')" id="initialEstimate" name="belowBurn" />
-                            <span>Initial Burn Estimation Chart</span></label><br>
-                        <label class="td_wtt"><input type="radio" [checked]="estimationType === 'amended' "
-                                [disabled]="manualMode" (click)="setEstimationType('amended')" id="amendedEstimate"
-                                name="belowBurn" />
-                            <span>Amended Burn Estimation Chart</span></label><br>
-                        <label class="td_wtt"><input type="radio" [checked]="estimationType === 'discharge' "
-                                [disabled]="manualMode" (click)="setEstimationType('discharge')" id="dischargeEstimate"
-                                name="belowBurn" />
-                            <span>Discharge Burn Estimation Chart</span></label>
-                    </div>
-                </div>
 
                 <div class="row" style="margin-top: 3%;">
                     <div class="col l6 m6 s6" style="margin-left: 0; padding-left: 0;">
@@ -129,24 +37,30 @@
                     </div>
                     <div class="col l6 m6 s6" style="margin-left: 0; padding-left: 0;">
                         <h6>Time of Injury: <input id="timeOfInjury" [(ngModel)]="dataObject.timeOfInjury"
-                                type="time" /> </h6>
+                                type="time" /></h6>
                     </div>
                 </div>
 
-                <div class="row center" *ngIf="!pdfView" id="toggleViewWrapper" style="margin-bottom: 0;">
+                <!-- <div class="row center" *ngIf="!pdfView" id="toggleViewWrapper" style="margin-bottom: 0;">
                     <button class="btn" id="openWoundImages">Open Wound Images</button>
-                </div>
+                </div> 
 
-                <div id="woundImages">
+                 <div id="woundImages">
                     <div class='slideshow-container' id="carouselDiv"></div>
                     <div id="carouselDots" style="text-align:center"></div>
-                </div>
+                </div> -->
 
             </div>
 
             <div class="col l6 m6 s12">
                 <!-- canvas in here -->
-                <app-burn-canvas #burnCanvas></app-burn-canvas>
+                <ng-container *ngIf="!environment.isMobileApp">
+                    <app-burn-canvas #burnCanvas></app-burn-canvas>
+                </ng-container>
+                <ng-container *ngIf="environment.isMobileApp">
+                    <canvas id="displayCanvas" height="500" width="400" [ngClass]="returnCanvasClass()" #displayCanvas></canvas>
+                    <button (click)="openBurnCanvasModal();">Click To Edit</button>
+                </ng-container>
             </div>
         </div>
         <div *ngIf="!pdfView" class="sectionBreak"></div>
@@ -198,8 +112,7 @@
 
         <div class="row" [ngStyle]="{'height': pdfView ? '220px' : 'auto'}">
             <div class="col l6 m6 s12">
-                <h6>Completed by: <input [(ngModel)]="dataObject.createdBy ? dataObject.createdBy : userInfo.userEsig"
-                        readonly id="completedBy" type="text" /></h6>
+                <h6>Completed by: <input [(ngModel)]="userInfo.userName" readonly id="completedBy" type="text" /></h6>
             </div>
             <div class="col l3 m3 s6">
                 <h6>Date: <input readonly [(ngModel)]="currentDate" id="todayDate" /></h6>
@@ -209,7 +122,11 @@
             </div>
         </div>
 
-        <div class="row" *ngIf="!pdfView" id="amendment_history"></div>
+        <div class="row" *ngIf="!pdfView && dataObject && dataObject.amendmentHistory.length" id="amendment_history">
+            <div *ngFor="let a of dataObject.amendmentHistory; index as i">
+                {{ i === 0 ? 'Created By:' : 'Amended By:'}} {{ a.name }} on {{ a.date }}
+            </div>
+        </div>
 
         <div class="row center" id="formActions">
             <div *ngIf="!pdfView" class='col m4 center'><button (click)="generatePDF();" class='bottom-button btn'
@@ -223,3 +140,78 @@
 
     </div>
 </ion-content>
+
+<ng-template #manualPatientInfo>
+    <div class="row">
+        <div class="col l5 m6 s12" style="padding:0">
+            <span>
+                <h6>Name: </h6>
+            </span>
+            <input type="text" [(ngModel)]="patientInfo.patientName" (change)="updatePatientInfo()" id="name" />
+        </div>
+        <div class="col l3 m2 s6">
+            <span>
+                <h6>Age: </h6>
+            </span><input min="0" value="0" [(ngModel)]="patientInfo.patientAge" (input)="updatePatientInfo();"
+                id="patientAge" type="number" />
+        </div>
+        <div class="col l3 m4 s6 center" style="padding:0">
+            <span>
+                <h6>Sex: </h6>
+            </span>
+            <label style="margin: 2%"><input id="maleBox" type="checkbox" (click)="setSex('m')" /><span>M</span></label>
+            <label style="margin: 2%"><input id="femaleBox" type="checkbox"
+                    (click)="setSex('f')" /><span>F</span></label>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #formTypeAndRadios>
+    <div class="row center" style="margin-top: 0">
+        <div id='formTypeWrapper' *ngIf="!pdfView">
+            <h6>Form Type?</h6>
+            <div class="row">
+                <label class="td_wtt"><input [checked]="dataObject.formType === 'burn'" type="radio" id="burnRadio"
+                        name="formType" (click)="setFormType('burn');" /><span>Burn</span></label>
+                <label class="td_wtt"><input type="radio" id="skinRadio" name="formType"
+                        (click)="setFormType('skinDisease');" [checked]="dataObject.formType !== 'burn'" /><span>Skin
+                        Disease</span></label>
+            </div>
+            <hr />
+        </div>
+        <div *ngIf="dataObject.formType === 'burn'" id="burnTypes">
+            <h6>Type of Burn Injury</h6>
+            <label *ngFor="let r of environment.burnRadios" class="td_wtt burnRadio"><input
+                    [checked]="dataObject.burnType === r.arg" (click)="setSkinType(r.arg)" id="{{r.arg}}_radio"
+                    type="radio" name="{{r.name}}" />
+                <span>{{ r.display }} </span></label>
+
+        </div>
+        <div *ngIf="dataObject.formType !== 'burn'" id="skinTypes">
+            <h6>Type of Skin Disease</h6>
+            <label *ngFor="let r of environment.skinRadios" class="td_wtt burnRadio"><input
+                    [checked]="dataObject.skinType === r.arg" (click)="setSkinType(r.arg)" id="{{r.arg}}_radio"
+                    type="radio" name="{{r.name}}" />
+                <span>{{ r.display }} </span></label>
+        </div>
+        <hr />
+
+    </div>
+</ng-template>
+
+<ng-template #estimationTypeWrapper>
+    <div *ngIf="dataObject.formType === 'burn'" id="lowerBurn" class="center">
+        <div classs="row center">
+            <label class="td_wtt"><input type="radio" [checked]="estimationType === 'initial' "
+                    (click)="setEstimationType('initial')" id="initialEstimate" name="belowBurn" />
+                <span>Initial Burn Estimation Chart</span></label><br>
+            <label class="td_wtt"><input type="radio" [checked]="estimationType === 'amended' " [disabled]="manualMode"
+                    (click)="setEstimationType('amended')" id="amendedEstimate" name="belowBurn" />
+                <span>Amended Burn Estimation Chart</span></label><br>
+            <label class="td_wtt"><input type="radio" [checked]="estimationType === 'discharge' "
+                    [disabled]="manualMode" (click)="setEstimationType('discharge')" id="dischargeEstimate"
+                    name="belowBurn" />
+                <span>Discharge Burn Estimation Chart</span></label>
+        </div>
+    </div>
+</ng-template>

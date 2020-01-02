@@ -3,10 +3,7 @@ let mainWindow = null;
 let imageWindow = null;
 let hasOpenImageWindow = false;
 let imageData = null;
-let printData = null;
-const fs = require('fs');
 const { ipcMain } = require('electron');
-const { shell } = require('electron');
 // const server = require('./server'); // just importing this will launch server to create api bridge
 const { protocol } = require('electron');
 const nfs = require('fs');
@@ -19,6 +16,7 @@ let userId = null;
 let envId = null;
 let mssqlConnected = false;
 let mssqlQueryCount = 0;
+let connectionInProgress = false;
 let debug = true;
 
 let dataObject = {
@@ -47,13 +45,6 @@ let patientInfo = {
   patientSex: null,
   admitDate: null
 };
-
-// need to setup the pdf stuff
-// need to reconfig the pdf sizing n stuff for pdf
-// update to moment for date inputs
-// prefill completed by
-// need to prefill the amendment history stuff / convert to ngFor
-// update the radios to run on ngFors
 
 if (process.platform !== 'darwin') {
   protocol.registerSchemesAsPrivileged([
@@ -89,7 +80,7 @@ function createWindow() {
   mainWindow.setTitle('Lund & Browder Form');
   // mainWindow.loadFile('./app/index.html'); // jquery build
   // mainWindow.loadURL('http://localhost:4200'); // angular dev 
-  mainWindow.loadFile('./ion_app/www/index.html'); //angular build
+  mainWindow.loadFile('./ion_app/www/index.html'); // angular build
   mainWindow.webContents.openDevTools();
   mainWindow.setMenu(null);
 
@@ -105,13 +96,6 @@ ipcMain.on('cancel', (evt, arg) => {
 
 ipcMain.on('saved', (evt, arg) => {
   app.exit(1);
-});
-
-ipcMain.on('print', (evt, arg) => {
-  // print(arg);
-  // mainWindow.webContents.print({silent:true, printBackground:true});
-  // console.log('arg.... ', arg);
-  // shell.openItem(arg);
 });
 
 ipcMain.on('open-images', async (evt, arg) => {
@@ -184,7 +168,7 @@ ipcMain.on('get-args', (evt, arg) => {
 
 ipcMain.on('connect-mssql', (evt, arg) => {
   if (!debug) { // not in debug mode
-    if (!mssqlConnected && mssqlQueryCount < 10) { // connection not established
+    if (!mssqlConnected && mssqlQueryCount < 10 && !connectionInProgress) { // connection not established
       connectMsSql().then(() => {
         executeMsSqlQueries(process.argv).then(() => {
           const d = {
@@ -218,7 +202,7 @@ ipcMain.on('submit-mssql', (evt, arg) => {
   console.log('evt... ', evt);
   console.log('args... ', arg);
   if (!debug) {
-    submitMsSql().then(() => {
+    submitMsSql(arg.editMode, arg.canvasUrl, arg.data).then(() => {
       evt.sender.send('submit-response', { success: true });
     }).catch(err => {
       console.log('failed to submit... ', err);
@@ -420,19 +404,20 @@ function executeMsSqlQueries(args) { // get the envelope id from args passed or 
 }
 
 function connectMsSql() {
+  connectionInProgress = true;
   return new Promise((resolve, reject) => {
-
     const config = { // construct the connection config
       user: 'wfadmin',
       password: 'hiswfadmin',
       server: 'localhost',
       database: 'HealthlineWorkflow',
     };
-
     sql.connect(config).then(res => {
       mssqlConnected = true;
+      connectionInProgress = false;
       resolve();
     }).catch(e => {
+      connectionInProgress = false;
       console.log('err... ', e);
       reject();
     });

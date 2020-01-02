@@ -18,6 +18,7 @@ import { HomePage } from './home.page';
       }
     ])
   ],
-  declarations: [HomePage, BurnCanvasComponent]
+  declarations: [HomePage, BurnCanvasComponent],
+  entryComponents: [BurnCanvasComponent]
 })
 export class HomePageModule {}

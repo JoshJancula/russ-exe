@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { Patient } from 'src/app/models/patient.model';
 import { User } from 'src/app/models/user.model';
 import { SaveObject } from 'src/app/models/save-object.model';
@@ -11,6 +11,7 @@ import { ElectronService } from 'ngx-electron';
 import * as moment from 'moment';
 import { PdfService } from 'src/app/services/pdf.service';
 import { BurnCanvasComponent } from './components/burn-canvas/burn-canvas.component';
+import { ModalController } from '@ionic/angular';
 
 @Component({
   selector: 'app-home',
@@ -19,10 +20,14 @@ import { BurnCanvasComponent } from './components/burn-canvas/burn-canvas.compon
 })
 export class HomePage implements OnInit, OnDestroy {
 
+  @ViewChild('burnCanvas', null) burnCanvas: BurnCanvasComponent;
+  @ViewChild('displayCanvas', null) displayCanvas: ElementRef;
+
   public patientInfo: Patient;
   public userInfo: User;
   public dataObject: SaveObject;
   private subs: Subscription[] = [];
+  public environment = environment;
   public manualMode: boolean = true;
   public estimationType: string = null;
   public pdfView: boolean = false;
@@ -32,8 +37,6 @@ export class HomePage implements OnInit, OnDestroy {
   public secondTotal: number = 0;
   public thirdTotal: number = 0;
   public fourthTotal: number = 0;
-
-  @ViewChild('burnCanvas', null) burnCanvas: BurnCanvasComponent;
 
   public currentDate: string = null;
   public currentTime: string = null;
@@ -65,7 +68,8 @@ export class HomePage implements OnInit, OnDestroy {
     private appActions: MainStateActions,
     private store: Store<AppState>,
     private electronService: ElectronService,
-    private pdfService: PdfService
+    private pdfService: PdfService,
+    private modalController: ModalController
   ) {
     if (environment.isElectron) {
       this.initElectron();
@@ -77,7 +81,9 @@ export class HomePage implements OnInit, OnDestroy {
     this.subs.push(this.store.select(state => state.main.patientInfo).subscribe((p: Patient) => {
       if (p) {
         this.patientInfo = p;
-        this.burnCanvas.patientInfo = p;
+        if (!environment.isMobileApp && this.burnCanvas) {
+          this.burnCanvas.patientInfo = p;
+        }
         if (this.patientInfo.medRecno) {
           this.manualMode = false;
         }
@@ -90,13 +96,17 @@ export class HomePage implements OnInit, OnDestroy {
     }));
     this.subs.push(this.store.select(state => state.main.canvasUrl).subscribe((url: string) => {
       if (url) {
-        this.burnCanvas.drawDataURIOnCanvas(url, this.burnCanvas.cx);
+        if (!environment.isMobileApp && this.burnCanvas) {
+          this.burnCanvas.drawDataURIOnCanvas(url, this.burnCanvas.cx);
+        }
       }
     }));
     this.subs.push(this.store.select(state => state.main.saveData).subscribe((d: SaveObject) => {
       if (d) {
         this.dataObject = d;
-        this.burnCanvas.dataObject = d;
+        if (!environment.isMobileApp && this.burnCanvas) {
+          this.burnCanvas.dataObject = d;
+        }
         if (this.dataObject.amendmentHistory.length) {
           this.estimationType = 'amended';
         } else {
@@ -118,7 +128,7 @@ export class HomePage implements OnInit, OnDestroy {
         console.log('data... ', data);
         this.loading = false;
       }).catch(err => {
-        console.log('error getting saved data... ', err);
+        console.log('error getting saved data.... ', err);
         this.loading = false;
       });
     }).catch(e => {
@@ -127,9 +137,13 @@ export class HomePage implements OnInit, OnDestroy {
     });
   }
 
-  private setTimeAndDate() {
+  private setTimeAndDate(): void {
     this.currentDate = moment(new Date().toISOString()).format('MM/DD/YYYY');
     this.currentTime = moment(new Date().toISOString()).format('hh:mm a');
+  }
+
+  public returnCanvasClass(): string {
+    return `${this.useThisRange()}-canvas`;
   }
 
   public setSex(sex: string): void {
@@ -152,20 +166,26 @@ export class HomePage implements OnInit, OnDestroy {
   public setFormType(type: string): void {
     this.dataObject.formType = type;
     this.appActions.setSaveData(this.dataObject);
-    this.burnCanvas.setCanvasFill(type === 'burn' ? '#000306' : '#0080FF');
-    this.burnCanvas.resetCanvas(true);
+    if (!environment.isMobileApp) {
+      this.burnCanvas.setCanvasFill(type === 'burn' ? '#000306' : '#0080FF');
+      this.burnCanvas.resetCanvas(true);
+    }
   }
 
   public setBurnType(type: string): void {
     this.dataObject.burnType = type;
     this.appActions.setSaveData(this.dataObject);
-    this.burnCanvas.useTool('draw');
+    if (!environment.isMobileApp) {
+      this.burnCanvas.useTool('draw');
+    }
   }
 
   public setSkinType(type: string): void {
     this.dataObject.skinType = type;
     this.appActions.setSaveData(this.dataObject);
-    this.burnCanvas.useTool('draw');
+    if (!environment.isMobileApp) {
+      this.burnCanvas.useTool('draw');
+    }
   }
 
   public cancel(): void {
@@ -176,7 +196,16 @@ export class HomePage implements OnInit, OnDestroy {
     this.estimationType = type;
   }
 
+  private updateAmendmentHistory(): void {
+    this.dataObject.amendmentHistory.push({ name: this.userInfo.userName, date: moment(new Date().toISOString()).format('MM/DD/YYYY') });
+    if (!this.dataObject.createdBy) {
+      this.dataObject.createdBy = this.userInfo.userEsig;
+    }
+    this.appActions.setSaveData(this.dataObject);
+  }
+
   public submitData(): void {
+    this.updateAmendmentHistory();
     this.loading = true;
     const canvas: HTMLCanvasElement | any = document.getElementById('canvas');
     const url = canvas.toDataURL();
@@ -199,7 +228,9 @@ export class HomePage implements OnInit, OnDestroy {
 
   public generatePDF(): void {
     this.pdfView = true;
-    this.burnCanvas.pdfView = true;
+    if (!environment.isMobileApp) {
+      this.burnCanvas.pdfView = true;
+    }
     const div = document.getElementById('mainForm');
     const ogWidth = document.body.style.width;
     const ogWidth2 = div.style.width;
@@ -212,11 +243,15 @@ export class HomePage implements OnInit, OnDestroy {
           document.getElementById('mainForm').style.width = ogWidth2;
           document.body.style.width = ogWidth;
           this.pdfView = false;
-          this.burnCanvas.pdfView = false;
+          if (!environment.isMobileApp) {
+            this.burnCanvas.pdfView = false;
+          }
         }, 300);
       }).catch((e: any) => {
         this.pdfView = false;
-        this.burnCanvas.pdfView = false;
+        if (!environment.isMobileApp) {
+          this.burnCanvas.pdfView = false;
+        }
         this.makeCellsDarker(true);
         document.getElementById('mainForm').style.width = ogWidth2;
         document.body.style.width = ogWidth;
@@ -314,6 +349,27 @@ export class HomePage implements OnInit, OnDestroy {
       return display ? '15 yr' : 'fifteen';
     } else if (this.patientInfo.patientAge >= 16) {
       return display ? 'Adult' : 'adult';
+    }
+  }
+
+  public async openBurnCanvasModal(): Promise<any> {
+    const modal = await this.modalController.create({
+      component: BurnCanvasComponent,
+      componentProps: {
+        dataObject: this.dataObject,
+        patientInfo: this.patientInfo
+      }
+    });
+    modal.present();
+    const { data } = await modal.onWillDismiss();
+    if (data) {
+      const canvasEl: HTMLCanvasElement = this.displayCanvas.nativeElement;
+      const context = canvasEl.getContext('2d');
+      const img = new Image();
+      img.addEventListener('load', () => {
+        context.drawImage(img, 0, 0);
+      });
+      img.setAttribute('src', data.toString());
     }
   }
 

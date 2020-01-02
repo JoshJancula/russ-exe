@@ -1,15 +1,17 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, OnDestroy, Input } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, OnDestroy, Input, AfterContentInit } from '@angular/core';
 import { Subscription, fromEvent } from 'rxjs';
 import { switchMap, takeUntil, pairwise } from 'rxjs/operators';
 import { Patient } from 'src/app/models/patient.model';
 import { SaveObject } from 'src/app/models/save-object.model';
+import { environment } from 'src/environments/environment';
+import { ModalController } from '@ionic/angular';
 
 @Component({
   selector: 'app-burn-canvas',
   templateUrl: './burn-canvas.component.html',
   styleUrls: ['./burn-canvas.component.scss'],
 })
-export class BurnCanvasComponent implements OnInit, AfterViewInit, OnDestroy {
+export class BurnCanvasComponent implements OnInit, AfterContentInit, OnDestroy {
 
   @ViewChild('canvas', null) canvas: ElementRef;
   @Input() public patientInfo: Patient;
@@ -21,25 +23,30 @@ export class BurnCanvasComponent implements OnInit, AfterViewInit, OnDestroy {
   public prevURL: string = null;
   public hasDrawnOnCanvas: boolean = false;
   private subs: Subscription[] = [];
+  public environment = environment;
 
-  constructor() { }
+  constructor(private modalController: ModalController) { }
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 
   ngOnDestroy(): void {
     this.subs.map(s => s.unsubscribe());
   }
 
-  ngAfterViewInit(): void {
+  ngAfterContentInit(): void {
     // get the context
-    const canvasEl: HTMLCanvasElement = this.canvas.nativeElement;
-    this.cx = canvasEl.getContext('2d');
-    canvasEl.width = 400;
-    canvasEl.height = 500;
-    this.cx.lineWidth = 5;
-    this.cx.lineCap = 'round';
-    this.cx.strokeStyle = '#000306';
-    this.captureEvents(canvasEl);
+    if (this.canvas) {
+      const canvasEl: HTMLCanvasElement = this.canvas.nativeElement;
+      this.cx = canvasEl.getContext('2d');
+      canvasEl.width = 400;
+      canvasEl.height = 500;
+      this.cx.lineWidth = 5;
+      this.cx.lineCap = 'round';
+      this.cx.strokeStyle = this.dataObject.formType === 'burn' ? '#000306' : '#0080ff';
+      this.captureEvents(canvasEl);
+    } else {
+      setTimeout(() => this.ngAfterContentInit(), 500);
+    }
   }
 
   public resetCanvas(noReset?: boolean): void {
@@ -126,7 +133,7 @@ export class BurnCanvasComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-    public useThisRange(display?: boolean): string {
+  public useThisRange(display?: boolean): string {
     if (this.patientInfo.patientAge < 1 || !this.patientInfo.patientAge) {
       return display ? '0-1 yr' : 'infant';
     } else if (this.patientInfo.patientAge >= 1 && this.patientInfo.patientAge < 5) {
@@ -140,6 +147,12 @@ export class BurnCanvasComponent implements OnInit, AfterViewInit, OnDestroy {
     } else if (this.patientInfo.patientAge >= 16) {
       return display ? 'Adult' : 'adult';
     }
+  }
+
+  public dismissModal(): void {
+    const canvas: HTMLCanvasElement | any = document.getElementById('canvas');
+    const url = canvas.toDataURL();
+    this.modalController.dismiss(url);
   }
 
 
