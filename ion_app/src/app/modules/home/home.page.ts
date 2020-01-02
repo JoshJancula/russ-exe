@@ -78,6 +78,19 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.subs.push(this.store.select(state => state.main.saveData).subscribe((d: SaveObject) => {
+      if (d) {
+        this.dataObject = d;
+        if (!environment.isMobileApp && this.burnCanvas) {
+          this.burnCanvas.dataObject = d;
+        }
+        if (this.dataObject.amendmentHistory.length) {
+          this.estimationType = 'amended';
+        } else {
+          this.estimationType = 'initial';
+        }
+      }
+    }));
     this.subs.push(this.store.select(state => state.main.patientInfo).subscribe((p: Patient) => {
       if (p) {
         this.patientInfo = p;
@@ -98,19 +111,6 @@ export class HomePage implements OnInit, OnDestroy {
       if (url) {
         if (!environment.isMobileApp && this.burnCanvas) {
           this.burnCanvas.drawDataURIOnCanvas(url, this.burnCanvas.cx);
-        }
-      }
-    }));
-    this.subs.push(this.store.select(state => state.main.saveData).subscribe((d: SaveObject) => {
-      if (d) {
-        this.dataObject = d;
-        if (!environment.isMobileApp && this.burnCanvas) {
-          this.burnCanvas.dataObject = d;
-        }
-        if (this.dataObject.amendmentHistory.length) {
-          this.estimationType = 'amended';
-        } else {
-          this.estimationType = 'initial';
         }
       }
     }));

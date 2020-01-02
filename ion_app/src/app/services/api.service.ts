@@ -52,7 +52,7 @@ export class ApiService {
     return new Promise((resolve, reject) => {
       this.electronService.ipcRenderer.send('connect-mssql');
       this.electronService.ipcRenderer.on('mssql-response', (event, args) => {
-        alert('strait from the source... ' + args);
+        alert('strait from the source... ' + JSON.stringify(args));
         if (args.err) {
           reject(args.err);
         } else {
