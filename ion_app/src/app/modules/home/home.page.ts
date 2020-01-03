@@ -113,7 +113,9 @@ export class HomePage implements OnInit, OnDestroy, AfterContentInit {
     this.subs.push(this.store.select(state => state.main.canvasUrl).subscribe((url: string) => {
       if (url) {
         if (!environment.isMobileApp && this.burnCanvas) {
-          this.burnCanvas.drawDataURIOnCanvas(url, this.burnCanvas.cx);
+          setTimeout(() => {
+            this.burnCanvas.drawDataURIOnCanvas(url, this.burnCanvas.cx);
+          }, 500);
         }
       }
     }));
@@ -219,7 +221,7 @@ export class HomePage implements OnInit, OnDestroy, AfterContentInit {
     const obj = {
       data: this.dataObject,
       canvasUrl: url,
-      editMode: this.startEstimationType === 'initial' ? false : true
+      editMode: this.estimationType === 'initial' ? false : true
     };
 
     this.appActions.submitFormData(obj).then(() => {
