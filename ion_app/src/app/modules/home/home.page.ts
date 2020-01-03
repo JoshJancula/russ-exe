@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterContentInit } from '@angular/core';
 import { Patient } from 'src/app/models/patient.model';
 import { User } from 'src/app/models/user.model';
 import { SaveObject } from 'src/app/models/save-object.model';
@@ -18,7 +18,7 @@ import { ModalController } from '@ionic/angular';
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
 })
-export class HomePage implements OnInit, OnDestroy {
+export class HomePage implements OnInit, OnDestroy, AfterContentInit {
 
   @ViewChild('burnCanvas', null) burnCanvas: BurnCanvasComponent;
   @ViewChild('displayCanvas', null) displayCanvas: ElementRef;
@@ -41,6 +41,7 @@ export class HomePage implements OnInit, OnDestroy {
   public currentDate: string = null;
   public currentTime: string = null;
   private timeInterval: any = null;
+  private startEstimationType: string = 'initial';
 
   public tableRows: any[] = [
     { display: 'Head', name: 'head', infant: 19, oneToFour: 12, fiveToNine: 13, tenToFourteen: 11, fifteen: 8, adult: 7 },
@@ -78,17 +79,19 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    let initialLoad = true;
     this.subs.push(this.store.select(state => state.main.saveData).subscribe((d: SaveObject) => {
       if (d) {
         this.dataObject = d;
         if (!environment.isMobileApp && this.burnCanvas) {
           this.burnCanvas.dataObject = d;
         }
-        if (this.dataObject.amendmentHistory.length) {
+        if (this.dataObject.amendmentHistory.length && initialLoad) {
           this.estimationType = 'amended';
         } else {
           this.estimationType = 'initial';
         }
+        initialLoad = false;
       }
     }));
     this.subs.push(this.store.select(state => state.main.patientInfo).subscribe((p: Patient) => {
@@ -119,6 +122,10 @@ export class HomePage implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.subs.map(s => s.unsubscribe());
     clearInterval(this.timeInterval);
+  }
+
+  ngAfterContentInit(): void {
+    // this.startEstimationType = this.dataObject.formType;
   }
 
   private initElectron(): void {
@@ -212,7 +219,7 @@ export class HomePage implements OnInit, OnDestroy {
     const obj = {
       data: this.dataObject,
       canvasUrl: url,
-      editMode: this.estimationType === 'initial' ? false : true
+      editMode: this.startEstimationType === 'initial' ? false : true
     };
 
     this.appActions.submitFormData(obj).then(() => {
