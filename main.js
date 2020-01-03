@@ -9,7 +9,7 @@ const { protocol } = require('electron');
 const nfs = require('fs');
 const npjoin = require('path').join;
 const es6Path = npjoin(__dirname, '/ion_app/www');
-const debug = require('electron-debugMode');
+const debug = require('electron-debug');
 
 const sql = require('mssql');
 let canvasString = null;
