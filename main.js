@@ -9,6 +9,7 @@ const { protocol } = require('electron');
 const nfs = require('fs');
 const npjoin = require('path').join;
 const es6Path = npjoin(__dirname, '/ion_app/www');
+const debug = require('electron-debugMode');
 
 const sql = require('mssql');
 let canvasString = null;
@@ -17,7 +18,7 @@ let envId = null;
 let mssqlConnected = false;
 let mssqlQueryCount = 0;
 let connectionInProgress = false;
-let debug = false;
+let debugMode = false;
 
 let dataObject = {
   tableData: null,
@@ -48,6 +49,9 @@ let patientInfo = {
 
 let bypassStandard = false;
 
+debug({ isEnabled: true, showDevTools: true});
+
+
 if (process.platform !== 'darwin' || bypassStandard) {
   protocol.registerSchemesAsPrivileged([
     { scheme: 'es6', privileges: { standard: true } }
@@ -55,6 +59,7 @@ if (process.platform !== 'darwin' || bypassStandard) {
 } else {
   protocol.registerStandardSchemes(['es6']);
 }
+
 
 app.on('ready', () => {
   protocol.registerBufferProtocol('es6', (req, cb) => {
@@ -163,13 +168,13 @@ async function createImageWindow(imgs) {
 
 ipcMain.on('get-args', (evt, arg) => {
   evt.sender.send('args-response', process.argv);
-  // if (!debug && process.argv) {
+  // if (!debugMode && process.argv) {
   //   connectMsSql(process.argv);
   // }
 });
 
 ipcMain.on('connect-mssql', (evt, arg) => {
-  if (!debug) { // not in debug mode
+  if (!debugMode) { // not in debugMode mode
     if (!mssqlConnected && mssqlQueryCount < 10 && !connectionInProgress) { // connection not established
       if (process.argv) {
         connectMsSql(process.argv).then(() => {
@@ -207,13 +212,13 @@ ipcMain.on('connect-mssql', (evt, arg) => {
 ipcMain.on('submit-mssql', (evt, arg) => {
   // console.log('evt... ', evt);
   // console.log('args... ', arg);
-  if (!debug) {
+  if (!debugMode) {
     console.log('arg.edit.... ', arg.editMode);
     console.log('arg.canvas.... ', arg.canvasUrl);
     console.log('arg.data.... ', arg.data);
 
     submitMsSql(arg.editMode, arg.canvasUrl, arg.data).then(() => {
-      evt.sender.send('submit-response', { success: true });
+      evt.sender.send('submit-response', { success: true, msg: 'we saved data????' });
     }).catch(err => {
       console.log('failed to submit... ', err);
       evt.sender.send('submit-response', { success: false, msg: 'Failed to submit data to mssql', err: err });
