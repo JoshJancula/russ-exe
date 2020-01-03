@@ -8,4 +8,5 @@ export interface MainState {
     saveData: SaveObject;
     canvasUrl: string;
     prevCanvasUrl: string;
+    isInEditMode: boolean;
 }

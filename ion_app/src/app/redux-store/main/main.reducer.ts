@@ -9,7 +9,8 @@ export const mainAppState: MainState = {
  patientInfo: new Patient(),
  saveData: new SaveObject(),
  canvasUrl: null,
- prevCanvasUrl: null
+ prevCanvasUrl: null,
+ isInEditMode: false
 };
 
 export function mainReducer(state = mainAppState, action: any): MainState {
@@ -48,6 +49,13 @@ export function mainReducer(state = mainAppState, action: any): MainState {
             return Object.assign(state, {
                 ...state,
                 saveData: action.payload
+            });
+        }
+
+        case MainActionsTypes.SET_EDIT_MODE: {
+            return Object.assign(state, {
+                ...state,
+                isInEditMode: action.payload
             });
         }
 

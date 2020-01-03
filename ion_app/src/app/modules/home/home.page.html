@@ -202,14 +202,14 @@
 <ng-template #estimationTypeWrapper>
     <div *ngIf="dataObject.formType === 'burn'" id="lowerBurn" class="center">
         <div classs="row center">
-            <label class="td_wtt"><input type="radio" [checked]="estimationType === 'initial' "
+            <label class="td_wtt"><input type="radio" [checked]="estimationType === 'initial' " [disabled]="dataObject.createdBy"
                     (click)="setEstimationType('initial')" id="initialEstimate" name="belowBurn" />
                 <span>Initial Burn Estimation Chart</span></label><br>
-            <label class="td_wtt"><input type="radio" [checked]="estimationType === 'amended' " [disabled]="manualMode"
+            <label class="td_wtt"><input type="radio" [checked]="estimationType === 'amended' " [disabled]="manualMode || !dataObject.createdBy"
                     (click)="setEstimationType('amended')" id="amendedEstimate" name="belowBurn" />
                 <span>Amended Burn Estimation Chart</span></label><br>
             <label class="td_wtt"><input type="radio" [checked]="estimationType === 'discharge' "
-                    [disabled]="manualMode" (click)="setEstimationType('discharge')" id="dischargeEstimate"
+                    [disabled]="manualMode || !dataObject.createdBy" (click)="setEstimationType('discharge')" id="dischargeEstimate"
                     name="belowBurn" />
                 <span>Discharge Burn Estimation Chart</span></label>
         </div>

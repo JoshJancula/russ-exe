@@ -3,7 +3,7 @@ import * as moment from 'moment';
 export class SaveObject {
 
     tableData: any[] = [];
-    formType: string = null;
+    formType: string = 'burn';
     burnType: string = null;
     skinType: string = null;
     createdBy: any = null;

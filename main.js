@@ -9,7 +9,7 @@ const { protocol } = require('electron');
 const nfs = require('fs');
 const npjoin = require('path').join;
 const es6Path = npjoin(__dirname, '/ion_app/www');
-const debug = require('electron-debug');
+// const debug = require('electron-debug');
 
 const sql = require('mssql');
 let canvasString = null;
@@ -22,7 +22,7 @@ let debugMode = false;
 
 let dataObject = {
   tableData: null,
-  formType: null,
+  formType: 'burn',
   burnType: null,
   skinType: null,
   createdBy: null,
@@ -49,7 +49,7 @@ let patientInfo = {
 
 let bypassStandard = false;
 
-debug({ isEnabled: true, showDevTools: true});
+// debug({ isEnabled: false, showDevTools: false});
 
 
 if (process.platform !== 'darwin' || bypassStandard) {
@@ -89,7 +89,7 @@ function createWindow() {
   // mainWindow.loadURL('http://localhost:4200'); // angular dev 
   mainWindow.loadFile('./ion_app/www/index.html'); // angular build
   mainWindow.webContents.openDevTools();
-  // mainWindow.setMenu(null);
+  mainWindow.setMenu(null);
 
   mainWindow.on('closed', () => {
     mainWindow = null;
@@ -168,9 +168,6 @@ async function createImageWindow(imgs) {
 
 ipcMain.on('get-args', (evt, arg) => {
   evt.sender.send('args-response', process.argv);
-  // if (!debugMode && process.argv) {
-  //   connectMsSql(process.argv);
-  // }
 });
 
 ipcMain.on('connect-mssql', (evt, arg) => {

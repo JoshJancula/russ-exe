@@ -12,7 +12,8 @@ export const MainActionsTypes = {
   SET_PATIENT_INFO: 'SET_PATIENT_INFO',
   SET_CANVAS_URL: 'SET_CANVAS_URL',
   SET_PREV_CANVAS_URL: 'SET_PREV_CANVAS_URL',
-  SET_SAVE_DATA: 'SET_SAVE_DATA'
+  SET_SAVE_DATA: 'SET_SAVE_DATA',
+  SET_EDIT_MODE: 'SET_EDIT_MODE'
 };
 
 @Injectable()
@@ -44,8 +45,12 @@ export class MainStateActions {
     return this.store.dispatch({ type: MainActionsTypes.SET_SAVE_DATA, payload: new SaveObject(data) });
   }
 
+  private setEditMode(bool: boolean): void {
+    return this.store.dispatch({ type: MainActionsTypes.SET_EDIT_MODE, payload: bool });
+  }
+
   public async getElectronArgs(): Promise<any> {
-    return this.apiService.getArgs().then((res: any) => {
+    return await this.apiService.getArgs().then((res: any) => {
       console.log('electron args... ', res);
       return res;
     }).catch((e: any) => {
@@ -54,19 +59,19 @@ export class MainStateActions {
   }
 
   public async fetchSavedData(): Promise<any> {
-    return this.apiService.getAppData().then((res: any) => {
-      // alert('fetched data in app actions.... ' + JSON.stringify(res));
+    return await this.apiService.getAppData().then((res: any) => {
       this.setPatientInfo(res.patient_data);
       this.setUserInfo(res.user_data);
       if (!res.data_object.tableData) {
+        this.setEditMode(false);
         this.setSaveData({ ...res.data_object, ...{ tableData: environment.defaultTableData } });
       } else {
+        this.setEditMode(true);
         this.setSaveData(res.data_object);
       }
       this.setCanvasUrl(res.canvas_string);
     }).catch((err: any) => {
       if (environment.enableTestData) {
-        // set fake data
         this.setPatientInfo(environment.defaultPatientInfo);
         this.setUserInfo(environment.defaultUserData);
         this.setSaveData({ ...environment.dummyDataObject, ...{ tableData: environment.defaultTableData } });
@@ -77,7 +82,7 @@ export class MainStateActions {
   }
 
   public async submitFormData(data: any): Promise<any> {
-    return this.apiService.submitData(data).then(() => {
+    return await this.apiService.submitData(data).then(() => {
     }).catch((err: any) => {
       console.log('error.... ', err);
     });

@@ -1,24 +1,24 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterContentInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { Patient } from 'src/app/models/patient.model';
 import { User } from 'src/app/models/user.model';
 import { SaveObject } from 'src/app/models/save-object.model';
 import { Subscription, fromEvent } from 'rxjs';
 import { MainStateActions } from 'src/app/redux-store/main/main.actions';
-import { Store } from '@ngrx/store';
+import { Store, State } from '@ngrx/store';
 import { AppState } from 'src/app/redux-store/app.state';
 import { environment } from 'src/environments/environment';
 import { ElectronService } from 'ngx-electron';
 import * as moment from 'moment';
 import { PdfService } from 'src/app/services/pdf.service';
 import { BurnCanvasComponent } from './components/burn-canvas/burn-canvas.component';
-import { ModalController } from '@ionic/angular';
+import { ModalController, AlertController } from '@ionic/angular';
 
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
 })
-export class HomePage implements OnInit, OnDestroy, AfterContentInit {
+export class HomePage implements OnInit, OnDestroy {
 
   @ViewChild('burnCanvas', null) burnCanvas: BurnCanvasComponent;
   @ViewChild('displayCanvas', null) displayCanvas: ElementRef;
@@ -41,7 +41,6 @@ export class HomePage implements OnInit, OnDestroy, AfterContentInit {
   public currentDate: string = null;
   public currentTime: string = null;
   private timeInterval: any = null;
-  private startEstimationType: string = 'initial';
 
   public tableRows: any[] = [
     { display: 'Head', name: 'head', infant: 19, oneToFour: 12, fiveToNine: 13, tenToFourteen: 11, fifteen: 8, adult: 7 },
@@ -68,30 +67,48 @@ export class HomePage implements OnInit, OnDestroy, AfterContentInit {
   constructor(
     private appActions: MainStateActions,
     private store: Store<AppState>,
+    private state: State<AppState>,
     private electronService: ElectronService,
     private pdfService: PdfService,
-    private modalController: ModalController
+    private modalController: ModalController,
+    private alertController: AlertController
   ) {
     if (environment.isElectron) {
       this.initElectron();
     }
+    this.setSubs();
     this.timeInterval = setInterval(() => { this.setTimeAndDate(); }, 1000);
   }
 
-  ngOnInit(): void {
-    let initialLoad = true;
+  ngOnInit(): void { }
+
+  ngOnDestroy(): void {
+    this.subs.map(s => s.unsubscribe());
+    clearInterval(this.timeInterval);
+  }
+
+  private initElectron(): void {
+    this.loading = true;
+    this.appActions.fetchSavedData().then((data: any) => {
+      this.loading = false;
+    }).catch(err => {
+      console.log('error getting saved data.... ', err);
+      this.loading = false;
+    });
+  }
+
+  private setSubs(): void {
     this.subs.push(this.store.select(state => state.main.saveData).subscribe((d: SaveObject) => {
       if (d) {
         this.dataObject = d;
         if (!environment.isMobileApp && this.burnCanvas) {
           this.burnCanvas.dataObject = d;
         }
-        if (this.dataObject.amendmentHistory.length && initialLoad) {
+        if (this.dataObject.amendmentHistory.length) {
           this.estimationType = 'amended';
         } else {
           this.estimationType = 'initial';
         }
-        initialLoad = false;
       }
     }));
     this.subs.push(this.store.select(state => state.main.patientInfo).subscribe((p: Patient) => {
@@ -119,31 +136,6 @@ export class HomePage implements OnInit, OnDestroy, AfterContentInit {
         }
       }
     }));
-  }
-
-  ngOnDestroy(): void {
-    this.subs.map(s => s.unsubscribe());
-    clearInterval(this.timeInterval);
-  }
-
-  ngAfterContentInit(): void {
-    // this.startEstimationType = this.dataObject.formType;
-  }
-
-  private initElectron(): void {
-    this.loading = true;
-    this.appActions.getElectronArgs().then((args: any) => {
-      this.appActions.fetchSavedData().then((data: any) => {
-        console.log('data... ', data);
-        this.loading = false;
-      }).catch(err => {
-        console.log('error getting saved data.... ', err);
-        this.loading = false;
-      });
-    }).catch(e => {
-      console.log('error getting args.... ', e);
-      this.loading = false;
-    });
   }
 
   private setTimeAndDate(): void {
@@ -221,18 +213,29 @@ export class HomePage implements OnInit, OnDestroy, AfterContentInit {
     const obj = {
       data: this.dataObject,
       canvasUrl: url,
-      editMode: this.estimationType === 'initial' ? false : true
+      editMode: this.state.getValue().main.isInEditMode
     };
-
     this.appActions.submitFormData(obj).then(() => {
       this.loading = false;
-      // if (environment.isElectron) {
-      //   this.electronService.ipcRenderer.send('saved');
-      // }
+      this.showSuccess('Your form was saved successfully.');
+      if (environment.isElectron) {
+        setTimeout(() => {
+          this.electronService.ipcRenderer.send('saved');
+        }, 1500);
+      }
     }).catch((e: any) => {
       this.loading = false;
       console.log('e... ', e);
     });
+  }
+
+  private async showSuccess(msg: string): Promise<any> {
+    const alert = await this.alertController.create({
+      header: 'Success!',
+      message: msg,
+      buttons: [{ text: 'Okay' }]
+    });
+    await alert.present();
   }
 
   public generatePDF(): void {
