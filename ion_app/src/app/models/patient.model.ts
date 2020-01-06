@@ -15,7 +15,7 @@ export class Patient {
                 values.patientAge = parseFloat(values.patientAge);
             }
 
-            Object.keys(values).forEach(key => {
+            Object.keys(values).map(key => {
                 this[key] = values[key];
             });
         }

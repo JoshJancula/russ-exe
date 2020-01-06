@@ -25,7 +25,7 @@ export class ApiService {
     }
   }
 
-  private async getArgsIPC(): Promise<any> {
+  private async getArgsIPC(): Promise<string[]> {
     return new Promise((resolve, reject) => {
       this.electronService.ipcRenderer.send('get-args');
       this.electronService.ipcRenderer.on('args-response', (event, args) => {
@@ -77,6 +77,19 @@ export class ApiService {
     return new Promise((resolve, reject) => {
       this.electronService.ipcRenderer.send('submit-mssql', data);
       this.electronService.ipcRenderer.on('submit-response', (event, args) => {
+        if (args.err) {
+          reject(args.err);
+        } else {
+          resolve(args);
+        }
+      });
+    });
+  }
+
+  public async getPath2ffMpeg(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.electronService.ipcRenderer.send('request-ffmpeg');
+      this.electronService.ipcRenderer.on('ffmpeg-response', (event, args) => {
         if (args.err) {
           reject(args.err);
         } else {

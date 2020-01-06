@@ -32,12 +32,16 @@
 
                 <div class="row" style="margin-top: 3%;">
                     <div class="col l6 m6 s6" style="margin-left: 0; padding-left: 0;">
-                        <h6>Date of Injury: <input id="dateOfInjury" [(ngModel)]="dataObject.dateOfInjury"
-                                type="date" /></h6>
+                        <h6>Date of Injury: 
+                            <input *ngIf="!environment.useIonPickers" id="dateOfInjury" placeholder="MM/DD/YYYY" [(ngModel)]="dataObject.dateOfInjury"  style="cursor: pointer;" type="text" />
+                            <ion-datetime *ngIf="environment.useIonPickers" placeholder="{{ currentDate }}"  class="fake-input" max="{{maxDate}}" displayFormat="MM/DD/YYYY" [(ngModel)]="dataObject.dateOfInjury"></ion-datetime>
+                        </h6>
                     </div>
                     <div class="col l6 m6 s6" style="margin-left: 0; padding-left: 0;">
-                        <h6>Time of Injury: <input id="timeOfInjury" [(ngModel)]="dataObject.timeOfInjury"
-                                type="time" /></h6>
+                        <h6>Time of Injury:
+                             <input *ngIf="!environment.useIonPickers" placeholder="12:00 am" id="timeOfInjury" [(ngModel)]="dataObject.timeOfInjury" type="time" />
+                             <ion-datetime *ngIf="environment.useIonPickers" placeholder="{{ currentTime }}" class="fake-input" [(ngModel)]="dataObject.timeOfInjury" displayFormat="hh:mm a"></ion-datetime>
+                            </h6>
                     </div>
                 </div>
 
@@ -124,14 +128,13 @@
 
         <div class="row" *ngIf="!pdfView && dataObject && dataObject.amendmentHistory.length" id="amendment_history">
             <div *ngFor="let a of dataObject.amendmentHistory; index as i">
-                {{ i === 0 ? 'Created By:' : 'Amended By:'}} {{ a.name }} on {{ a.date }}
+                {{ i === 0 ? 'Created By:' : 'Amended By:'}} {{ a.name }} | {{ getAmendedDate(a.date) }}
             </div>
         </div>
 
         <div class="row center" id="formActions">
-            <div *ngIf="!pdfView" class='col m4 center'><button (click)="generatePDF();" class='bottom-button btn'
-                    id='print-pdf'>Download
-                    PDF</button></div>
+            <div *ngIf="!pdfView && environment.supportsPdfDownload" class='col m4 center'><button (click)="generatePDF();" class='bottom-button btn'
+                    id='print-pdf'>Download PDF</button></div>
             <div *ngIf="!pdfView" class='col m4 center'><button (click)="submitData();" class='bottom-button btn'
                     id='submitData'>Save</button></div>
             <div *ngIf="!pdfView" class='col m4 center'><button (click)="cancel();" class='bottom-button btn'
@@ -169,7 +172,7 @@
 <ng-template #formTypeAndRadios>
     <div class="row center" style="margin-top: 0">
         <div id='formTypeWrapper' *ngIf="!pdfView">
-            <h6>Form Type?</h6>
+            <h6>Form Type</h6>
             <div class="row">
                 <label class="td_wtt"><input [checked]="dataObject.formType === 'burn'" type="radio" id="burnRadio"
                         name="formType" (click)="setFormType('burn');" /><span>Burn</span></label>
@@ -182,7 +185,7 @@
         <div *ngIf="dataObject.formType === 'burn'" id="burnTypes">
             <h6>Type of Burn Injury</h6>
             <label *ngFor="let r of environment.burnRadios" class="td_wtt burnRadio"><input
-                    [checked]="dataObject.burnType === r.arg" (click)="setSkinType(r.arg)" id="{{r.arg}}_radio"
+                    [checked]="dataObject.burnType === r.arg" (click)="setBurnType(r.arg)" id="{{r.arg}}_radio"
                     type="radio" name="{{r.name}}" />
                 <span>{{ r.display }} </span></label>
 
@@ -202,14 +205,14 @@
 <ng-template #estimationTypeWrapper>
     <div *ngIf="dataObject.formType === 'burn'" id="lowerBurn" class="center">
         <div classs="row center">
-            <label class="td_wtt"><input type="radio" [checked]="estimationType === 'initial' " [disabled]="dataObject.createdBy"
+            <label class="td_wtt" [ngClass]="{'disabledRadio': dataObject.createdBy}"><input type="radio" [checked]="estimationType === 'initial' " [disabled]="dataObject.createdBy"
                     (click)="setEstimationType('initial')" id="initialEstimate" name="belowBurn" />
                 <span>Initial Burn Estimation Chart</span></label><br>
-            <label class="td_wtt"><input type="radio" [checked]="estimationType === 'amended' " [disabled]="manualMode || !dataObject.createdBy"
+            <label [ngClass]="{'disabledRadio': manualMode || !dataObject.createdBy}" class="td_wtt"><input type="radio" [checked]="estimationType === 'amended' " [disabled]="manualMode || !dataObject.createdBy"
                     (click)="setEstimationType('amended')" id="amendedEstimate" name="belowBurn" />
                 <span>Amended Burn Estimation Chart</span></label><br>
             <label class="td_wtt"><input type="radio" [checked]="estimationType === 'discharge' "
-                    [disabled]="manualMode || !dataObject.createdBy" (click)="setEstimationType('discharge')" id="dischargeEstimate"
+                     (click)="setEstimationType('discharge')" id="dischargeEstimate"
                     name="belowBurn" />
                 <span>Discharge Burn Estimation Chart</span></label>
         </div>

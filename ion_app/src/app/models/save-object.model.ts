@@ -19,7 +19,7 @@ export class SaveObject {
                 values.dateOfInjury = m.format('YYYY-MM-DD');
             }
 
-            Object.keys(values).forEach(key => {
+            Object.keys(values).map(key => {
                 this[key] = values[key];
             });
         }

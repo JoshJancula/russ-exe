@@ -303,4 +303,14 @@ right: 1rem !important;
 float: right;
 margin-bottom: 1rem;
 }
+
+// [type="radio"]:checked+span:after, [type="radio"].with-gap:checked+span:after {
+//     background-color: #26a69a;
+// }
+
+.picker-wrapper.sc-ion-picker-md {
+  background: #585858;
+  color: white;
+  opacity: .97;
+}
   

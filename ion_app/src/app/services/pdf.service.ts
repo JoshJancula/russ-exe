@@ -7,9 +7,11 @@ import html2canvas from 'html2canvas';
 })
 export class PdfService {
 
+  private printIframe: HTMLIFrameElement | any;
+
   constructor() { }
 
-  public generatePDF(action: string, div: any, title: string, totalRows?: number): Promise<any> {
+  public generatePDF(action: string, div: HTMLElement, title: string, totalRows?: number): Promise<void> {
     return new Promise((resolve, reject) => {
       html2canvas(div, { height: 3200 }).then((canvas: any) => {
         const imgData = canvas.toDataURL('image/png');
@@ -24,12 +26,40 @@ export class PdfService {
             resolve();
           } else if (action === 'print') {
             const blob = pdf.output('blob');
-            resolve();
+            this.print(blob).then(() => {
+              resolve();
+            }).catch((err: any) => {
+              reject(err);
+            });
           }
         }, 300);
       }).catch((err: any) => {
         reject(err);
       });
+    });
+  }
+
+  private print(blob: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      try { // WIP
+        const fileUrl = URL.createObjectURL(blob);
+        let iframe = this.printIframe;
+        if (!this.printIframe) {
+          iframe = this.printIframe = document.createElement('iframe');
+          document.body.appendChild(iframe);
+          iframe.style.display = 'none';
+          iframe.onload = () => {
+            setTimeout(() => {
+              iframe.focus();
+              iframe.contentWindow.print();
+            }, 100);
+          };
+        }
+        iframe.src = fileUrl;
+        resolve();
+      } catch (err) {
+        reject(err);
+      }
     });
   }
 

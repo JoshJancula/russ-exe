@@ -12,6 +12,7 @@ import * as moment from 'moment';
 import { PdfService } from 'src/app/services/pdf.service';
 import { BurnCanvasComponent } from './components/burn-canvas/burn-canvas.component';
 import { ModalController, AlertController } from '@ionic/angular';
+import { ApiService } from 'src/app/services/api.service';
 
 @Component({
   selector: 'app-home',
@@ -41,6 +42,7 @@ export class HomePage implements OnInit, OnDestroy {
   public currentDate: string = null;
   public currentTime: string = null;
   private timeInterval: any = null;
+  public maxDate: string = moment(new Date().toISOString()).format('YYYY-MM-DD');
 
   public tableRows: any[] = [
     { display: 'Head', name: 'head', infant: 19, oneToFour: 12, fiveToNine: 13, tenToFourteen: 11, fifteen: 8, adult: 7 },
@@ -71,7 +73,8 @@ export class HomePage implements OnInit, OnDestroy {
     private electronService: ElectronService,
     private pdfService: PdfService,
     private modalController: ModalController,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private apiService: ApiService
   ) {
     if (environment.isElectron) {
       this.initElectron();
@@ -80,7 +83,11 @@ export class HomePage implements OnInit, OnDestroy {
     this.timeInterval = setInterval(() => { this.setTimeAndDate(); }, 1000);
   }
 
-  ngOnInit(): void { }
+  ngOnInit(): void {
+    this.apiService.getPath2ffMpeg().then((res: any) => {
+      alert('path to ffmpeg... ' + JSON.stringify(res));
+    });
+  }
 
   ngOnDestroy(): void {
     this.subs.map(s => s.unsubscribe());
@@ -189,16 +196,12 @@ export class HomePage implements OnInit, OnDestroy {
     }
   }
 
-  public cancel(): void {
-    this.electronService.ipcRenderer.send('cancel');
-  }
-
   public setEstimationType(type: string): void {
     this.estimationType = type;
   }
 
   private updateAmendmentHistory(): void {
-    this.dataObject.amendmentHistory.push({ name: this.userInfo.userName, date: moment(new Date().toISOString()).format('MM/DD/YYYY') });
+    this.dataObject.amendmentHistory.push({ name: this.userInfo.userName, date: moment(new Date().toISOString()).format('MM/DD/YYYY HH:mm') });
     if (!this.dataObject.createdBy) {
       this.dataObject.createdBy = this.userInfo.userEsig;
     }
@@ -210,6 +213,12 @@ export class HomePage implements OnInit, OnDestroy {
     this.loading = true;
     const canvas: HTMLCanvasElement | any = document.getElementById('canvas');
     const url = canvas.toDataURL();
+    if (!this.dataObject.timeOfInjury && this.currentTime) {
+      this.dataObject.timeOfInjury = this.currentTime;
+    }
+    if (!this.dataObject.dateOfInjury && this.currentDate) {
+      this.dataObject.dateOfInjury = this.currentDate;
+    }
     const obj = {
       data: this.dataObject,
       canvasUrl: url,
@@ -229,13 +238,17 @@ export class HomePage implements OnInit, OnDestroy {
     });
   }
 
-  private async showSuccess(msg: string): Promise<any> {
+  private async showSuccess(msg: string): Promise<void> {
     const alert = await this.alertController.create({
       header: 'Success!',
       message: msg,
       buttons: [{ text: 'Okay' }]
     });
     await alert.present();
+  }
+
+  public getAmendedDate(date: string): string {
+    return moment(date).format('MM/DD/YYYY hh:mm a');
   }
 
   public generatePDF(): void {
@@ -364,7 +377,7 @@ export class HomePage implements OnInit, OnDestroy {
     }
   }
 
-  public async openBurnCanvasModal(): Promise<any> {
+  public async openBurnCanvasModal(): Promise<void> {
     const modal = await this.modalController.create({
       component: BurnCanvasComponent,
       componentProps: {
@@ -372,7 +385,7 @@ export class HomePage implements OnInit, OnDestroy {
         patientInfo: this.patientInfo
       }
     });
-    modal.present();
+    await modal.present();
     const { data } = await modal.onWillDismiss();
     if (data) {
       const canvasEl: HTMLCanvasElement = this.displayCanvas.nativeElement;
@@ -383,6 +396,43 @@ export class HomePage implements OnInit, OnDestroy {
       });
       img.setAttribute('src', data.toString());
     }
+  }
+
+  public cancel(): void {
+    this.confirmCancel().then((res: boolean) => {
+      if (res) { this.electronService.ipcRenderer.send('cancel'); }
+    }).catch((err: any) => { });
+  }
+
+  private async confirmCancel(): Promise<boolean> {
+    return new Promise(async (resolve, reject) => {
+      const alert = await this.alertController.create({
+        header: 'Hold Up!',
+        message: 'Are you sure you want to exit without saving?',
+        buttons: [
+          {
+            text: 'No',
+            role: 'cancel',
+            cssClass: 'secondary',
+            handler: () => {
+              alert.dismiss(false);
+            }
+          }, {
+            text: 'Yes',
+            handler: () => {
+              alert.dismiss(true);
+            }
+          }
+        ]
+      });
+      await alert.present();
+      const data = await alert.onWillDismiss();
+      if (data.role === 'cancel') {
+        resolve(false);
+      } else {
+        resolve(true);
+      }
+    });
   }
 
 }

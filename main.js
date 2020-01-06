@@ -10,6 +10,7 @@ const nfs = require('fs');
 const npjoin = require('path').join;
 const es6Path = npjoin(__dirname, '/ion_app/www');
 // const debug = require('electron-debug');
+const ffmpeg = require('ffmpeg-static-electron');
 
 const sql = require('mssql');
 let canvasString = null;
@@ -17,6 +18,7 @@ let userId = null;
 let envId = null;
 let mssqlConnected = false;
 let mssqlQueryCount = 0;
+const maxQueryCount = 10;
 let connectionInProgress = false;
 let debugMode = false;
 
@@ -50,6 +52,14 @@ let patientInfo = {
 let bypassStandard = false;
 
 // debug({ isEnabled: false, showDevTools: false});
+
+// if (process.argv) {
+//   // console.log('args... ', process.argv);
+//   let id = process.argv && process.argv[2] ? process.argv[2].slice(8) : null;
+//   let id2 = process.argv && process.argv[3] ? process.argv[3].slice(5) : null;
+//   console.log('id... ', id);
+//   console.log('id2... ', id2);
+// }
 
 
 if (process.platform !== 'darwin' || bypassStandard) {
@@ -121,6 +131,10 @@ ipcMain.on('image-window-loaded', (evt, arg) => {
 
 ipcMain.on('close-images', (evt, arg) => {
   // imageWindow.exit();
+});
+
+ipcMain.on('request-ffmpeg', (evt, arg) => {
+  evt.sender.send('ffmpeg-response', ffmpeg);
 });
 
 // app.on('ready', createWindow);
@@ -303,82 +317,82 @@ function executeMsSqlQueries(args) { // get the envelope id from args passed or 
       userData.userName = username.recordset[0].esig_placeholder;
       userData.userEsig = username.recordset[0].esig_placeholder;
       mssqlQueryCount++;
-      if (mssqlQueryCount >= 10) { resolve(); }
+      if (mssqlQueryCount >= maxQueryCount) { resolve(); }
     }).catch(err => {
       mssqlQueryCount++;
       console.log('query error retrieving User Info.... ', err);
-      if (mssqlQueryCount >= 10) { resolve(); }
+      if (mssqlQueryCount >= maxQueryCount) { resolve(); }
     });
 
     sql.query(queryStringpatName).then(name => {
       patientInfo.patientName = name.recordset[0].content_value;
       mssqlQueryCount++;
-      if (mssqlQueryCount >= 10) { resolve(); }
+      if (mssqlQueryCount >= maxQueryCount) { resolve(); }
     }).catch(err => {
       mssqlQueryCount++;
       console.log('error retrieving Patient Name in query.... ', err);
-      if (mssqlQueryCount >= 10) { resolve(); }
+      if (mssqlQueryCount >= maxQueryCount) { resolve(); }
     });
 
     sql.query(queryStringmedRecno).then(med => {
       patientInfo.medRecno = med.recordset[0].content_value;
       mssqlQueryCount++;
-      if (mssqlQueryCount >= 10) { resolve(); }
+      if (mssqlQueryCount >= maxQueryCount) { resolve(); }
     }).catch(err => {
       mssqlQueryCount++;
       console.log('error retrieving med rec no in query.... ', err);
-      if (mssqlQueryCount >= 10) { resolve(); }
+      if (mssqlQueryCount >= maxQueryCount) { resolve(); }
     });
 
     sql.query(queryStringacctNo).then(acc => {
       patientInfo.acctNo = acc.recordset[0].content_value;
       mssqlQueryCount++;
-      if (mssqlQueryCount >= 10) { resolve(); }
+      if (mssqlQueryCount >= maxQueryCount) { resolve(); }
     }).catch(err => {
       mssqlQueryCount++;
       console.log('error retrieving acct number in query.... ', err);
-      if (mssqlQueryCount >= 10) { resolve(); }
+      if (mssqlQueryCount >= maxQueryCount) { resolve(); }
     });
 
     sql.query(queryStringpatientAge).then(age => {
       patientInfo.patientAge = age.recordset[0].content_value;
       mssqlQueryCount++;
-      if (mssqlQueryCount >= 10) { resolve(); }
+      if (mssqlQueryCount >= maxQueryCount) { resolve(); }
     }).catch(err => {
       mssqlQueryCount++;
       console.log('error retrieving patient age in query.... ', err);
-      if (mssqlQueryCount >= 10) { resolve(); }
+      if (mssqlQueryCount >= maxQueryCount) { resolve(); }
     });
 
     sql.query(queryStringpatBirthdate).then(bday => {
       patientInfo.birthDate = bday.recordset[0].content_value;
       mssqlQueryCount++;
-      if (mssqlQueryCount >= 10) { resolve(); }
+      if (mssqlQueryCount >= maxQueryCount) { resolve(); }
     }).catch(err => {
       mssqlQueryCount++;
       console.log('error retrieving patient DOB in query.... ', err);
-      if (mssqlQueryCount >= 10) { resolve(); }
+      if (mssqlQueryCount >= maxQueryCount) { resolve(); }
     });
 
     sql.query(queryStringpatientSex).then(sex => {
       patientInfo.patientSex = sex.recordset[0].content_value;
       console.log('patient sex is.... ', patientInfo.patientSex)
       mssqlQueryCount++;
-      if (mssqlQueryCount >= 10) { resolve(); }
+      if (mssqlQueryCount >= maxQueryCount) { resolve(); }
     }).catch(err => {
       mssqlQueryCount++;
       console.log('error retrieving patient sex in query.... ', err);
-      if (mssqlQueryCount >= 10) { resolve(); }
+      if (mssqlQueryCount >= maxQueryCount) { resolve(); }
     });
 
     sql.query(queryStringadmitDate).then(admit => {
       patientInfo.admitDate = admit.recordset[0].content_value;
       mssqlQueryCount++;
-      if (mssqlQueryCount >= 10) { resolve(); }
+      if (mssqlQueryCount >= maxQueryCount) { resolve(); }
     }).catch(err => {
       mssqlQueryCount++;
       console.log('error retrieving admit date in query.... ', err);
-      if (mssqlQueryCount >= 10) { resolve(); }
+      if (mssqlQueryCount >= maxQueryCount) { resolve(); }
     });
 
     sql.query(queryStringcanvasData).then((canvasData) => { // look to see if we had a canvas already
@@ -386,11 +400,11 @@ function executeMsSqlQueries(args) { // get the envelope id from args passed or 
         canvasString = canvasData.recordset[0].content_cblob;
       }
       mssqlQueryCount++;
-      if (mssqlQueryCount >= 10) { resolve(); }
+      if (mssqlQueryCount >= maxQueryCount) { resolve(); }
     }).catch((err) => {
       mssqlQueryCount++;
       console.log('error retrieving canvas data in query.... ', err);
-      if (mssqlQueryCount >= 10) { resolve(); }
+      if (mssqlQueryCount >= maxQueryCount) { resolve(); }
     });
 
     sql.query(queryStringtableData).then((qd) => { // if there was data from request
@@ -402,27 +416,28 @@ function executeMsSqlQueries(args) { // get the envelope id from args passed or 
           console.log('error parsing json.... ', e);
         }
         mssqlQueryCount++;
-        if (mssqlQueryCount >= 10) { resolve(); }
+        if (mssqlQueryCount >= maxQueryCount) { resolve(); }
       } else { // there was no form yet so set initial state
         // dataObject.createdBy = userData.userName;
         mssqlQueryCount++;
-        if (mssqlQueryCount >= 10) { resolve(); }
+        if (mssqlQueryCount >= maxQueryCount) { resolve(); }
       }
     }).catch((err) => {
       mssqlQueryCount++;
       console.log('error retrieving table data in query.... ', err);
-      if (mssqlQueryCount >= 10) { resolve(); }
+      if (mssqlQueryCount >= maxQueryCount) { resolve(); }
     });
   });
 }
 
 function connectMsSql() {
   connectionInProgress = true;
+  let serverId = process.argv && process.argv[8] ? process.argv[8].slice(8) : null;
   return new Promise((resolve, reject) => {
     const config = { // construct the connection config
       user: 'wfadmin',
       password: 'hiswfadmin',
-      server: 'localhost',
+      server: `${serverId ? serverId : 'localhost'}`,
       database: 'HealthlineWorkflow',
     };
     sql.connect(config).then((res) => {

@@ -49,7 +49,7 @@ export class MainStateActions {
     return this.store.dispatch({ type: MainActionsTypes.SET_EDIT_MODE, payload: bool });
   }
 
-  public async getElectronArgs(): Promise<any> {
+  public async getElectronArgs(): Promise<void> {
     return await this.apiService.getArgs().then((res: any) => {
       console.log('electron args... ', res);
       return res;
@@ -58,7 +58,7 @@ export class MainStateActions {
     });
   }
 
-  public async fetchSavedData(): Promise<any> {
+  public async fetchSavedData(): Promise<void> {
     return await this.apiService.getAppData().then((res: any) => {
       this.setPatientInfo(res.patient_data);
       this.setUserInfo(res.user_data);
@@ -81,7 +81,7 @@ export class MainStateActions {
     });
   }
 
-  public async submitFormData(data: any): Promise<any> {
+  public async submitFormData(data: any): Promise<void> {
     return await this.apiService.submitData(data).then(() => {
     }).catch((err: any) => {
       console.log('error.... ', err);

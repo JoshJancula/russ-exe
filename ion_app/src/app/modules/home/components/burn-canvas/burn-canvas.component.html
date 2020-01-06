@@ -19,7 +19,7 @@
     <a id="resetCanvasButton" *ngIf="hasDrawnOnCanvas && !pdfView"
         style="cursor: pointer; margin-bottom: 12px; display: block" (click)="resetCanvas()">Reset
         Canvas</a>
-    <a id="undoCanvasReset" *ngIf="prevURL" (click)="undoCanvasClear()">Undo</a>
+    <a id="undoCanvasReset" *ngIf="prevURL" style="cursor: pointer; margin-bottom: 12px; display: block"  (click)="undoCanvasClear()">Undo Reset</a>
     <div *ngIf="dataObject && cx" style="margin-top: -3%;" class="col l6 m12 s12 center">
         <div class="row" id="selectFill">
             <h6>Select Fill</h6>

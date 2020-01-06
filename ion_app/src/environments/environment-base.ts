@@ -4,9 +4,11 @@ export const environment = {
   isMobileApp: false,
   isElectron: true,
   useIpcForApi: true,
-  enableTestData: true,
+  enableTestData: false,
   persistRedux: false,
   onlyAddValidRowsToPDF: true,
+  useIonPickers: true,
+  supportsPdfDownload: true,
 
   defaultTableData: [
     { name: 'head', secondDegree: null, thirdDegree: null, fourthDegree: null, total: null, hasError: false },

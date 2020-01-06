@@ -6,7 +6,7 @@ export class User {
 
     constructor(values?: any) {
         if (values) {
-            Object.keys(values).forEach(key => {
+            Object.keys(values).map(key => {
                 this[key] = values[key];
             });
         }
