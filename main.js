@@ -432,12 +432,12 @@ function executeMsSqlQueries(args) { // get the envelope id from args passed or 
 
 function connectMsSql() {
   connectionInProgress = true;
-  let serverId = process.argv && process.argv[8] ? process.argv[8].slice(8) : null;
+  let serverId = process.argv && process.argv[8] ? process.argv[8].slice(8) : 'localhost';
   return new Promise((resolve, reject) => {
     const config = { // construct the connection config
       user: 'wfadmin',
       password: 'hiswfadmin',
-      server: `${serverId ? serverId : 'localhost'}`,
+      server: serverId,
       database: 'HealthlineWorkflow',
     };
     sql.connect(config).then((res) => {
