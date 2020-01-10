@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import * as jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { environment } from 'src/environments/environment.prod';
+import { ElectronService } from 'ngx-electron';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +11,7 @@ export class PdfService {
 
   private printIframe: HTMLIFrameElement | any;
 
-  constructor() { }
+  constructor(private electronService: ElectronService) { }
 
   public generatePDF(action: string, div: HTMLElement, title: string, totalRows?: number): Promise<void> {
     return new Promise((resolve, reject) => {
@@ -22,8 +24,19 @@ export class PdfService {
         setTimeout(() => {
           pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight, '', 'FAST');
           if (action === 'download') {
-            pdf.save(title);
-            resolve();
+            if (!environment.isElectron) {
+              pdf.save(title);
+              resolve();
+            } else {
+              this.electronService.ipcRenderer.send('save-pdf', pdf.output('datauristring'));
+              this.electronService.ipcRenderer.on('pdf-complete', (event, args) => {
+                if (args.err) {
+                  reject(args.err);
+                } else {
+                  resolve();
+                }
+              });
+            }
           } else if (action === 'print') {
             const blob = pdf.output('blob');
             this.print(blob).then(() => {

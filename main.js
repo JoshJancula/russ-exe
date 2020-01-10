@@ -1,3 +1,4 @@
+global.window = { document: { createElementNS: () => { return {} } } };
 const { app, BrowserWindow } = require('electron');
 let mainWindow = null;
 let imageWindow = null;
@@ -11,7 +12,8 @@ const npjoin = require('path').join;
 const es6Path = npjoin(__dirname, '/ion_app/www');
 // const debug = require('electron-debug');
 const ffmpeg = require('ffmpeg-static-electron');
-
+// const jsPDF = require('jspdf');
+// const html2canvas = require('html2canvas');
 const sql = require('mssql');
 let canvasString = null;
 let userId = null;
@@ -20,7 +22,9 @@ let mssqlConnected = false;
 let mssqlQueryCount = 0;
 const maxQueryCount = 10;
 let connectionInProgress = false;
-let debugMode = false;
+let debugMode = true;
+// const ElectronPDF = require('electron-pdf');
+
 
 let dataObject = {
   tableData: null,
@@ -238,6 +242,36 @@ ipcMain.on('submit-mssql', (evt, arg) => {
     // not sure what to do...
   }
 });
+
+ipcMain.on('save-pdf', (evt, arg) => {
+  // handlePdf().then(() => {
+  //   evt.sender.send('pdf-complete', { success: true, msg: 'Saved pdf' });
+  // }).catch(e => {
+    // evt.sender.send('pdf-complete', { success: false, msg: 'Failed to save pdf', err: e });
+  // });
+});
+
+// function handlePdf(data) {
+//   return new Promise((resolve, reject) => {
+//     const exporter = new ElectronPDF();
+
+//     const jobOptions = {
+//       inMemory: false
+//     };
+
+//     const options = {
+//       pageSize: "A4"
+//     };
+
+//     exporter.createJob(source, target, options, jobOptions).then(job => {
+//       job.on('job-complete', (r) => {
+//         console.log('pdf files:', r.results);
+//         // Process the PDF file(s) here
+//       })
+//       job.render()
+//     })
+//   });
+// }
 
 function executeMsSqlQueries(args) { // get the envelope id from args passed or use test id
   return new Promise((resolve, reject) => {
@@ -479,12 +513,19 @@ function submitMsSql(edit, url, obj) {
     // if in editMode do an update else insert new
     sql.query(edit ? update1 : insert1).then(() => {
       sql.query(edit ? update2 : insert2).then(() => {
-        // ipcRenderer.send('saved');
+        ipcRenderer.send('saved');
         resolve()
-      }).catch((err2) => { reject(err2); console.log('error inserting table data.... ', err2); });
+      }).catch((err2) => {
+        reject(err2);
+        console.log('error inserting table data.... ', err2);
+      });
     }).catch((err) => {
-      reject(err);
-      console.log('query error inserting Canvas data.... ', err);
+      connectMsSql().then(() => {
+        submitMsSql(edit, url, obj);
+      }).catch(err2 => {
+        reject(err);
+        console.log('query error inserting Canvas data.... ', err);
+      });
     });
   });
 }

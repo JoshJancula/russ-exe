@@ -84,9 +84,10 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.apiService.getPath2ffMpeg().then((res: any) => {
-      alert('path to ffmpeg... ' + JSON.stringify(res));
-    });
+    // this.apiService.getPath2ffMpeg().then((res: any) => {
+    //   alert('path to ffmpeg... ' + JSON.stringify(res));
+    // });
+    alert('args.... ' + JSON.stringify(this.electronService.remote.process.argv));
   }
 
   ngOnDestroy(): void {

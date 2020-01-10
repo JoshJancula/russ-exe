@@ -188,6 +188,29 @@ ipcMain.on('connect-mssql', (evt, arg) => {
   });
 });
 
+function handlePdf() {
+  return new Promise((resolve, reject) => {
+    const pdf = new jsPDF('p', 'mm', 'a4', true);
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = pdf.internal.pageSize.getHeight() + 40;
+    // const position = window.innerWidth < 600 ? -80 : window.innerWidth >= 600 && window.innerWidth < 800 ? -60 : -50;
+    setTimeout(() => {
+      pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight, '', 'FAST');
+      if (action === 'download') {
+        pdf.save(title);
+        resolve();
+      } else if (action === 'print') {
+        const blob = pdf.output('blob');
+        this.print(blob).then(() => {
+          resolve();
+        }).catch((err) => {
+          reject(err);
+        });
+      }
+    }, 300);
+  });
+}
+
 function executeMsSqlQueries(args) { // get the envelope id from args passed or use test id
   return new Promise((resolve, reject) => {
     envId = args && args[3] ? args[3].slice(5) : 'c7a19bba-abdb-4ff0-b6e4-fe8528c8a1ae';
