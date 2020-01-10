@@ -481,7 +481,7 @@ function connectMsSql() {
     }).catch((e) => {
       connectionInProgress = false;
       console.log('err... ', e);
-      reject();
+      reject(m,);
     });
   });
 }
