@@ -22,7 +22,7 @@ let mssqlConnected = false;
 let mssqlQueryCount = 0;
 const maxQueryCount = 10;
 let connectionInProgress = false;
-let debugMode = true;
+let debugMode = false;
 // const ElectronPDF = require('electron-pdf');
 
 
