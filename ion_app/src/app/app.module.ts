@@ -12,6 +12,7 @@ import { reducers } from './redux-store/app.reducer';
 import { storageSyncMetaReducer } from 'ngrx-store-persist';
 import { HttpClientModule } from '@angular/common/http';
 import { NgxElectronModule } from 'ngx-electron';
+import { MainStateSelectors } from './redux-store/main/main.selectors';
 
 @NgModule({
   declarations: [AppComponent],
@@ -27,6 +28,7 @@ import { NgxElectronModule } from 'ngx-electron';
   providers: [
     StatusBar,
     MainStateActions,
+    MainStateSelectors,
     SplashScreen,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],

@@ -10,6 +10,7 @@ import { ElectronService } from 'ngx-electron';
 export class PdfService {
 
   private printIframe: HTMLIFrameElement | any;
+  private debug: boolean = false;
 
   constructor(private electronService: ElectronService) { }
 
@@ -24,8 +25,9 @@ export class PdfService {
         setTimeout(() => {
           pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight, '', 'FAST');
           if (action === 'download') {
-            if (!environment.isElectron) {
-              pdf.save(title);
+            if (!environment.isElectron || !this.debug) {
+              // pdf.save(title);
+              pdf.output('save', title);
               resolve();
             } else {
               this.electronService.ipcRenderer.send('save-pdf', pdf.output('datauristring'));

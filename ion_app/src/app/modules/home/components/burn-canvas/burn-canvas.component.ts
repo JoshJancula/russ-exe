@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, OnDestroy, Inp
 import { Subscription, fromEvent } from 'rxjs';
 import { switchMap, takeUntil, pairwise } from 'rxjs/operators';
 import { Patient } from 'src/app/models/patient.model';
-import { SaveObject } from 'src/app/models/save-object.model';
+import { BurnFormData } from 'src/app/models/burn-form-data.model';
 import { environment } from 'src/environments/environment';
 import { ModalController } from '@ionic/angular';
 
@@ -15,7 +15,7 @@ export class BurnCanvasComponent implements OnInit, AfterContentInit, OnDestroy 
 
   @ViewChild('canvas', null) canvas: ElementRef;
   @Input() public patientInfo: Patient;
-  @Input() public dataObject: SaveObject;
+  @Input() public dataObject: BurnFormData;
   @Input() public pdfView: boolean = false;
   public cx: CanvasRenderingContext2D;
   public drawingSubscription: Subscription;
@@ -97,10 +97,36 @@ export class BurnCanvasComponent implements OnInit, AfterContentInit, OnDestroy 
     }
   }
 
+  // private captureEvents(canvasEl: HTMLCanvasElement): void {
+  //   this.drawingSubscription = fromEvent(canvasEl, 'mousedown').pipe(switchMap(e => {
+  //     return fromEvent(canvasEl, 'mousemove').pipe(
+  //       takeUntil(fromEvent(canvasEl, 'mouseup')),
+  //       takeUntil(fromEvent(canvasEl, 'mouseleave')),
+  //       pairwise()
+  //     );
+  //   })
+  //   ).subscribe((res: [MouseEvent, MouseEvent]) => {
+  //     this.hasDrawnOnCanvas = true;
+  //     const rect = canvasEl.getBoundingClientRect();
+  //     const prevPos = {
+  //       x: res[0].clientX - rect.left,
+  //       y: res[0].clientY - rect.top
+  //     };
+
+  //     const currentPos = {
+  //       x: res[1].clientX - rect.left,
+  //       y: res[1].clientY - rect.top
+  //     };
+
+  //     this.drawOnCanvas(prevPos, currentPos);
+  //     this.subs.push(this.drawingSubscription);
+  //   });
+  // }
+
   private captureEvents(canvasEl: HTMLCanvasElement): void {
-    this.drawingSubscription = fromEvent(canvasEl, 'mousedown').pipe(switchMap(e => {
-      return fromEvent(canvasEl, 'mousemove').pipe(
-        takeUntil(fromEvent(canvasEl, 'mouseup')),
+    this.drawingSubscription = fromEvent(canvasEl, (environment.isMobileApp ? 'touchmove' : 'mousedown')).pipe(switchMap(e => {
+      return fromEvent(canvasEl, (environment.isMobileApp ? 'touchmove' : 'mousemove')).pipe(
+        takeUntil(fromEvent(canvasEl, (environment.isMobileApp ? 'touchend' : 'mouseup'))),
         takeUntil(fromEvent(canvasEl, 'mouseleave')),
         pairwise()
       );

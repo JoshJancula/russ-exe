@@ -1,9 +1,10 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { Patient } from 'src/app/models/patient.model';
 import { User } from 'src/app/models/user.model';
-import { SaveObject } from 'src/app/models/save-object.model';
+import { BurnFormData } from 'src/app/models/burn-form-data.model';
 import { Subscription, fromEvent } from 'rxjs';
 import { MainStateActions } from 'src/app/redux-store/main/main.actions';
+import { MainStateSelectors } from 'src/app/redux-store/main/main.selectors';
 import { Store, State } from '@ngrx/store';
 import { AppState } from 'src/app/redux-store/app.state';
 import { environment } from 'src/environments/environment';
@@ -12,7 +13,6 @@ import * as moment from 'moment';
 import { PdfService } from 'src/app/services/pdf.service';
 import { BurnCanvasComponent } from './components/burn-canvas/burn-canvas.component';
 import { ModalController, AlertController } from '@ionic/angular';
-import { ApiService } from 'src/app/services/api.service';
 
 @Component({
   selector: 'app-home',
@@ -26,9 +26,8 @@ export class HomePage implements OnInit, OnDestroy {
 
   public patientInfo: Patient;
   public userInfo: User;
-  public dataObject: SaveObject;
+  public dataObject: BurnFormData;
   private subs: Subscription[] = [];
-  public environment = environment;
   public manualMode: boolean = true;
   public estimationType: string = null;
   public pdfView: boolean = false;
@@ -43,6 +42,7 @@ export class HomePage implements OnInit, OnDestroy {
   public currentTime: string = null;
   private timeInterval: any = null;
   public maxDate: string = moment(new Date().toISOString()).format('YYYY-MM-DD');
+  public environment = environment;
 
   public tableRows: any[] = [
     { display: 'Head', name: 'head', infant: 19, oneToFour: 12, fiveToNine: 13, tenToFourteen: 11, fifteen: 8, adult: 7 },
@@ -68,13 +68,12 @@ export class HomePage implements OnInit, OnDestroy {
 
   constructor(
     private appActions: MainStateActions,
-    private store: Store<AppState>,
+    private appSelectors: MainStateSelectors,
     private state: State<AppState>,
     private electronService: ElectronService,
     private pdfService: PdfService,
     private modalController: ModalController,
     private alertController: AlertController,
-    private apiService: ApiService
   ) {
     if (environment.isElectron) {
       this.initElectron();
@@ -83,16 +82,7 @@ export class HomePage implements OnInit, OnDestroy {
     this.timeInterval = setInterval(() => { this.setTimeAndDate(); }, 1000);
   }
 
-  ngOnInit(): void {
-    // this.apiService.getPath2ffMpeg().then((res: any) => {
-    //   alert('path to ffmpeg... ' + JSON.stringify(res));
-    // });
-    const args = this.electronService.remote.process.argv;
-    const userId = args && args[4] ? args[4].slice(6) : '';
-    const serverId = args && args[8] ? args[8].slice(8) : 'not found';
-    alert('this is what is at args[4] ' + args[4] + ' this is what is at args[8] ' + args[8]);
-    alert('userId from args.... ' + userId + ' serverId should be.... ' + serverId);
-  }
+  ngOnInit(): void {}
 
   ngOnDestroy(): void {
     this.subs.map(s => s.unsubscribe());
@@ -110,11 +100,11 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   private setSubs(): void {
-    this.subs.push(this.store.select(state => state.main.saveData).subscribe((d: SaveObject) => {
-      if (d) {
-        this.dataObject = d;
+    this.subs.push(this.appSelectors.burnFormData.subscribe((b: BurnFormData) => {
+      if (b) {
+        this.dataObject = b;
         if (!environment.isMobileApp && this.burnCanvas) {
-          this.burnCanvas.dataObject = d;
+          this.burnCanvas.dataObject = b;
         }
         if (this.dataObject.amendmentHistory.length) {
           this.estimationType = 'amended';
@@ -123,7 +113,7 @@ export class HomePage implements OnInit, OnDestroy {
         }
       }
     }));
-    this.subs.push(this.store.select(state => state.main.patientInfo).subscribe((p: Patient) => {
+    this.subs.push(this.appSelectors.patientInfo.subscribe((p: Patient) => {
       if (p) {
         this.patientInfo = p;
         if (!environment.isMobileApp && this.burnCanvas) {
@@ -134,12 +124,10 @@ export class HomePage implements OnInit, OnDestroy {
         }
       }
     }));
-    this.subs.push(this.store.select(state => state.main.userInfo).subscribe((u: User) => {
-      if (u) {
-        this.userInfo = u;
-      }
+    this.subs.push(this.appSelectors.userInfo.subscribe((u: User) => {
+      if (u) { this.userInfo = u;  }
     }));
-    this.subs.push(this.store.select(state => state.main.canvasUrl).subscribe((url: string) => {
+    this.subs.push(this.appSelectors.canvasUrl.subscribe((url: string) => {
       if (url) {
         if (!environment.isMobileApp && this.burnCanvas) {
           setTimeout(() => {
@@ -178,7 +166,7 @@ export class HomePage implements OnInit, OnDestroy {
 
   public setFormType(type: string): void {
     this.dataObject.formType = type;
-    this.appActions.setSaveData(this.dataObject);
+    this.appActions.setburnFormData(this.dataObject);
     if (!environment.isMobileApp) {
       this.burnCanvas.setCanvasFill(type === 'burn' ? '#000306' : '#0080FF');
       this.burnCanvas.resetCanvas(true);
@@ -187,7 +175,7 @@ export class HomePage implements OnInit, OnDestroy {
 
   public setBurnType(type: string): void {
     this.dataObject.burnType = type;
-    this.appActions.setSaveData(this.dataObject);
+    this.appActions.setburnFormData(this.dataObject);
     if (!environment.isMobileApp) {
       this.burnCanvas.useTool('draw');
     }
@@ -195,7 +183,7 @@ export class HomePage implements OnInit, OnDestroy {
 
   public setSkinType(type: string): void {
     this.dataObject.skinType = type;
-    this.appActions.setSaveData(this.dataObject);
+    this.appActions.setburnFormData(this.dataObject);
     if (!environment.isMobileApp) {
       this.burnCanvas.useTool('draw');
     }
@@ -210,7 +198,7 @@ export class HomePage implements OnInit, OnDestroy {
     if (!this.dataObject.createdBy) {
       this.dataObject.createdBy = this.userInfo.userEsig;
     }
-    this.appActions.setSaveData(this.dataObject);
+    this.appActions.setburnFormData(this.dataObject);
   }
 
   public submitData(): void {
@@ -363,7 +351,7 @@ export class HomePage implements OnInit, OnDestroy {
     } else {
       dataRow.hasError = false;
     }
-    this.appActions.setSaveData(this.dataObject);
+    this.appActions.setburnFormData(this.dataObject);
   }
 
   public useThisRange(display?: boolean): string {

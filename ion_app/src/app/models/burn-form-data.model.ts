@@ -1,6 +1,6 @@
 import * as moment from 'moment';
 
-export class SaveObject {
+export class BurnFormData {
 
     tableData: any[] = [];
     formType: string = 'burn';

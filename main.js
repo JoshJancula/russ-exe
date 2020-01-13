@@ -22,7 +22,7 @@ let mssqlConnected = false;
 let mssqlQueryCount = 0;
 const maxQueryCount = 10;
 let connectionInProgress = false;
-let debugMode = false;
+let debugMode = true;
 // const ElectronPDF = require('electron-pdf');
 
 
@@ -100,8 +100,8 @@ function createWindow() {
 
   mainWindow.setTitle('Lund & Browder Form');
   // mainWindow.loadFile('./app/index.html'); // jquery build
-  // mainWindow.loadURL('http://localhost:4200'); // angular dev 
-  mainWindow.loadFile('./ion_app/www/index.html'); // angular build
+  mainWindow.loadURL('http://localhost:4200'); // angular dev 
+  // mainWindow.loadFile('./ion_app/www/index.html'); // angular build
   mainWindow.webContents.openDevTools();
   mainWindow.setMenu(null);
 
@@ -471,7 +471,7 @@ function connectMsSql() {
     const config = { // construct the connection config
       user: 'wfadmin',
       password: 'hiswfadmin',
-      server: serverId,
+      server: serverId.replace("'", ''),
       database: 'HealthlineWorkflow',
     };
     sql.connect(config).then((res) => {

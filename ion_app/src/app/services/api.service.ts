@@ -12,35 +12,13 @@ export class ApiService {
 
   private localUrl: string = environment.baseUrl ? environment.baseUrl : `http://localhost:8080`;
 
-  public async getArgs(): Promise<any> {
-    if (environment.isElectron && environment.useIpcForApi) {
-      return await this.getArgsIPC();
-    } else {
-      const httpOptions = {
-        headers: new HttpHeaders({
-          Authorization: localStorage.getItem('jwtToken') ? localStorage.getItem('jwtToken') : null,
-        })
-      };
-      return this.http.get(`${this.localUrl}/api/electron/args`).toPromise();
-    }
-  }
-
-  private async getArgsIPC(): Promise<string[]> {
-    return new Promise((resolve, reject) => {
-      this.electronService.ipcRenderer.send('get-args');
-      this.electronService.ipcRenderer.on('args-response', (event, args) => {
-        resolve(args);
-      });
-    });
-  }
-
   public async getAppData(): Promise<any> {
     if (environment.isElectron && environment.useIpcForApi) {
       return await this.getAppDataIPC();
     } else {
       const httpOptions = {
         headers: new HttpHeaders({
-          Authorization: localStorage.getItem('jwtToken') ? localStorage.getItem('jwtToken') : null,
+          Authorization: null,
         })
       };
       return this.http.get(`${this.localUrl}/api/mssql/saved-info`).toPromise();
@@ -66,7 +44,7 @@ export class ApiService {
     } else {
       const httpOptions = {
         headers: new HttpHeaders({
-          Authorization: localStorage.getItem('jwtToken') ? localStorage.getItem('jwtToken') : null,
+          Authorization: null,
         })
       };
       return this.http.post(`${this.localUrl}/api/mssql/submit`, data).toPromise();
