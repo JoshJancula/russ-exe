@@ -100,8 +100,8 @@ function createWindow() {
 
   mainWindow.setTitle('Lund & Browder Form');
   // mainWindow.loadFile('./app/index.html'); // jquery build
-  mainWindow.loadURL('http://localhost:4200'); // angular dev 
-  // mainWindow.loadFile('./ion_app/www/index.html'); // angular build
+  // mainWindow.loadURL('http://localhost:4200'); // angular dev 
+  mainWindow.loadFile('./ion_app/www/index.html'); // angular build
   mainWindow.webContents.openDevTools();
   mainWindow.setMenu(null);
 
