@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script type="text/javascript">window.$ = window.jQuery = require('jquery');</script>
+</head>
+
+<base href="./">
+
+<body>
+    <!-- <canvas id="canvas"></canvas> -->
+    <!-- <img id="theImage" style="height: 100vh; width: 100vw;" /> -->
+    <div id="theDiv"></div>
+</body>
+<script type="text/javascript">
+    // window.$ = window.jQuery = require('jquery');
+    const ipcRenderer = require('electron').ipcRenderer;
+
+    $(document).ready(() => {
+        console.log('ready....');
+        ipcRenderer.send('print-window-loaded');
+        ipcRenderer.on('print-loaded', function (event, args) {
+            console.log('args.... ', args);
+            // initCanvas(args);
+            // const img = document.createElement('img');
+            // img.src = args;
+            // img.style.height = '100vh;';
+            // img.style.width = '100vw;';
+            // document.body.appendChild(img);
+            // console.log('ummm appending... ');
+
+            const embed = "<iframe width='100%' height='100%' src='" + args + "'/>";
+            const div = document.getElementById('theDiv');
+            div.innerHTML += embed;
+        });
+    });
+
+    function initCanvas(data) {
+        const canvas = document.getElementById('canvas');
+        // canvas.style.height = '100vh';
+        // canvas.style.width = '100vw';
+        canvas.setAttribute('width', 1500);
+        canvas.setAttribute('height', 1000);
+        let ctx = canvas.getContext('2d');
+        'use strict';
+        let img = new window.Image();
+        img.addEventListener('load', () => {
+            ctx.drawImage(img, 0, 0);
+        });
+        img.setAttribute('src', data);
+    }
+
+</script>
+
+</html>

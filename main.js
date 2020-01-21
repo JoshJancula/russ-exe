@@ -1,7 +1,9 @@
 global.window = { document: { createElementNS: () => { return {} } } };
 const { app, BrowserWindow } = require('electron');
+const PDFWindow = require('electron-pdf-window')
 let mainWindow = null;
 let imageWindow = null;
+let printWindow = null;
 let hasOpenImageWindow = false;
 let imageData = null;
 const { ipcMain } = require('electron');
@@ -10,10 +12,8 @@ const { protocol } = require('electron');
 const nfs = require('fs');
 const npjoin = require('path').join;
 const es6Path = npjoin(__dirname, '/ion_app/www');
-// const debug = require('electron-debug');
+const debug = require('electron-debug');
 const ffmpeg = require('ffmpeg-static-electron');
-// const jsPDF = require('jspdf');
-// const html2canvas = require('html2canvas');
 const sql = require('mssql');
 let canvasString = null;
 let userId = null;
@@ -22,7 +22,6 @@ let mssqlConnected = false;
 let mssqlQueryCount = 0;
 const maxQueryCount = 10;
 let connectionInProgress = false;
-let debugMode = false;
 // const ElectronPDF = require('electron-pdf');
 
 
@@ -54,17 +53,9 @@ let patientInfo = {
 };
 
 let bypassStandard = false;
+let debugMode = true;
 
-// debug({ isEnabled: false, showDevTools: false});
-
-// if (process.argv) {
-//   // console.log('args... ', process.argv);
-//   let id = process.argv && process.argv[2] ? process.argv[2].slice(8) : null;
-//   let id2 = process.argv && process.argv[3] ? process.argv[3].slice(5) : null;
-//   console.log('id... ', id);
-//   console.log('id2... ', id2);
-// }
-
+debug({ isEnabled: debugMode, showDevTools: debugMode });
 
 if (process.platform !== 'darwin' || bypassStandard) {
   protocol.registerSchemesAsPrivileged([
@@ -99,9 +90,9 @@ function createWindow() {
   });
 
   mainWindow.setTitle('Lund & Browder Form');
-  // mainWindow.loadFile('./app/index.html'); // jquery build
+  mainWindow.loadFile('./app/index.html'); // jquery build
   // mainWindow.loadURL('http://localhost:4200'); // angular dev 
-  mainWindow.loadFile('./ion_app/www/index.html'); // angular build
+  // mainWindow.loadFile('./ion_app/www/index.html'); // angular build
   mainWindow.webContents.openDevTools();
   mainWindow.setMenu(null);
 
@@ -152,7 +143,7 @@ app.on('window-all-closed', () => {
 //   if (mainWindow === null) createWindow();
 // });
 
-async function createImageWindow(imgs) {
+function createImageWindow(imgs) {
   hasOpenImageWindow = true;
   imageWindow = new BrowserWindow({
     width: 600,
@@ -247,34 +238,84 @@ ipcMain.on('save-pdf', (evt, arg) => {
   // handlePdf().then(() => {
   //   evt.sender.send('pdf-complete', { success: true, msg: 'Saved pdf' });
   // }).catch(e => {
-    // evt.sender.send('pdf-complete', { success: false, msg: 'Failed to save pdf', err: e });
+  // evt.sender.send('pdf-complete', { success: false, msg: 'Failed to save pdf', err: e });
   // });
+  // createPrintWindow(arg);
+  // const win = new PDFWindow({
+  //   width: 100,
+  //   height: 100
+  // })
+
+
+  // console.log('arg... ', arg[0], arg[1], arg[2], arg[3], arg[4]);
+  // win.loadFile(`${arg}`);
+    printString = arg;
+  createPrintWindow(null);
 });
 
-// function handlePdf(data) {
-//   return new Promise((resolve, reject) => {
-//     const exporter = new ElectronPDF();
+let printString = null;
 
-//     const jobOptions = {
-//       inMemory: false
-//     };
+ipcMain.on('print-window-loaded', (evt, arg) => {
+  evt.sender.send('print-loaded', printString);
+});
 
-//     const options = {
-//       pageSize: "A4"
-//     };
+function createPrintWindow(url) {
+  printWindow = new BrowserWindow({
+    width: 800,
+    height: 600,
+    minHeight: 300,
+    minWidth: 460,
+    icon: __dirname + '/app/assets/healthline_logo.ico',
+    webPreferences: {
+      nodeIntegration: true,
+      webSecurity: false,
+      plugins: true
+    }
+  });
+  printWindow.loadFile('./printer.html'); // angular build
+  // printWindow.on('closed', () => {
+  //   printWindow = null;
+  // });
 
-//     exporter.createJob(source, target, options, jobOptions).then(job => {
-//       job.on('job-complete', (r) => {
-//         console.log('pdf files:', r.results);
-//         // Process the PDF file(s) here
-//       })
-//       job.render()
-//     })
-//   });
-// }
 
-function executeMsSqlQueries(args) { // get the envelope id from args passed or use test id
-  return new Promise((resolve, reject) => {
+  //   var winparams = 'dependent=yes,locationbar=no,scrollbars=yes,menubar=yes,' +
+  //     'resizable,screenX=50,screenY=50,width=850,height=1050';
+
+  //   var htmlPop = '<embed width=100% height=100%'
+  //     + ' type="application/pdf"'
+  //     + ' src="data:application/pdf;base64,'
+  //     + escape(data)
+  //     + '"></embed>';
+
+  //   var printWindow = window.open("", "PDF", winparams);
+  //   printWindow.document.write(htmlPop);
+  //   printWindow.print();
+  // }
+
+  // function handlePdf(data) {
+  //   return new Promise((resolve, reject) => {
+  //     const exporter = new ElectronPDF();
+
+  //     const jobOptions = {
+  //       inMemory: false
+  //     };
+
+  //     const options = {
+  //       pageSize: "A4"
+  //     };
+
+  //     exporter.createJob(source, target, options, jobOptions).then(job => {
+  //       job.on('job-complete', (r) => {
+  //         console.log('pdf files:', r.results);
+  //         // Process the PDF file(s) here
+  //       })
+  //       job.render()
+  //     })
+  //   });
+}
+
+async function executeMsSqlQueries(args) { // get the envelope id from args passed or use test id
+  return new Promise(async (resolve, reject) => {
     envId = args && args[3] ? args[3].slice(5) : 'c7a19bba-abdb-4ff0-b6e4-fe8528c8a1ae';
     // get current userId passed and build query
     userId = args && args[4] ? args[4].slice(6) : '';
@@ -347,101 +388,66 @@ function executeMsSqlQueries(args) { // get the envelope id from args passed or 
                         content_description = 'LB Form Data'
                         `;
 
-    sql.query(queryStringuserName).then(username => {
+    let promises = [];
+    // push all these query promises to an array and wait for them all to be resolved
+    promises.push(sql.query(queryStringuserName).then(username => {
       userData.userName = username.recordset[0].esig_placeholder;
       userData.userEsig = username.recordset[0].esig_placeholder;
-      mssqlQueryCount++;
-      if (mssqlQueryCount >= maxQueryCount) { resolve(); }
     }).catch(err => {
-      mssqlQueryCount++;
       console.log('query error retrieving User Info.... ', err);
-      if (mssqlQueryCount >= maxQueryCount) { resolve(); }
-    });
+    }));
 
-    sql.query(queryStringpatName).then(name => {
+    promises.push(sql.query(queryStringpatName).then(name => {
       patientInfo.patientName = name.recordset[0].content_value;
-      mssqlQueryCount++;
-      if (mssqlQueryCount >= maxQueryCount) { resolve(); }
     }).catch(err => {
-      mssqlQueryCount++;
       console.log('error retrieving Patient Name in query.... ', err);
-      if (mssqlQueryCount >= maxQueryCount) { resolve(); }
-    });
+    }));
 
-    sql.query(queryStringmedRecno).then(med => {
+    promises.push(sql.query(queryStringmedRecno).then(med => {
       patientInfo.medRecno = med.recordset[0].content_value;
-      mssqlQueryCount++;
-      if (mssqlQueryCount >= maxQueryCount) { resolve(); }
     }).catch(err => {
-      mssqlQueryCount++;
       console.log('error retrieving med rec no in query.... ', err);
-      if (mssqlQueryCount >= maxQueryCount) { resolve(); }
-    });
+    }));
 
-    sql.query(queryStringacctNo).then(acc => {
+    promises.push(sql.query(queryStringacctNo).then(acc => {
       patientInfo.acctNo = acc.recordset[0].content_value;
-      mssqlQueryCount++;
-      if (mssqlQueryCount >= maxQueryCount) { resolve(); }
     }).catch(err => {
-      mssqlQueryCount++;
       console.log('error retrieving acct number in query.... ', err);
-      if (mssqlQueryCount >= maxQueryCount) { resolve(); }
-    });
+    }));
 
-    sql.query(queryStringpatientAge).then(age => {
+    promises.push(sql.query(queryStringpatientAge).then(age => {
       patientInfo.patientAge = age.recordset[0].content_value;
-      mssqlQueryCount++;
-      if (mssqlQueryCount >= maxQueryCount) { resolve(); }
     }).catch(err => {
-      mssqlQueryCount++;
       console.log('error retrieving patient age in query.... ', err);
-      if (mssqlQueryCount >= maxQueryCount) { resolve(); }
-    });
+    }));
 
-    sql.query(queryStringpatBirthdate).then(bday => {
+    promises.push(sql.query(queryStringpatBirthdate).then(bday => {
       patientInfo.birthDate = bday.recordset[0].content_value;
-      mssqlQueryCount++;
-      if (mssqlQueryCount >= maxQueryCount) { resolve(); }
     }).catch(err => {
-      mssqlQueryCount++;
       console.log('error retrieving patient DOB in query.... ', err);
-      if (mssqlQueryCount >= maxQueryCount) { resolve(); }
-    });
+    }));
 
-    sql.query(queryStringpatientSex).then(sex => {
+    promises.push(sql.query(queryStringpatientSex).then(sex => {
       patientInfo.patientSex = sex.recordset[0].content_value;
-      console.log('patient sex is.... ', patientInfo.patientSex)
-      mssqlQueryCount++;
-      if (mssqlQueryCount >= maxQueryCount) { resolve(); }
     }).catch(err => {
-      mssqlQueryCount++;
       console.log('error retrieving patient sex in query.... ', err);
-      if (mssqlQueryCount >= maxQueryCount) { resolve(); }
-    });
+    }));
 
-    sql.query(queryStringadmitDate).then(admit => {
+    promises.push(sql.query(queryStringadmitDate).then(admit => {
       patientInfo.admitDate = admit.recordset[0].content_value;
-      mssqlQueryCount++;
-      if (mssqlQueryCount >= maxQueryCount) { resolve(); }
     }).catch(err => {
-      mssqlQueryCount++;
       console.log('error retrieving admit date in query.... ', err);
-      if (mssqlQueryCount >= maxQueryCount) { resolve(); }
-    });
+    }));
 
-    sql.query(queryStringcanvasData).then((canvasData) => { // look to see if we had a canvas already
+    promises.push(sql.query(queryStringcanvasData).then((canvasData) => { // look to see if we had a canvas already
       if (canvasData.recordset.length && canvasData.recordset[0].content_cblob) {
         canvasString = canvasData.recordset[0].content_cblob;
       }
-      mssqlQueryCount++;
-      if (mssqlQueryCount >= maxQueryCount) { resolve(); }
     }).catch((err) => {
-      mssqlQueryCount++;
       console.log('error retrieving canvas data in query.... ', err);
-      if (mssqlQueryCount >= maxQueryCount) { resolve(); }
-    });
+    }));
 
-    sql.query(queryStringtableData).then((qd) => { // if there was data from request
+    promises.push(sql.query(queryStringtableData).then((qd) => { // if there was data from request
       if (qd.recordset.length && qd.recordset[0].content_cblob) {
         try { // try to parse the json and set info.....
           const d = JSON.parse(qd.recordset[0].content_cblob);
@@ -449,18 +455,13 @@ function executeMsSqlQueries(args) { // get the envelope id from args passed or 
         } catch (e) {
           console.log('error parsing json.... ', e);
         }
-        mssqlQueryCount++;
-        if (mssqlQueryCount >= maxQueryCount) { resolve(); }
-      } else { // there was no form yet so set initial state
-        // dataObject.createdBy = userData.userName;
-        mssqlQueryCount++;
-        if (mssqlQueryCount >= maxQueryCount) { resolve(); }
       }
     }).catch((err) => {
-      mssqlQueryCount++;
       console.log('error retrieving table data in query.... ', err);
-      if (mssqlQueryCount >= maxQueryCount) { resolve(); }
-    });
+    }));
+
+    await Promise.all(promises);
+    resolve();
   });
 }
 
@@ -481,12 +482,13 @@ function connectMsSql() {
     }).catch((e) => {
       connectionInProgress = false;
       console.log('err... ', e);
-      reject(m,);
+      reject(m);
     });
   });
 }
 
-function submitMsSql(edit, url, obj) {
+function submitMsSql(edit, url, obj, tried) {
+  let hasRetried = tried ? tried : false;
   return new Promise((resolve, reject) => {
     const insert1 = `
         INSERT INTO [dbo].[envelope_content] ([envelope_id],[content_description],[content_value], [content_type],[content_cblob]) 
@@ -519,11 +521,13 @@ function submitMsSql(edit, url, obj) {
         reject(err2);
         console.log('error inserting table data.... ', err2);
       });
-    }).catch((err) => {
-      connectMsSql().then(() => {
-        submitMsSql(edit, url, obj);
-      }).catch(err2 => {
-        reject(err);
+    }).catch((err) => { // if the first update/insert didn't work
+      connectMsSql().then(() => { // see if it was bc was lost connection
+        if (!hasRetried) { // ....only if we hadn't already tried
+          submitMsSql(edit, url, obj, true);
+        }
+      }).catch(err2 => { // if you can't connect
+        reject(err); // just reject with error
         console.log('query error inserting Canvas data.... ', err);
       });
     });

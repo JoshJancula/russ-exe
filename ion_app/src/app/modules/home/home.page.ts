@@ -288,7 +288,7 @@ export class HomePage implements OnInit, OnDestroy {
     return count;
   }
 
-  private resetForPDF(): Promise<any> {
+  private resetForPDF(): Promise<void> {
     return new Promise((resolve, reject) => {
       this.makeCellsDarker(false);
       setTimeout(() => resolve(), 500);

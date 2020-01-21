@@ -35,6 +35,7 @@
     "jspdf": "^1.5.3",
     "moment": "^2.24.0",
     "mssql": "^5.1.0",
+    "ng2-pdf-viewer": "^6.0.2",
     "ngrx-store-persist": "^1.0.20",
     "ngx-electron": "^2.2.0",
     "rxjs": "~6.5.1",

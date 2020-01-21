@@ -10,7 +10,7 @@ import { ElectronService } from 'ngx-electron';
 export class PdfService {
 
   private printIframe: HTMLIFrameElement | any;
-  private debug: boolean = false;
+  private debug: boolean = true;
 
   constructor(private electronService: ElectronService) { }
 
@@ -27,10 +27,11 @@ export class PdfService {
           if (action === 'download') {
             if (!environment.isElectron || !this.debug) {
               // pdf.save(title);
-              pdf.output('save', title);
+              // pdf.output('save', title);
               resolve();
             } else {
-              this.electronService.ipcRenderer.send('save-pdf', pdf.output('datauristring'));
+              // console.log('blob.... ', pdf.output('datauristring').toString());
+              this.electronService.ipcRenderer.send('save-pdf', imgData);
               this.electronService.ipcRenderer.on('pdf-complete', (event, args) => {
                 if (args.err) {
                   reject(args.err);

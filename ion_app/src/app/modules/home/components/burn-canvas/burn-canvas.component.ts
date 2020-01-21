@@ -97,32 +97,6 @@ export class BurnCanvasComponent implements OnInit, AfterContentInit, OnDestroy 
     }
   }
 
-  // private captureEvents(canvasEl: HTMLCanvasElement): void {
-  //   this.drawingSubscription = fromEvent(canvasEl, 'mousedown').pipe(switchMap(e => {
-  //     return fromEvent(canvasEl, 'mousemove').pipe(
-  //       takeUntil(fromEvent(canvasEl, 'mouseup')),
-  //       takeUntil(fromEvent(canvasEl, 'mouseleave')),
-  //       pairwise()
-  //     );
-  //   })
-  //   ).subscribe((res: [MouseEvent, MouseEvent]) => {
-  //     this.hasDrawnOnCanvas = true;
-  //     const rect = canvasEl.getBoundingClientRect();
-  //     const prevPos = {
-  //       x: res[0].clientX - rect.left,
-  //       y: res[0].clientY - rect.top
-  //     };
-
-  //     const currentPos = {
-  //       x: res[1].clientX - rect.left,
-  //       y: res[1].clientY - rect.top
-  //     };
-
-  //     this.drawOnCanvas(prevPos, currentPos);
-  //     this.subs.push(this.drawingSubscription);
-  //   });
-  // }
-
   private captureEvents(canvasEl: HTMLCanvasElement): void {
     this.drawingSubscription = fromEvent(canvasEl, (environment.isMobileApp ? 'touchmove' : 'mousedown')).pipe(switchMap(e => {
       return fromEvent(canvasEl, (environment.isMobileApp ? 'touchmove' : 'mousemove')).pipe(
