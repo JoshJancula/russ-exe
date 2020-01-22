@@ -40,8 +40,7 @@ th {
 td input {
     margin: 1%;
     border-bottom: none !important;
-    margin-left: 45% !important;
-    width: 30% !important;
+    text-align: center;
 }
 
 .insertMoreButton {
