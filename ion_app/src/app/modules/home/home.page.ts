@@ -248,12 +248,13 @@ export class HomePage implements OnInit, OnDestroy {
     this.pdfView = true;
     if (!environment.isMobileApp) {
       this.burnCanvas.pdfView = true;
+      this.burnCanvas.pdfSubject.next(true);
     }
     const div = document.getElementById('mainForm');
     const ogWidth = document.body.style.width;
     const ogWidth2 = div.style.width;
-    div.style.width = '1000px';
-    document.body.style.width = '1000px';
+    div.style.width = '1400px';
+    document.body.style.width = '1400px';
     this.resetForPDF().then(() => {
       this.pdfService.generatePDF('download', document.querySelector('#mainForm'), 'test', this.countRows()).then(() => {
         setTimeout(() => {
@@ -263,12 +264,14 @@ export class HomePage implements OnInit, OnDestroy {
           this.pdfView = false;
           if (!environment.isMobileApp) {
             this.burnCanvas.pdfView = false;
+            this.burnCanvas.pdfSubject.next(false);
           }
         }, 300);
       }).catch((e: any) => {
         this.pdfView = false;
         if (!environment.isMobileApp) {
           this.burnCanvas.pdfView = false;
+          this.burnCanvas.pdfSubject.next(false);
         }
         this.makeCellsDarker(true);
         document.getElementById('mainForm').style.width = ogWidth2;
@@ -291,7 +294,7 @@ export class HomePage implements OnInit, OnDestroy {
   private resetForPDF(): Promise<void> {
     return new Promise((resolve, reject) => {
       this.makeCellsDarker(false);
-      setTimeout(() => resolve(), 500);
+      setTimeout(() => resolve(), 1000);
     });
   }
 

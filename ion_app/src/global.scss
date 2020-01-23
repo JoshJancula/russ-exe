@@ -253,7 +253,7 @@ ion-spinner {
 
 .infant-canvas {
   background-position: center;
-  background-size: cover;
+  background-size: contain;
   background-repeat: no-repeat;
   background-image: url('./assets/BodyOutlines_AllFigures-06.png');
 }
@@ -261,14 +261,14 @@ ion-spinner {
 
 .oneToFour-canvas {
   background-position: center;
-  background-size: cover;
+  background-size: contain;
   background-repeat: no-repeat;
   background-image: url('./assets/BodyOutlines_AllFigures-05.png');
 }
 
 .fiveToNine-canvas {
   background-position: center;
-  background-size: cover;
+  background-size: contain;
   background-repeat: no-repeat;
   background-image: url('./assets/BodyOutlines_AllFigures-04.png');
 }
@@ -276,14 +276,14 @@ ion-spinner {
 
 .tenToFourteen-canvas {
   background-position: center;
-  background-size: cover;
+  background-size: contain;
   background-repeat: no-repeat;
   background-image: url('./assets/BodyOutlines_AllFigures-03.png');
 }
 
 .fifteen-canvas {
   background-position: center;
-  background-size: cover;
+  background-size: contain;
   background-repeat: no-repeat;
   background-image: url('./assets/BodyOutlines_AllFigures-02.png');
 }
@@ -291,7 +291,7 @@ ion-spinner {
 
 .adult-canvas {
   background-position: center;
-  background-size: cover;
+  background-size: contain;
   background-repeat: no-repeat;
   background-image: url('./assets/BodyOutlines_AllFigures-01.png');
 }
@@ -312,5 +312,13 @@ margin-bottom: 1rem;
   background: #585858;
   color: white;
   opacity: .97;
+}
+
+.d-block {
+  display: block !important;
+}
+
+.d-none {
+  display: none !important;
 }
   

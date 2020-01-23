@@ -74,8 +74,10 @@
                     <th>Area</th>
                     <th *ngIf="patientInfo.patientAge < 1" class="infant">0-1 yr</th>
                     <th *ngIf="patientInfo.patientAge >= 1 && patientInfo.patientAge < 5" class="oneToFour">1-4 yr</th>
-                    <th *ngIf="patientInfo.patientAge >= 5 && patientInfo.patientAge < 10" class="fiveToNine">5-9 yr</th>
-                    <th *ngIf="patientInfo.patientAge >= 10 && patientInfo.patientAge < 15" class="tenToFourteen">10-14yr</th>
+                    <th *ngIf="patientInfo.patientAge >= 5 && patientInfo.patientAge < 10" class="fiveToNine">5-9 yr
+                    </th>
+                    <th *ngIf="patientInfo.patientAge >= 10 && patientInfo.patientAge < 15" class="tenToFourteen">
+                        10-14yr</th>
                     <th *ngIf="patientInfo.patientAge === 15" class="fifteen">15 yr</th>
                     <th *ngIf="patientInfo.patientAge >= 16" class="adult">Adult</th>
                     <th>2nd Degree</th>
@@ -87,15 +89,15 @@
                     <td *ngIf="displayRow(row, i)" class="center">{{ row.display }}</td>
                     <td *ngIf="displayRow(row, i)" class="center">{{ row[useThisRange()] }}</td>
                     <td *ngIf="displayRow(row, i)"><input [(ngModel)]="dataObject.tableData[i].secondDegree"
-                        type="number" min="0" (input)="calculateTotals()" /></td>
+                            type="number" min="0" (input)="calculateTotals()" /></td>
                     <td *ngIf="displayRow(row, i)"><input [(ngModel)]="dataObject.tableData[i].thirdDegree"
-                        type="number" min="0" (input)="calculateTotals()" /></td>
+                            type="number" min="0" (input)="calculateTotals()" /></td>
                     <td *ngIf="displayRow(row, i)"><input [(ngModel)]="dataObject.tableData[i].fourthDegree"
-                        type="number" min="0" (input)="calculateTotals()" /></td>
+                            type="number" min="0" (input)="calculateTotals()" /></td>
                     <td *ngIf="displayRow(row, i)" class="totalRow"
                         [ngClass]="{'hasError': dataObject.tableData[i].hasError}"><input class="totalRow"
-                        [ngClass]="{'hasError': dataObject.tableData[i].hasError}"
-                        [(ngModel)]="dataObject.tableData[i].total" type="number" readonly /></td>
+                            [ngClass]="{'hasError': dataObject.tableData[i].hasError}"
+                            [(ngModel)]="dataObject.tableData[i].total" type="number" readonly /></td>
                 </tr>
                 <tr>
                     <td colspan="2" class="right-align">
@@ -159,7 +161,7 @@
             </span>
             <label style="margin: 2%"><input id="maleBox" type="checkbox" (click)="setSex('m')" /><span>M</span></label>
             <label style="margin: 2%"><input id="femaleBox" type="checkbox"
-                (click)="setSex('f')" /><span>F</span></label>
+                    (click)="setSex('f')" /><span>F</span></label>
         </div>
     </div>
 </ng-template>

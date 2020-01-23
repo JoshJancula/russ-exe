@@ -8,7 +8,7 @@ export class Html2CanvasService {
   constructor() {
   }
 
-  public async getCanvas(ele: any) {
+  public async getCanvas(ele: any): Promise<any> {
     if (!ele) {
       return;
     }
@@ -23,4 +23,5 @@ export class Html2CanvasService {
       return res;
     });
   }
+
 }

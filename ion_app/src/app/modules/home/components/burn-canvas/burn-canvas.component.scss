@@ -1,6 +1,6 @@
 .infant-canvas {
     background-position: center;
-    background-size: cover;
+    background-size: contain;
     background-repeat: no-repeat;
     background-image: url('../../../../../assets/BodyOutlines_AllFigures-06.png');
 }
@@ -8,14 +8,14 @@
 
 .oneToFour-canvas {
     background-position: center;
-    background-size: cover;
+    background-size: contain;
     background-repeat: no-repeat;
     background-image: url('../../../../../assets/BodyOutlines_AllFigures-05.png');
 }
 
 .fiveToNine-canvas {
     background-position: center;
-    background-size: cover;
+    background-size: contain;
     background-repeat: no-repeat;
     background-image: url('../../../../../assets/BodyOutlines_AllFigures-04.png');
 }
@@ -23,14 +23,14 @@
 
 .tenToFourteen-canvas {
     background-position: center;
-    background-size: cover;
+    background-size: contain;
     background-repeat: no-repeat;
     background-image: url('../../../../../assets/BodyOutlines_AllFigures-03.png');
 }
 
 .fifteen-canvas {
     background-position: center;
-    background-size: cover;
+    background-size: contain;
     background-repeat: no-repeat;
     background-image: url('../../../../../assets/BodyOutlines_AllFigures-02.png');
 }
@@ -38,7 +38,7 @@
 
 .adult-canvas {
     background-position: center;
-    background-size: cover;
+    background-size: contain;
     background-repeat: no-repeat;
     background-image: url('../../../../../assets/BodyOutlines_AllFigures-01.png');
 }
@@ -49,4 +49,27 @@
   right: 1rem !important;
   float: right;
   margin-bottom: 1rem;
+}
+
+.canvasContainer {
+    padding: 0;
+    margin: 0;
+    // margin-left: 0.7rem;
+    // margin-right: 0.9rem;
+    // padding-bottom: 3rem;
+    // width: 400;
+    // height: 500;
+    // justify-content: center;
+    // align-content: center;
+}
+
+.doodle {
+    height: 100% !important;
+    width: 100% !important;
+    // margin: 0;
+    // padding: 0;
+    // width: 400;
+    // height: 500;
+    // position: relative; 
+    // top: -28px !important;
 }

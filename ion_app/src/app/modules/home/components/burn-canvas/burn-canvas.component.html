@@ -9,9 +9,10 @@
         style="display: inline-block; height: 12px; width: 12px; background: #0080FF; margin-left: 8px;"></span>
 </div>
 
-<div class="row" *ngIf="dataObject">
-    <div id="canvasDiv">
-        <canvas id="canvas" [ngClass]="returnCanvasClass()" #canvas></canvas>
+<div class="row" [ngStyle]="{ 'width': pdfView ? '75%' : '100%' }" *ngIf="dataObject">
+    <div id="canvasDiv" class="canvasContainer" (mouseleave)="updatePrintCanvas()" [ngClass]="pdfView ? returnCanvasClass() : null" >
+        <canvas *ngIf="!pdfView" id="canvas" [ngClass]="returnCanvasClass()" [ngStyle]="{'display': pdfView ? 'none' : 'block'}" #canvas></canvas>
+        <img class="doodle" *ngIf="pdfView" src="{{currentUrl}}" />
     </div>
 </div>
 

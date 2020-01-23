@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, OnDestroy, Input, AfterContentInit } from '@angular/core';
-import { Subscription, fromEvent } from 'rxjs';
+import { Subscription, fromEvent, Observable, BehaviorSubject } from 'rxjs';
 import { switchMap, takeUntil, pairwise } from 'rxjs/operators';
 import { Patient } from 'src/app/models/patient.model';
 import { BurnFormData } from 'src/app/models/burn-form-data.model';
@@ -17,6 +17,8 @@ export class BurnCanvasComponent implements OnInit, AfterContentInit, OnDestroy 
   @Input() public patientInfo: Patient;
   @Input() public dataObject: BurnFormData;
   @Input() public pdfView: boolean = false;
+  public pdfSubject = new BehaviorSubject(this.pdfView);
+  public pdfStatus = this.pdfSubject.asObservable();
   public cx: CanvasRenderingContext2D;
   public drawingSubscription: Subscription;
   public formTool: string = 'draw';
@@ -24,10 +26,20 @@ export class BurnCanvasComponent implements OnInit, AfterContentInit, OnDestroy 
   public hasDrawnOnCanvas: boolean = false;
   private subs: Subscription[] = [];
   public environment = environment;
+  public currentUrl: string;
 
   constructor(private modalController: ModalController) { }
 
-  ngOnInit(): void { }
+  ngOnInit(): void {
+    this.subs.push(this.pdfStatus.subscribe((res: boolean) => {
+      if (res) {
+        this.updatePrintCanvas();
+      } else {
+        this.ngAfterContentInit();
+        setTimeout(() => this.drawDataURIOnCanvas(this.currentUrl, this.cx), 500);
+      }
+    }));
+  }
 
   ngOnDestroy(): void {
     this.subs.map(s => s.unsubscribe());
@@ -131,6 +143,11 @@ export class BurnCanvasComponent implements OnInit, AfterContentInit, OnDestroy 
       this.cx.lineTo(currentPos.x, currentPos.y);
       this.cx.stroke();
     }
+  }
+
+  public updatePrintCanvas(): void {
+    const canvas: HTMLCanvasElement | any = document.getElementById('canvas');
+    this.currentUrl = canvas.toDataURL();
   }
 
   public useThisRange(display?: boolean): string {
