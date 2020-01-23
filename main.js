@@ -53,7 +53,7 @@ let patientInfo = {
 };
 
 let bypassStandard = false;
-let debugMode = true;
+let debugMode = false;
 
 debug({ isEnabled: debugMode, showDevTools: debugMode });
 
