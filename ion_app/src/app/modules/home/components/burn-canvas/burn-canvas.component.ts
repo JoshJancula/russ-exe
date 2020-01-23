@@ -32,9 +32,9 @@ export class BurnCanvasComponent implements OnInit, AfterContentInit, OnDestroy 
 
   ngOnInit(): void {
     this.subs.push(this.pdfStatus.subscribe((res: boolean) => {
-      if (res) {
+      if (res && this.hasDrawnOnCanvas) {
         this.updatePrintCanvas();
-      } else {
+      } else if (this.hasDrawnOnCanvas && !res) {
         this.ngAfterContentInit();
         setTimeout(() => this.drawDataURIOnCanvas(this.currentUrl, this.cx), 500);
       }
