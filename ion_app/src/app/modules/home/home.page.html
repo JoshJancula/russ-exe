@@ -33,18 +33,18 @@
                 <div class="row" style="margin-top: 3%;">
                     <div class="col l6 m6 s6" style="margin-left: 0; padding-left: 0;">
                         <h6>Date of Injury:
-                            <input *ngIf="!environment.useIonPickers" id="dateOfInjury" placeholder="MM/DD/YYYY"
+                            <input *ngIf="!environment.useIonPickers || pdfView" id="dateOfInjury" placeholder="MM/DD/YYYY"
                                 [(ngModel)]="dataObject.dateOfInjury" style="cursor: pointer;" type="text" />
-                            <ion-datetime *ngIf="environment.useIonPickers" placeholder="{{ currentDate }}"
+                            <ion-datetime *ngIf="environment.useIonPickers && !pdfView" placeholder="{{ currentDate }}"
                                 class="fake-input" max="{{maxDate}}" displayFormat="MM/DD/YYYY"
                                 [(ngModel)]="dataObject.dateOfInjury"></ion-datetime>
                         </h6>
                     </div>
                     <div class="col l6 m6 s6" style="margin-left: 0; padding-left: 0;">
                         <h6>Time of Injury:
-                            <input *ngIf="!environment.useIonPickers" placeholder="12:00 am" id="timeOfInjury"
+                            <input *ngIf="!environment.useIonPickers || pdfView" placeholder="HH:mm" id="timeOfInjury"
                                 [(ngModel)]="dataObject.timeOfInjury" type="time" />
-                            <ion-datetime *ngIf="environment.useIonPickers" placeholder="{{ currentTime }}"
+                            <ion-datetime *ngIf="environment.useIonPickers && !pdfView" placeholder="{{ currentTime }}"
                                 class="fake-input" [(ngModel)]="dataObject.timeOfInjury" displayFormat="hh:mm a">
                             </ion-datetime>
                         </h6>
@@ -181,17 +181,17 @@
         </div>
         <div *ngIf="dataObject.formType === 'burn'" id="burnTypes">
             <h6>Type of Burn Injury</h6>
-            <label *ngFor="let r of environment.burnRadios" class="td_wtt burnRadio"><input
+            <label *ngFor="let r of environment.burnRadios; index as i" class="td_wtt burnRadio"><input
                     [checked]="dataObject.burnType === r.arg" (click)="setBurnType(r.arg)" id="{{r.arg}}_radio"
                     type="radio" name="{{r.name}}" />
-                <span>{{ r.display }} </span></label>
+                <span>{{ r.display }} </span><br *ngIf="pdfView && i === 3" /></label>
         </div>
         <div *ngIf="dataObject.formType !== 'burn'" id="skinTypes">
             <h6>Type of Skin Disease</h6>
-            <label *ngFor="let r of environment.skinRadios" class="td_wtt burnRadio"><input
+            <label *ngFor="let r of environment.skinRadios; index as i" class="td_wtt burnRadio"><input
                     [checked]="dataObject.skinType === r.arg" (click)="setSkinType(r.arg)" id="{{r.arg}}_radio"
                     type="radio" name="{{r.name}}" />
-                <span>{{ r.display }} </span></label>
+                <span>{{ r.display }} </span><br *ngIf="pdfView && i === 3" /></label>
         </div>
         <hr />
     </div>

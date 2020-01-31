@@ -246,7 +246,7 @@ export class HomePage implements OnInit, OnDestroy {
 
   public generatePDF(): void {
     this.pdfView = true;
-    if (!environment.isMobileApp) {
+    if (!environment.isMobileApp && this.burnCanvas.hasDrawnOnCanvas) {
       this.burnCanvas.pdfView = true;
       this.burnCanvas.pdfSubject.next(true);
     }
@@ -269,7 +269,7 @@ export class HomePage implements OnInit, OnDestroy {
         }, 300);
       }).catch((e: any) => {
         this.pdfView = false;
-        if (!environment.isMobileApp) {
+        if (!environment.isMobileApp && this.burnCanvas.hasDrawnOnCanvas) {
           this.burnCanvas.pdfView = false;
           this.burnCanvas.pdfSubject.next(false);
         }

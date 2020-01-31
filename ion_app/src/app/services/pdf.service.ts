@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import * as jsPDF from 'jspdf';
 import { Html2CanvasService } from './html2canvas.service';
+import { ElectronService } from 'ngx-electron';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +10,9 @@ export class PdfService {
 
   private printIframe: HTMLIFrameElement | any;
 
-  constructor(private canvasService: Html2CanvasService) { }
+  constructor(
+    private electronService: ElectronService,
+    private canvasService: Html2CanvasService) { }
 
   public generatePDF(action: string, div: HTMLElement, title: string, totalRows?: number): Promise<void> {
     return new Promise((resolve, reject) => {
@@ -19,14 +22,18 @@ export class PdfService {
         const pdf = new jsPDF('p', 'mm', 'a4', true);
         const pdfWidth = pdf.internal.pageSize.getWidth();
         const pdfHeight = pdf.internal.pageSize.getHeight() + 140;
-        // const position = window.innerWidth < 600 ? -80 : window.innerWidth >= 600 && window.innerWidth < 800 ? -60 : -50;
         setTimeout(() => {
           pdf.addImage(imgData, 'PNG', 0, null, pdfWidth, pdfHeight, '', 'FAST');
           if (action === 'download') {
             try {
-              pdf.save(title);
-              resolve();
+              // pdf.save(title);
+              // resolve();
+              this.electronService.ipcRenderer.send('save-pdf', canvas.toDataURL('image/png'));
+              this.electronService.ipcRenderer.on('print-task-complete', (event, args) => {
+                resolve();
+              });
             } catch (e) {
+              console.log('e... ', e);
               resolve();
             }
           } else if (action === 'print') {
@@ -41,6 +48,7 @@ export class PdfService {
       }).catch((err: any) => {
         reject(err);
       });
+
     });
   }
 

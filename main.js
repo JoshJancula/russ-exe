@@ -1,6 +1,6 @@
 global.window = { document: { createElementNS: () => { return {} } } };
 const { app, BrowserWindow } = require('electron');
-const PDFWindow = require('electron-pdf-window')
+const PDFWindow = require('electron-pdf-window');
 let mainWindow = null;
 let imageWindow = null;
 let printWindow = null;
@@ -24,6 +24,7 @@ const maxQueryCount = 10;
 let connectionInProgress = false;
 // const ElectronPDF = require('electron-pdf');
 
+// const printer = require('@thiagoelg/node-printer');
 
 let dataObject = {
   tableData: null,
@@ -82,10 +83,12 @@ function createWindow() {
     height: 600,
     minHeight: 300,
     minWidth: 460,
+    nodeIntegrationInSubFrames: true,
     icon: __dirname + '/app/assets/healthline_logo.ico',
     webPreferences: {
       nodeIntegration: true,
-      webSecurity: false
+      webSecurity: false,
+      nodeIntegrationInWorker: true
     }
   });
 
@@ -99,6 +102,7 @@ function createWindow() {
   mainWindow.on('closed', () => {
     mainWindow = null;
     imageWindow = null;
+    printWindow = null;
   });
 }
 
@@ -110,10 +114,10 @@ ipcMain.on('saved', (evt, arg) => {
   app.exit(1);
 });
 
-ipcMain.on('open-images', async (evt, arg) => {
+ipcMain.on('open-images', (evt, arg) => {
   if (!hasOpenImageWindow) {
     imageData = arg;
-    await createImageWindow(arg);
+    createImageWindow(arg);
   } else {
     imageWindow.hide();
     imageWindow.show();
@@ -234,29 +238,22 @@ ipcMain.on('submit-mssql', (evt, arg) => {
   }
 });
 
+let printString = null;
+let printResponder = null;
+
 ipcMain.on('save-pdf', (evt, arg) => {
-  // handlePdf().then(() => {
-  //   evt.sender.send('pdf-complete', { success: true, msg: 'Saved pdf' });
-  // }).catch(e => {
-  // evt.sender.send('pdf-complete', { success: false, msg: 'Failed to save pdf', err: e });
-  // });
-  // createPrintWindow(arg);
-  // const win = new PDFWindow({
-  //   width: 100,
-  //   height: 100
-  // })
-
-
-  // console.log('arg... ', arg[0], arg[1], arg[2], arg[3], arg[4]);
-  // win.loadFile(`${arg}`);
-    printString = arg;
+  printString = arg;
   createPrintWindow(null);
+  printResponder = evt;
 });
 
-let printString = null;
-
 ipcMain.on('print-window-loaded', (evt, arg) => {
-  evt.sender.send('print-loaded', printString);
+  evt.sender.send('loaded-response', printString);
+});
+
+ipcMain.on('print-task-complete', (evt, arg) => {
+  printResponder.sender.send('print-task-complete', arg);
+  printWindow.close();
 });
 
 function createPrintWindow(url) {
@@ -269,49 +266,11 @@ function createPrintWindow(url) {
     webPreferences: {
       nodeIntegration: true,
       webSecurity: false,
-      plugins: true
+      plugins: true,
+      devTools: false
     }
   });
   printWindow.loadFile('./printer.html'); // angular build
-  // printWindow.on('closed', () => {
-  //   printWindow = null;
-  // });
-
-
-  //   var winparams = 'dependent=yes,locationbar=no,scrollbars=yes,menubar=yes,' +
-  //     'resizable,screenX=50,screenY=50,width=850,height=1050';
-
-  //   var htmlPop = '<embed width=100% height=100%'
-  //     + ' type="application/pdf"'
-  //     + ' src="data:application/pdf;base64,'
-  //     + escape(data)
-  //     + '"></embed>';
-
-  //   var printWindow = window.open("", "PDF", winparams);
-  //   printWindow.document.write(htmlPop);
-  //   printWindow.print();
-  // }
-
-  // function handlePdf(data) {
-  //   return new Promise((resolve, reject) => {
-  //     const exporter = new ElectronPDF();
-
-  //     const jobOptions = {
-  //       inMemory: false
-  //     };
-
-  //     const options = {
-  //       pageSize: "A4"
-  //     };
-
-  //     exporter.createJob(source, target, options, jobOptions).then(job => {
-  //       job.on('job-complete', (r) => {
-  //         console.log('pdf files:', r.results);
-  //         // Process the PDF file(s) here
-  //       })
-  //       job.render()
-  //     })
-  //   });
 }
 
 async function executeMsSqlQueries(args) { // get the envelope id from args passed or use test id

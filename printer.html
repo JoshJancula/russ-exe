@@ -3,52 +3,59 @@
 
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script type="text/javascript">window.$ = window.jQuery = require('jquery');</script>
 </head>
 
 <base href="./">
 
 <body>
-    <!-- <canvas id="canvas"></canvas> -->
-    <!-- <img id="theImage" style="height: 100vh; width: 100vw;" /> -->
-    <div id="theDiv"></div>
+
 </body>
+
+<script>window.html2canvas = require('html2canvas');</script>
+<script>window.jsPDF = require('jspdf');</script>
+<script>window.$ = window.jQuery = require('jquery');</script>
+
 <script type="text/javascript">
-    // window.$ = window.jQuery = require('jquery');
+
     const ipcRenderer = require('electron').ipcRenderer;
 
     $(document).ready(() => {
-        console.log('ready....');
         ipcRenderer.send('print-window-loaded');
-        ipcRenderer.on('print-loaded', function (event, args) {
-            console.log('args.... ', args);
-            // initCanvas(args);
-            // const img = document.createElement('img');
-            // img.src = args;
-            // img.style.height = '100vh;';
-            // img.style.width = '100vw;';
-            // document.body.appendChild(img);
-            // console.log('ummm appending... ');
-
-            const embed = "<iframe width='100%' height='100%' src='" + args + "'/>";
-            const div = document.getElementById('theDiv');
-            div.innerHTML += embed;
+        ipcRenderer.on('loaded-response', (event, args) => {
+            print(args).then(() => {
+                // notify job done
+                ipcRenderer.send('print-task-complete');
+            }).catch(e => {
+                // notify job fail
+                ipcRenderer.send('print-task-complete', e);
+            })
         });
     });
 
-    function initCanvas(data) {
-        const canvas = document.getElementById('canvas');
-        // canvas.style.height = '100vh';
-        // canvas.style.width = '100vw';
-        canvas.setAttribute('width', 1500);
-        canvas.setAttribute('height', 1000);
-        let ctx = canvas.getContext('2d');
-        'use strict';
-        let img = new window.Image();
-        img.addEventListener('load', () => {
-            ctx.drawImage(img, 0, 0);
+    // so printing didn't work out so hot... 
+    function print(contentDataURL) { // so lets see if we can save from here
+        return new Promise((resolve, reject) => {
+            try {
+                const imgWidth = 210; // create a canvas of doc to append to pdf as img
+                const imgHeight = 300;
+                setTimeout(() => {
+                    const pdf = new jsPDF('p', 'mm', 'a4', true);
+                    const pdfWidth = pdf.internal.pageSize.getWidth();
+                    const pdfHeight = pdf.internal.pageSize.getHeight() + 140;
+                    setTimeout(() => {
+                        pdf.addImage(contentDataURL, 'PNG', 0, null, pdfWidth, pdfHeight, '', 'FAST');
+
+                        // const url = pdf.output('datauristring');
+                        // console.log('url... ', url);
+                        pdf.save('test');
+                    }, 300);
+                    // console.log('should have saved....');
+                    setTimeout(() => resolve(), 2000);
+                }, 300);
+            } catch (e) {
+                // console.log('err.... ', e);
+            }
         });
-        img.setAttribute('src', data);
     }
 
 </script>

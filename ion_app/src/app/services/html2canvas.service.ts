@@ -5,8 +5,8 @@ import html2canvas from 'html2canvas';
   providedIn: 'root'
 })
 export class Html2CanvasService {
-  constructor() {
-  }
+
+  constructor() {}
 
   public async getCanvas(ele: any): Promise<any> {
     if (!ele) {
