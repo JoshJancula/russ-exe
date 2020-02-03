@@ -4,7 +4,7 @@ export const environment = {
   isMobileApp: false,
   isElectron: true,
   useIpcForApi: true,
-  enableTestData: false,
+  enableTestData: true,
   persistRedux: false,
   onlyAddValidRowsToPDF: true,
   useIonPickers: true,

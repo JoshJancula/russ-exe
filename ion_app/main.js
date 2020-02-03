@@ -43,7 +43,7 @@ let patientInfo = {
 };
 
 let bypassStandard = false;
-let debugMode = true;
+let debugMode = false;
 
 app.on('ready', () => {
   createWindow();
@@ -56,7 +56,8 @@ function createWindow() {
     minHeight: 300,
     minWidth: 460,
     nodeIntegrationInSubFrames: true,
-    icon: __dirname + '/app/assets/healthline_logo.ico',
+    alwaysOnTop: true,
+    icon: __dirname + '/www/assets/healthline_logo.ico',
     webPreferences: {
       nodeIntegration: true,
       webSecurity: false,
@@ -64,13 +65,13 @@ function createWindow() {
     }
   });
 
-  mainWindow.setTitle('Lund & Browder Form');
   // mainWindow.loadFile('./app/index.html'); // jquery build
-//   mainWindow.loadURL('http://localhost:4200'); // angular dev 
+  //   mainWindow.loadURL('http://localhost:4200'); // angular dev 
   mainWindow.loadFile('./www/index.html'); // angular build
-  mainWindow.webContents.openDevTools();
+//   mainWindow.webContents.openDevTools();
   mainWindow.setMenu(null);
-// da fuck
+  mainWindow.setTitle('Lund & Browder Form');
+
   mainWindow.on('closed', () => {
     mainWindow = null;
     imageWindow = null;
@@ -151,7 +152,7 @@ ipcMain.on('get-args', (evt, arg) => {
 
 ipcMain.on('connect-mssql', (evt, arg) => {
   if (!debugMode) { // not in debugMode mode
-    if (!mssqlConnected && mssqlQueryCount < 10 && !connectionInProgress) { // connection not established
+    if (!mssqlConnected && !connectionInProgress) { // connection not established
       if (process.argv) {
         connectMsSql(process.argv).then(() => {
           executeMsSqlQueries(process.argv).then(() => {

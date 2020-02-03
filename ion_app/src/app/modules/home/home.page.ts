@@ -45,6 +45,9 @@ export class HomePage implements OnInit, OnDestroy {
   public environment = environment;
   public moment = moment;
 
+  private connectionInterval: any = null;
+  private connectionCount: number = 45;
+
   public tableRows: any[] = [
     { display: 'Head', name: 'head', infant: 19, oneToFour: 12, fiveToNine: 13, tenToFourteen: 11, fifteen: 8, adult: 7 },
     { display: 'Neck', name: 'neck', infant: 2, oneToFour: 2, fiveToNine: 2, tenToFourteen: 2, fifteen: 2, adult: 2 },
@@ -92,11 +95,21 @@ export class HomePage implements OnInit, OnDestroy {
 
   private initElectron(): void {
     this.loading = true;
+    this.connectionInterval = setInterval(() => { 
+      this.connectionCount--;
+      if (this.connectionCount === 0) {
+        clearInterval(this.connectionInterval);
+        alert('Connection to MsSQL has now exceeded 45 seconds... its probably screwed');
+        this.loading = false;
+      }
+    }, 1000);
     this.appActions.fetchSavedData().then((data: any) => {
       this.loading = false;
+      clearInterval(this.connectionInterval);
     }).catch(err => {
       console.log('error getting saved data.... ', err);
       this.loading = false;
+      clearInterval(this.connectionInterval);
     });
   }
 
