@@ -34,7 +34,7 @@
                     <div class="col l6 m6 s6" style="margin-left: 0; padding-left: 0;">
                         <h6>Date of Injury:
                             <input *ngIf="!environment.useIonPickers || pdfView" id="dateOfInjury" placeholder="MM/DD/YYYY"
-                                [(ngModel)]="dataObject.dateOfInjury" style="cursor: pointer;" type="text" />
+                                value="{{ dataObject.dateOfInjury ? moment(dataObject.dateOfInjury).format('MM/DD/YYYY') : 'MM/DD/YYYY'}}" style="cursor: pointer;" type="text" />
                             <ion-datetime *ngIf="environment.useIonPickers && !pdfView" placeholder="{{ currentDate }}"
                                 class="fake-input" max="{{maxDate}}" displayFormat="MM/DD/YYYY"
                                 [(ngModel)]="dataObject.dateOfInjury"></ion-datetime>
@@ -43,7 +43,7 @@
                     <div class="col l6 m6 s6" style="margin-left: 0; padding-left: 0;">
                         <h6>Time of Injury:
                             <input *ngIf="!environment.useIonPickers || pdfView" placeholder="HH:mm" id="timeOfInjury"
-                                [(ngModel)]="dataObject.timeOfInjury" type="time" />
+                            value="{{ dataObject.timeOfInjury ? moment(dataObject.timeOfInjury).format('hh:mm a') : 'HH:mm'}}" type="time" />
                             <ion-datetime *ngIf="environment.useIonPickers && !pdfView" placeholder="{{ currentTime }}"
                                 class="fake-input" [(ngModel)]="dataObject.timeOfInjury" displayFormat="hh:mm a">
                             </ion-datetime>

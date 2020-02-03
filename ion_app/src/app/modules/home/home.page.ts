@@ -43,6 +43,7 @@ export class HomePage implements OnInit, OnDestroy {
   private timeInterval: any = null;
   public maxDate: string = moment(new Date().toISOString()).format('YYYY-MM-DD');
   public environment = environment;
+  public moment = moment;
 
   public tableRows: any[] = [
     { display: 'Head', name: 'head', infant: 19, oneToFour: 12, fiveToNine: 13, tenToFourteen: 11, fifteen: 8, adult: 7 },
@@ -82,7 +83,7 @@ export class HomePage implements OnInit, OnDestroy {
     this.timeInterval = setInterval(() => { this.setTimeAndDate(); }, 1000);
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 
   ngOnDestroy(): void {
     this.subs.map(s => s.unsubscribe());
@@ -125,7 +126,7 @@ export class HomePage implements OnInit, OnDestroy {
       }
     }));
     this.subs.push(this.appSelectors.userInfo.subscribe((u: User) => {
-      if (u) { this.userInfo = u;  }
+      if (u) { this.userInfo = u; }
     }));
     this.subs.push(this.appSelectors.canvasUrl.subscribe((url: string) => {
       if (url) {
@@ -246,10 +247,10 @@ export class HomePage implements OnInit, OnDestroy {
 
   public generatePDF(): void {
     this.pdfView = true;
-    if (!environment.isMobileApp && this.burnCanvas.hasDrawnOnCanvas) {
-      this.burnCanvas.pdfView = true;
-      this.burnCanvas.pdfSubject.next(true);
-    }
+    // if (!environment.isMobileApp && this.burnCanvas.hasDrawnOnCanvas) {
+    this.burnCanvas.pdfView = true;
+    this.burnCanvas.pdfSubject.next(true);
+    // }
     const div = document.getElementById('mainForm');
     const ogWidth = document.body.style.width;
     const ogWidth2 = div.style.width;
@@ -262,17 +263,17 @@ export class HomePage implements OnInit, OnDestroy {
           document.getElementById('mainForm').style.width = ogWidth2;
           document.body.style.width = ogWidth;
           this.pdfView = false;
-          if (!environment.isMobileApp) {
+          if (!environment.isMobileApp && this.burnCanvas.hasDrawnOnCanvas) {
             this.burnCanvas.pdfView = false;
             this.burnCanvas.pdfSubject.next(false);
           }
         }, 300);
       }).catch((e: any) => {
         this.pdfView = false;
-        if (!environment.isMobileApp && this.burnCanvas.hasDrawnOnCanvas) {
-          this.burnCanvas.pdfView = false;
-          this.burnCanvas.pdfSubject.next(false);
-        }
+        // if (!environment.isMobileApp && this.burnCanvas.hasDrawnOnCanvas) {
+        this.burnCanvas.pdfView = false;
+        this.burnCanvas.pdfSubject.next(false);
+        // }
         this.makeCellsDarker(true);
         document.getElementById('mainForm').style.width = ogWidth2;
         document.body.style.width = ogWidth;
@@ -309,8 +310,8 @@ export class HomePage implements OnInit, OnDestroy {
     return true;
   }
 
-  private makeCellsDarker(def: boolean): void {
-    const tds = Array.from(document.getElementsByTagName('td'));
+  private makeCellsDarker(def: boolean): void { // probably replace this with ngClass
+    const tds = Array.from(document.getElementsByTagName('td')); // at some point...
     const ths = Array.from(document.getElementsByTagName('th'));
     const hrs = Array.from(document.getElementsByTagName('hr'));
     tds.map(t => this.executeStyleUpdate(t, def));

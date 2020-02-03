@@ -1,8 +1,8 @@
 {
-  "name": "ion_app",
-  "version": "0.0.1",
-  "author": "Ionic Framework",
-  "homepage": "https://ionicframework.com/",
+  "name": "wwa_lbform_ionic",
+  "version": "1.0.0",
+  "description": "Lund & Browder Form",
+  "author": "HealthlineIS",
   "main": "main.js",
   "scripts": {
     "ng": "ng",
@@ -10,7 +10,9 @@
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "postinstall": "electron-packager install-app-deps",
+    "build:electron": "ng build --prod --aot --base-href ./ && electron-packager . --no-prune --ignore=/e2e --ignore=/.git --overwrite"
   },
   "private": true,
   "dependencies": {
@@ -72,6 +74,5 @@
     "ts-node": "~7.0.0",
     "tslint": "~5.15.0",
     "typescript": "~3.4.3"
-  },
-  "description": "An Ionic project"
+  }
 }

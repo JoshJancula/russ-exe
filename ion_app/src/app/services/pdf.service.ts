@@ -26,16 +26,16 @@ export class PdfService {
           pdf.addImage(imgData, 'PNG', 0, null, pdfWidth, pdfHeight, '', 'FAST');
           if (action === 'download') {
             try {
-              // pdf.save(title);
-              // resolve();
-              this.electronService.ipcRenderer.send('save-pdf', canvas.toDataURL('image/png'));
-              this.electronService.ipcRenderer.on('print-task-complete', (event, args) => {
-                resolve();
-              });
+              pdf.save(title);
+              resolve();
+              // this.electronService.ipcRenderer.send('save-pdf', canvas.toDataURL('image/png'));
+              // this.electronService.ipcRenderer.on('print-task-complete', (event, args) => {
+              //   resolve();
+              // });
             } catch (e) {
               console.log('e... ', e);
               resolve();
-            }
+            } // WIP
           } else if (action === 'print') {
             const blob = pdf.output('blob');
             this.print(blob).then(() => {
@@ -54,7 +54,7 @@ export class PdfService {
 
   public html2canvas(div: HTMLElement): Promise<any> {
     // this is ridiculous but there is a bug with ionic and
-    // html2pdf over shadowed rood vars in duplicated stylesheets
+    // html2pdf over shadowed root vars in duplicated stylesheets
     // so we need to do this and have that service to accomodate
     return new Promise((resolve, reject) => {
       const element = document.getElementById('html2canvas');

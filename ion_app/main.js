@@ -1,19 +1,11 @@
-global.window = { document: { createElementNS: () => { return {} } } };
+// global.window = { document: { createElementNS: () => { return {} } } };
 const { app, BrowserWindow } = require('electron');
-const PDFWindow = require('electron-pdf-window');
 let mainWindow = null;
 let imageWindow = null;
 let printWindow = null;
 let hasOpenImageWindow = false;
 let imageData = null;
 const { ipcMain } = require('electron');
-// const server = require('./server'); // just importing this will launch server to create api bridge
-const { protocol } = require('electron');
-const nfs = require('fs');
-const npjoin = require('path').join;
-const es6Path = npjoin(__dirname, '/ion_app/www');
-const debug = require('electron-debug');
-const ffmpeg = require('ffmpeg-static-electron');
 const sql = require('mssql');
 let canvasString = null;
 let userId = null;
@@ -22,9 +14,6 @@ let mssqlConnected = false;
 let mssqlQueryCount = 0;
 const maxQueryCount = 10;
 let connectionInProgress = false;
-// const ElectronPDF = require('electron-pdf');
-
-// const printer = require('@thiagoelg/node-printer');
 
 let dataObject = {
   tableData: null,
@@ -56,24 +45,7 @@ let patientInfo = {
 let bypassStandard = false;
 let debugMode = true;
 
-debug({ isEnabled: debugMode, showDevTools: debugMode });
-
-if (process.platform !== 'darwin' || bypassStandard) {
-  protocol.registerSchemesAsPrivileged([
-    { scheme: 'es6', privileges: { standard: true } }
-  ]);
-} else {
-  protocol.registerStandardSchemes(['es6']);
-}
-
-
 app.on('ready', () => {
-  protocol.registerBufferProtocol('es6', (req, cb) => {
-    nfs.readFile(
-      npjoin(es6Path, req.url.replace('es6://', '')),
-      (e, b) => { cb({ mimeType: 'text/javascript', data: b }) }
-    );
-  });
   createWindow();
 });
 
@@ -94,11 +66,11 @@ function createWindow() {
 
   mainWindow.setTitle('Lund & Browder Form');
   // mainWindow.loadFile('./app/index.html'); // jquery build
-  // mainWindow.loadURL('http://localhost:4200'); // angular dev 
-  mainWindow.loadFile('./ion_app/www/index.html'); // angular build
+//   mainWindow.loadURL('http://localhost:4200'); // angular dev 
+  mainWindow.loadFile('./www/index.html'); // angular build
   mainWindow.webContents.openDevTools();
   mainWindow.setMenu(null);
-
+// da fuck
   mainWindow.on('closed', () => {
     mainWindow = null;
     imageWindow = null;
@@ -136,16 +108,10 @@ ipcMain.on('request-ffmpeg', (evt, arg) => {
   evt.sender.send('ffmpeg-response', ffmpeg);
 });
 
-// app.on('ready', createWindow);
-
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
   app.quit();
 });
-
-// app.on('activate', () => {
-//   if (mainWindow === null) createWindow();
-// });
 
 function createImageWindow(imgs) {
   hasOpenImageWindow = true;
@@ -223,9 +189,9 @@ ipcMain.on('submit-mssql', (evt, arg) => {
   // console.log('evt... ', evt);
   // console.log('args... ', arg);
   if (!debugMode) {
-    console.log('arg.edit.... ', arg.editMode);
-    console.log('arg.canvas.... ', arg.canvasUrl);
-    console.log('arg.data.... ', arg.data);
+    // console.log('arg.edit.... ', arg.editMode);
+    // console.log('arg.canvas.... ', arg.canvasUrl);
+    // console.log('arg.data.... ', arg.data);
 
     submitMsSql(arg.editMode, arg.canvasUrl, arg.data).then(() => {
       evt.sender.send('submit-response', { success: true, msg: 'we saved data????' });
@@ -237,41 +203,6 @@ ipcMain.on('submit-mssql', (evt, arg) => {
     // not sure what to do...
   }
 });
-
-let printString = null;
-let printResponder = null;
-
-ipcMain.on('save-pdf', (evt, arg) => {
-  printString = arg;
-  createPrintWindow(null);
-  printResponder = evt;
-});
-
-ipcMain.on('print-window-loaded', (evt, arg) => {
-  evt.sender.send('loaded-response', printString);
-});
-
-ipcMain.on('print-task-complete', (evt, arg) => {
-  printResponder.sender.send('print-task-complete', arg);
-  printWindow.close();
-});
-
-function createPrintWindow(url) {
-  printWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
-    minHeight: 300,
-    minWidth: 460,
-    icon: __dirname + '/app/assets/healthline_logo.ico',
-    webPreferences: {
-      nodeIntegration: true,
-      webSecurity: false,
-      plugins: true,
-      devTools: false
-    }
-  });
-  printWindow.loadFile('./printer.html'); // angular build
-}
 
 async function executeMsSqlQueries(args) { // get the envelope id from args passed or use test id
   return new Promise(async (resolve, reject) => {
